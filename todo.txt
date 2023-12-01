@@ -1,2 +1,0 @@
-Make push of number more efficient!
-E.g. make algorithm to convert (push N) which uses N blobs, into something that uses <= N blobs.
