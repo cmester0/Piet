@@ -374,13 +374,19 @@ def step(k):
                 case (4,1): # roll
                     if debug:
                         print("roll")
+                    # TODO: more clever
+                    def roll(l, n):
+                        if n > 0:
+                            return roll([l[-1]] + l[:-1], n-1)
+                        elif n < 0:
+                            return roll(l[1:] + [l[0]], n+1)
+                        else:
+                            return l
+
                     if len(stack) >= 2:
                         a = stack.pop()
                         b = stack.pop() # TODO: Ignore b negative
-                        if a > 0:
-                            stack = stack[:-b] + stack[-a:] + stack[-b:-a]
-                        if a < 0:
-                            stack = stack[:-b] + stack[-b-a:] + stack[-b:-b-a]
+                        stack = stack[:-b] + roll(stack[-b:], a)
                 case (4,2): # inN
                     if debug:
                         print("inN")

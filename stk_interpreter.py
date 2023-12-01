@@ -77,10 +77,12 @@ while index < len(block):
             if len(stack) >= 2:
                 a = stack.pop()
                 b = stack.pop() # TODO: Ignore b negative
-                if a > 0:
+                if b < 0:
+                    print ("Error")
+                else:
+                    a = a % b
+                    print (a,b)
                     stack = stack[:-b] + stack[-a:] + stack[-b:-a]
-                if a < 0:
-                    stack = stack[:-b] + stack[-b-a:] + stack[-b:-b-a]
         case "inN":
             if not input_eof:
                 value = sys.stdin.buffer.peek(1)
@@ -95,6 +97,7 @@ while index < len(block):
             else:
                 stack.append(-1)
         case "inC":
+            print (stack)
             if not input_eof:
                 value = sys.stdin.buffer.peek(1)
                 if value == b"":

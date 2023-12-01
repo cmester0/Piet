@@ -9,6 +9,32 @@ instrs = [("main",["push 1"])]
 
 data_type_size = {"num": 1, "list": 0}
 
+def dup_value_x_deep(index, x):
+    # Get the value to the top
+    instrs[index][1].append("push "+str(x))
+    instrs[index][1].append("push -1")
+    instrs[index][1].append("roll")
+
+    instrs[index][1].append("dup")
+
+    # put it back
+    instrs[index][1].append("push "+str(x+1))
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+
+def swap(index):
+    instrs[index][1].append("push 2")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+
+def add(index, n):
+    instrs[index][1].append("push "+str(n))
+    instrs[index][1].append("add")
+
+def sub(index, n):
+    instrs[index][1].append("push "+str(n))
+    instrs[index][1].append("sub")
+
 index = 0
 label_count = 0
 var_list = []
@@ -21,103 +47,99 @@ for l in inp_lines:
             instrs.append((l[1], []))
 
         case "push":
+            instrs[index][1].append("#+push" + l[1])
             instrs[index][1].append("push " + l[1])
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("add")
+            swap(index)
+            add(index,1)
+            instrs[index][1].append("#-push" + l[1])
 
         case "pop":
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            instrs[index][1].append("#+pop")
+            swap(index)
             instrs[index][1].append("pop")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            sub(index,1)
+            instrs[index][1].append("#-pop")
 
         case "eq":
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("push " + l[1])
-            instrs[index][1].append("sub")
+            instrs[index][1].append("#+eq")
+            swap(index)
+            sub(index, int(l[1]))
             instrs[index][1].append("dup")
             instrs[index][1].append("mul")
             instrs[index][1].append("push 0")
             instrs[index][1].append("greater")
             instrs[index][1].append("not")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
+            instrs[index][1].append("#-eq")
 
         case "add":
+            instrs[index][1].append("#+add")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push 1")
             instrs[index][1].append("roll")
             instrs[index][1].append("add")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
+            instrs[index][1].append("#-add")
 
         case "sub":
+            instrs[index][1].append("#+sub")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push 1")
             instrs[index][1].append("roll")
             instrs[index][1].append("sub")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
+            instrs[index][1].append("#-sub")
 
         case "div":
+            instrs[index][1].append("#+div")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push 1")
             instrs[index][1].append("roll")
             instrs[index][1].append("div")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
+            instrs[index][1].append("#-div")
 
         case "mod":
+            instrs[index][1].append("#+mod")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push 1")
             instrs[index][1].append("roll")
             instrs[index][1].append("mod")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
+            instrs[index][1].append("#-mod")
 
         case "mul":
+            instrs[index][1].append("#+mul")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push 1")
             instrs[index][1].append("roll")
             instrs[index][1].append("mul")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
+            instrs[index][1].append("#-mul")
 
         case "dup":
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            instrs[index][1].append("#+dup")
+            swap(index)
             instrs[index][1].append("dup")
             instrs[index][1].append("push 3")
             instrs[index][1].append("push -1")
             instrs[index][1].append("roll")
             instrs[index][1].append("push 1")
             instrs[index][1].append("add")
+            instrs[index][1].append("#-dup")
 
         case "inN":
+            instrs[index][1].append("#+inN")
             label_index = len(instrs)
             new_label = "l" + str(label_index)
             instrs[index][1].append("goto " + new_label)
@@ -126,9 +148,7 @@ for l in inp_lines:
             instrs[label_index][1].append("push -2")
             instrs[label_index][1].append("push -3")
             instrs[label_index][1].append("inN")
-            instrs[label_index][1].append("push 2")
-            instrs[label_index][1].append("push 1")
-            instrs[label_index][1].append("roll")
+            swap(label_index)
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
@@ -163,9 +183,12 @@ for l in inp_lines:
             instrs[fail_label_index][1].append("pop")
             instrs[fail_label_index][1].append("goto " + continue_new_label)
 
+            instrs[fail_label_index][1].append("#-inN")
+
             index = continue_label_index
 
         case "inC":
+            instrs[index][1].append("#+inC")
             label_index = len(instrs)
             new_label = "l" + str(label_index)
             instrs[index][1].append("goto " + new_label)
@@ -174,9 +197,7 @@ for l in inp_lines:
             instrs[label_index][1].append("push -2")
             instrs[label_index][1].append("push -3")
             instrs[label_index][1].append("inC")
-            instrs[label_index][1].append("push 2")
-            instrs[label_index][1].append("push 1")
-            instrs[label_index][1].append("roll")
+            swap(label_index)
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
@@ -211,21 +232,27 @@ for l in inp_lines:
             instrs[fail_label_index][1].append("pop")
             instrs[fail_label_index][1].append("goto " + continue_new_label)
 
+            instrs[fail_label_index][1].append("#-inC")
+
             index = continue_label_index
 
         case "goto":
+            instrs[index][1].append("#+goto " + l[1])
             instrs[index][1].append("goto " + l[1])
+            instrs[index][1].append("#-goto " + l[1])
 
         case "branch":
+            instrs[index][1].append("#+branch" + l[1] + " " + l[2])
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
-            instrs[index][1].append("push 2")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
+            swap(index)
             instrs[index][1].append("branch " + l[1] + " " + l[2])
+            instrs[index][1].append("#-branch " + l[1] + " " + l[2])
 
         case "var":
+            instrs[index][1].append("#+var " + l[1])
             var_list = [l[1]] + var_list
+            print (var_list)
 
             # Allocate empty variable
             instrs[index][1].append("push " + str(data_type_size[l[2]]))
@@ -259,7 +286,10 @@ for l in inp_lines:
             instrs[index][1].append("push " + str(new_data_size))
             instrs[index][1].append("roll")
 
+            instrs[index][1].append("#-var " + l[1])
+
         case "set":
+            instrs[index][1].append("#+set " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -286,8 +316,81 @@ for l in inp_lines:
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("sub")
 
+                instrs[index][1].append("#-set " + l[1])
+
             elif len(var_list) < (var_index+2):
-                print ("TODO")
+                print ("TODO:", len(var_list), "<", (var_index+2))
+
+                # Var index
+                instrs[index][1].append("push " + str(var_index))
+
+                label_index = len(instrs)
+                new_label = "l" + str(label_index)
+                instrs[index][1].append("goto " + new_label)
+
+                instrs.append((new_label, []))
+
+                instrs[label_index][1].append("dup")
+
+                less_branch_index = len(instrs)
+                new_label_1 = "l" + str(less_branch_index)
+                instrs.append((new_label_1, []))
+
+                greater_branch_index = len(instrs)
+                new_label_2 = "l" + str(greater_branch_index)
+                instrs.append((new_label_2, []))
+
+                instrs[label_index][1].append("branch " + new_label_1 + " " + new_label_2)
+
+                swap(less_branch_index)
+
+                instrs[less_branch_index][1].append("dup")
+
+                instrs[less_branch_index][1].append("push 3")
+                instrs[less_branch_index][1].append("push 1")
+                instrs[less_branch_index][1].append("roll")
+
+                # TODO: handle case of lists
+                instrs[less_branch_index][1].append("push 1")
+                instrs[less_branch_index][1].append("add")
+                instrs[less_branch_index][1].append("push -3")
+                instrs[less_branch_index][1].append("roll")
+
+                instrs[less_branch_index][1].append("push 6")
+                instrs[less_branch_index][1].append("push -3")
+                instrs[less_branch_index][1].append("roll")
+
+                instrs[less_branch_index][1].append("push 1")
+                instrs[less_branch_index][1].append("sub")
+
+                instrs[less_branch_index][1].append("goto " + new_label)
+
+                instrs[greater_branch_index][1].append("pop")
+                instrs[greater_branch_index][1].append("dup")
+                # TODO: handle case of lists
+                instrs[greater_branch_index][1].append("push -2")
+                instrs[greater_branch_index][1].append("roll")
+                instrs[greater_branch_index][1].append("pop")
+
+                instrs[greater_branch_index][1].append("push 3")
+                instrs[greater_branch_index][1].append("push -1")
+                instrs[greater_branch_index][1].append("roll")
+
+                instrs[greater_branch_index][1].append("push 3")
+                instrs[greater_branch_index][1].append("push -1")
+                instrs[greater_branch_index][1].append("roll")
+                instrs[greater_branch_index][1].append("dup")
+                instrs[greater_branch_index][1].append("push 4")
+                instrs[greater_branch_index][1].append("push 1")
+                instrs[greater_branch_index][1].append("roll")
+
+                swap(greater_branch_index)
+                instrs[greater_branch_index][1].append("push 1")
+                instrs[greater_branch_index][1].append("sub")
+
+                instrs[greater_branch_index][1].append("#-set " + l[1])
+
+                index = greater_branch_index
             else:
                 instrs[index][1].append("push 0") # Heap size
                 instrs[index][1].append("push " + str(len(var_list) - (var_index+2))) # Second round
@@ -329,9 +432,7 @@ for l in inp_lines:
                 instrs[label_index][1].append("roll")
 
                 instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
+                swap(label_index)
                 instrs[label_index][1].append("sub")
 
                 instrs[label_index][1].append("roll")
@@ -345,9 +446,7 @@ for l in inp_lines:
                 instrs[label_index][1].append("push 3")
                 instrs[label_index][1].append("sub")
 
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
+                swap(label_index)
                 instrs[label_index][1].append("dup")
                 instrs[label_index][1].append("push 6")
                 instrs[label_index][1].append("add")
@@ -467,14 +566,10 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("push 1")
                 instrs[final_label_index][1].append("roll")
 
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
 
                 instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
                 instrs[final_label_index][1].append("sub")
 
                 instrs[final_label_index][1].append("roll")
@@ -493,9 +588,7 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("add")
                 instrs[final_label_index][1].append("push 2")
                 instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
                 instrs[final_label_index][1].append("push 2")
                 instrs[final_label_index][1].append("sub")
                 instrs[final_label_index][1].append("push 1")
@@ -508,9 +601,7 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("push -1")
                 instrs[final_label_index][1].append("roll")
 
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
 
                 instrs[final_label_index][1].append("dup")
                 instrs[final_label_index][1].append("push 5")
@@ -552,22 +643,21 @@ for l in inp_lines:
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("add")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("roll")
 
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("sub")
 
+                instrs[index][1].append("#-set " + l[1])
+
         case "get":
+            instrs[index][1].append("#+get " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -597,8 +687,11 @@ for l in inp_lines:
                 instrs[index][1].append("push 2") # TODO: change to index / varsize
                 instrs[index][1].append("roll")
 
+                instrs[index][1].append("#-get " + l[1])
+
             elif len(var_list) < (var_index+2):
                 print ("TODO")
+                instrs[index][1].append("#-get " + l[1])
             else:
                 instrs[index][1].append("push 0") # Heap size
                 instrs[index][1].append("push " + str(len(var_list) - (var_index+2))) # Second round
@@ -640,9 +733,7 @@ for l in inp_lines:
                 instrs[label_index][1].append("roll")
 
                 instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
+                swap(label_index)
                 instrs[label_index][1].append("sub")
 
                 instrs[label_index][1].append("roll")
@@ -792,14 +883,10 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("push 1")
                 instrs[final_label_index][1].append("roll")
 
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
 
                 instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
                 instrs[final_label_index][1].append("sub")
 
                 instrs[final_label_index][1].append("roll")
@@ -877,22 +964,20 @@ for l in inp_lines:
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("add")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("roll")
 
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("sub")
+                instrs[index][1].append("#-get " + l[1])
 
         case "del":
+            instrs[index][1].append("#+del " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -915,9 +1000,7 @@ for l in inp_lines:
                 instrs[index][1].append("push -1")
                 instrs[index][1].append("roll")
                 instrs[index][1].append("push -1")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("sub")
                 instrs[index][1].append("roll")
 
@@ -941,9 +1024,7 @@ for l in inp_lines:
 
                 # Pop while top is less than one
 
-                instrs[pop_label_index][1].append("push 2")
-                instrs[pop_label_index][1].append("push 1")
-                instrs[pop_label_index][1].append("roll")
+                swap(pop_label_index)
                 instrs[pop_label_index][1].append("pop")
                 instrs[pop_label_index][1].append("push 1")
                 instrs[pop_label_index][1].append("sub")
@@ -955,9 +1036,11 @@ for l in inp_lines:
 
                 index = done_label_index
 
+                instrs[done_label_index][1].append("#-del " + l[1])
 
             elif len(var_list) < (var_index + 1):
-                pass
+                instrs[done_label_index][1].append("#-del " + l[1])
+                print("TODO")
             else:
                 instrs[index][1].append("push 0") # Heap size
                 instrs[index][1].append("push " + str(len(var_list) - (var_index + 1))) # Second round
@@ -999,9 +1082,7 @@ for l in inp_lines:
                 instrs[label_index][1].append("roll")
 
                 instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
+                swap(label_index)
                 instrs[label_index][1].append("sub")
 
                 instrs[label_index][1].append("roll")
@@ -1067,9 +1148,7 @@ for l in inp_lines:
                 instrs[next_label_index][1].append("push 4")
                 instrs[next_label_index][1].append("push -1")
                 instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("push 2")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
+                swap(next_label_index)
                 instrs[next_label_index][1].append("sub")
                 instrs[next_label_index][1].append("push 2")
                 instrs[next_label_index][1].append("sub")
@@ -1144,9 +1223,7 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("push 1")
                 instrs[final_label_index][1].append("roll")
 
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
 
                 instrs[final_label_index][1].append("push -1")
                 instrs[final_label_index][1].append("push 2")
@@ -1185,9 +1262,7 @@ for l in inp_lines:
                 instrs[final_label_index][1].append("push -1")
                 instrs[final_label_index][1].append("roll")
 
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
+                swap(final_label_index)
 
                 instrs[final_label_index][1].append("dup")
                 instrs[final_label_index][1].append("push 5")
@@ -1229,20 +1304,34 @@ for l in inp_lines:
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("push 3")
                 instrs[index][1].append("add")
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("roll")
-                instrs[index][1].append("push 2")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
+                swap(index)
                 instrs[index][1].append("roll")
 
                 instrs[index][1].append("push 1")
                 instrs[index][1].append("sub")
+
+                instrs[index][1].append("#-del " + l[1])
+
+        case "outC":
+            instrs[index][1].append("#+outC")
+            swap(index)
+            instrs[index][1].append("outC")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("sub")
+            instrs[index][1].append("#-outC")
+
+        case "outN":
+            instrs[index][1].append("#+outN")
+            swap(index)
+            instrs[index][1].append("outN")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("sub")
+            instrs[index][1].append("#-outN")
 
 # print (var_list)
 # print ("\n".join(instrs))
