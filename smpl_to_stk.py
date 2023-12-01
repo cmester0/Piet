@@ -35,6 +35,23 @@ def sub(index, n):
     instrs[index][1].append("push "+str(n))
     instrs[index][1].append("sub")
 
+def eq(index):
+    instrs[index][1].append("sub")
+    instrs[index][1].append("dup")
+    instrs[index][1].append("mul")
+    instrs[index][1].append("push 0")
+    instrs[index][1].append("greater")
+    instrs[index][1].append("not")
+
+def binop(index,op):
+    instrs[index][1].append("push 3")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+    instrs[index][1].append(op)
+    swap(index)
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("sub")
+
 index = 0
 label_count = 0
 var_list = []
@@ -63,68 +80,34 @@ for l in inp_lines:
         case "eq":
             instrs[index][1].append("#+eq")
             swap(index)
-            sub(index, int(l[1]))
-            instrs[index][1].append("dup")
-            instrs[index][1].append("mul")
-            instrs[index][1].append("push 0")
-            instrs[index][1].append("greater")
-            instrs[index][1].append("not")
+            instrs[index][1].append("push "+str(n))
+            eq(index)
             swap(index)
             instrs[index][1].append("#-eq")
 
         case "add":
             instrs[index][1].append("#+add")
-            instrs[index][1].append("push 3")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("add")
-            swap(index)
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            binop(index,"add")
             instrs[index][1].append("#-add")
 
         case "sub":
             instrs[index][1].append("#+sub")
-            instrs[index][1].append("push 3")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("sub")
-            swap(index)
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            binop(index,"sub")
             instrs[index][1].append("#-sub")
 
         case "div":
             instrs[index][1].append("#+div")
-            instrs[index][1].append("push 3")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("div")
-            swap(index)
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            binop(index,"div")
             instrs[index][1].append("#-div")
 
         case "mod":
             instrs[index][1].append("#+mod")
-            instrs[index][1].append("push 3")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("mod")
-            swap(index)
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            binop(index,"mod")
             instrs[index][1].append("#-mod")
 
         case "mul":
             instrs[index][1].append("#+mul")
-            instrs[index][1].append("push 3")
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-            instrs[index][1].append("mul")
-            swap(index)
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("sub")
+            binop(index,"mul")
             instrs[index][1].append("#-mul")
 
         case "dup":
@@ -152,12 +135,7 @@ for l in inp_lines:
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
-            instrs[label_index][1].append("sub")
-            instrs[label_index][1].append("dup")
-            instrs[label_index][1].append("mul")
-            instrs[label_index][1].append("push 0")
-            instrs[label_index][1].append("greater")
-            instrs[label_index][1].append("not")
+            eq(label_index)
 
             succ_label_index = len(instrs)
             succ_new_label = "l" + str(succ_label_index)
@@ -201,12 +179,7 @@ for l in inp_lines:
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
-            instrs[label_index][1].append("sub")
-            instrs[label_index][1].append("dup")
-            instrs[label_index][1].append("mul")
-            instrs[label_index][1].append("push 0")
-            instrs[label_index][1].append("greater")
-            instrs[label_index][1].append("not")
+            eq(label_index)
 
             succ_label_index = len(instrs)
             succ_new_label = "l" + str(succ_label_index)
