@@ -27,6 +27,48 @@ def swap(index):
     instrs[index][1].append("push 1")
     instrs[index][1].append("roll")
 
+def dup_at_depth(index):
+    # Save / update depth
+    instrs[index][1].append("dup")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("add")
+
+    # Fetch the element
+    instrs[index][1].append("push -1")
+    instrs[index][1].append("roll")
+
+    # dup and save element
+    instrs[index][1].append("dup")
+    instrs[index][1].append("push 3")
+    instrs[index][1].append("push -1")
+    instrs[index][1].append("roll")
+
+    # Put back the new element
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("add")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+
+# Swap the second element on the stack, with element at depth given by the top element of the stack
+def swap_at_depth(index):
+    # Save / update depth
+    instrs[index][1].append("dup")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("add")
+
+    # Fetch the element
+    instrs[index][1].append("push -1")
+    instrs[index][1].append("roll")
+
+    # Do the swap
+    instrs[index][1].append("push 3")
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+
+    # Put back the new element
+    instrs[index][1].append("push 1")
+    instrs[index][1].append("roll")
+
 def add(index, n):
     instrs[index][1].append("push "+str(n))
     instrs[index][1].append("add")
@@ -51,6 +93,155 @@ def binop(index,op):
     swap(index)
     instrs[index][1].append("push 1")
     instrs[index][1].append("sub")
+
+def goto_new_label(index):
+    label_index = len(instrs)
+    new_label = "l" + str(label_index)
+    instrs[index][1].append("goto " + new_label)
+
+    instrs.append((new_label, []))
+    return label_index
+
+def branch_new_labels(index):
+    label1_index = len(instrs)
+    new1_label = "l" + str(label1_index)
+    instrs.append((new1_label, []))
+
+    label2_index = len(instrs)
+    new2_label = "l" + str(label2_index)
+    instrs.append((new2_label, []))
+
+    instrs[index][1].append("branch " + new1_label + " " + new2_label)
+
+    return label1_index, label2_index
+
+def get_offset_for_var_index(index, var_index):
+    instrs[index][1].append("push 0") # Offset to variable
+    instrs[index][1].append("push "+str(var_index))
+
+    label_index = goto_new_label(index)
+    instrs[label_index][1].append("dup")
+    loop_index, set_index = branch_new_labels(label_index)
+
+    # Old stack size + 2
+    dup_value_x_deep(loop_index, 3)
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+
+    # Get size of variable
+    instrs[loop_index][1].append("push -1")
+    instrs[loop_index][1].append("roll")
+    instrs[loop_index][1].append("dup")
+
+    # Old stack size + 2
+    dup_value_x_deep(loop_index, 5)
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+
+    # Roll until next element
+    swap(loop_index)
+    instrs[loop_index][1].append("push 1")
+    instrs[loop_index][1].append("add")
+    instrs[loop_index][1].append("push 0")
+    swap(loop_index)
+    instrs[loop_index][1].append("sub")
+    instrs[loop_index][1].append("roll")
+
+    # Calculate extra offset from this var
+    instrs[loop_index][1].append("dup")
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+    instrs[loop_index][1].append("dup")
+
+    # Get stack size and offset accumulator to the top
+    instrs[loop_index][1].append("push 4")
+    instrs[loop_index][1].append("add")
+    instrs[loop_index][1].append("push -3")
+    instrs[loop_index][1].append("roll")
+
+    # Update accumulator
+    instrs[loop_index][1].append("push 4")
+    instrs[loop_index][1].append("push -1")
+    instrs[loop_index][1].append("roll")
+    instrs[loop_index][1].append("push 3")
+    instrs[loop_index][1].append("push -1")
+    instrs[loop_index][1].append("roll")
+    instrs[loop_index][1].append("add")
+    swap(loop_index)
+
+    # Update iterator
+    instrs[loop_index][1].append("push 1")
+    instrs[loop_index][1].append("sub")
+
+    instrs[loop_index][1].append("goto " + "l" + str(label_index))
+
+    instrs[set_index][1].append("pop")
+    dup_value_x_deep(set_index, 2)
+
+    instrs[set_index][1].append("push 1")
+    instrs[set_index][1].append("add")
+    instrs[set_index][1].append("push -1")
+    instrs[set_index][1].append("roll")
+    instrs[set_index][1].append("dup")
+    instrs[set_index][1].append("push 3")
+    instrs[set_index][1].append("push -1")
+    instrs[set_index][1].append("roll")
+    instrs[set_index][1].append("add")
+
+    swap(set_index)
+    dup_value_x_deep(set_index, 3)
+    instrs[set_index][1].append("push 1")
+    instrs[set_index][1].append("add")
+    instrs[set_index][1].append("push 1")
+    instrs[set_index][1].append("roll")
+
+    # Roll the entire stack back
+    instrs[set_index][1].append("push "+str(var_index))
+    label_index = goto_new_label(set_index)
+    instrs[label_index][1].append("dup")
+    loop_index, set_index = branch_new_labels(label_index)
+
+    dup_value_x_deep(loop_index, 3) # stack size
+    dup_value_x_deep(loop_index, 5) # var size
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+    instrs[loop_index][1].append("dup")
+
+    instrs[loop_index][1].append("push 3")
+    instrs[loop_index][1].append("push 1")
+    instrs[loop_index][1].append("roll")
+
+    instrs[loop_index][1].append("push 6")
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("roll")
+
+    instrs[loop_index][1].append("dup")
+    instrs[loop_index][1].append("push 5")
+    instrs[loop_index][1].append("add")
+    swap(loop_index)
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+
+    # negate
+    instrs[loop_index][1].append("push 0")
+    swap(loop_index)
+    instrs[loop_index][1].append("sub")
+
+    instrs[loop_index][1].append("roll")
+
+    swap(loop_index)
+    instrs[loop_index][1].append("push 2")
+    instrs[loop_index][1].append("add")
+    swap(loop_index)
+    instrs[loop_index][1].append("roll")
+
+    instrs[loop_index][1].append("push 1")
+    instrs[loop_index][1].append("sub")
+    instrs[loop_index][1].append("goto " + "l" + str(label_index))
+
+    instrs[set_index][1].append("pop")
+
+    return set_index
 
 index = 0
 label_count = 0
@@ -80,7 +271,7 @@ for l in inp_lines:
         case "eq":
             instrs[index][1].append("#+eq")
             swap(index)
-            instrs[index][1].append("push "+str(n))
+            instrs[index][1].append("push " + l[1])
             eq(index)
             swap(index)
             instrs[index][1].append("#-eq")
@@ -137,14 +328,7 @@ for l in inp_lines:
             instrs[label_index][1].append("push -3")
             eq(label_index)
 
-            succ_label_index = len(instrs)
-            succ_new_label = "l" + str(succ_label_index)
-            instrs.append((succ_new_label, []))
-
-            fail_label_index = len(instrs)
-            fail_new_label = "l" + str(fail_label_index)
-            instrs.append((fail_new_label, []))
-            instrs[label_index][1].append("branch " + succ_new_label + " " + fail_new_label)
+            succ_label_index, fail_label_index = branch_new_labels(label_index)
 
             continue_label_index = len(instrs)
             continue_new_label = "l" + str(continue_label_index)
@@ -181,14 +365,7 @@ for l in inp_lines:
             instrs[label_index][1].append("push -3")
             eq(label_index)
 
-            succ_label_index = len(instrs)
-            succ_new_label = "l" + str(succ_label_index)
-            instrs.append((succ_new_label, []))
-
-            fail_label_index = len(instrs)
-            fail_new_label = "l" + str(fail_label_index)
-            instrs.append((fail_new_label, []))
-            instrs[label_index][1].append("branch " + succ_new_label + " " + fail_new_label)
+            succ_label_index, fail_label_index = branch_new_labels(label_index)
 
             continue_label_index = len(instrs)
             continue_new_label = "l" + str(continue_label_index)
@@ -225,7 +402,6 @@ for l in inp_lines:
         case "var":
             instrs[index][1].append("#+var " + l[1])
             var_list = [l[1]] + var_list
-            print (var_list)
 
             # Allocate empty variable
             instrs[index][1].append("push " + str(data_type_size[l[2]]))
@@ -272,362 +448,20 @@ for l in inp_lines:
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            if var_index == 0:
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push -2") # TODO: change to index / varsize
-                instrs[index][1].append("roll")
-                instrs[index][1].append("pop")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push -2")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 4")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("push 2") # TODO: change to index / varsize
-                instrs[index][1].append("roll")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("sub")
-
-                instrs[index][1].append("#-set " + l[1])
-
-            elif len(var_list) < (var_index+2):
-                print ("TODO:", len(var_list), "<", (var_index+2))
-
-                # Var index
-                instrs[index][1].append("push " + str(var_index))
-
-                label_index = len(instrs)
-                new_label = "l" + str(label_index)
-                instrs[index][1].append("goto " + new_label)
-
-                instrs.append((new_label, []))
-
-                instrs[label_index][1].append("dup")
-
-                less_branch_index = len(instrs)
-                new_label_1 = "l" + str(less_branch_index)
-                instrs.append((new_label_1, []))
-
-                greater_branch_index = len(instrs)
-                new_label_2 = "l" + str(greater_branch_index)
-                instrs.append((new_label_2, []))
-
-                instrs[label_index][1].append("branch " + new_label_1 + " " + new_label_2)
-
-                swap(less_branch_index)
-
-                instrs[less_branch_index][1].append("dup")
-
-                instrs[less_branch_index][1].append("push 3")
-                instrs[less_branch_index][1].append("push 1")
-                instrs[less_branch_index][1].append("roll")
-
-                # TODO: handle case of lists
-                instrs[less_branch_index][1].append("push 1")
-                instrs[less_branch_index][1].append("add")
-                instrs[less_branch_index][1].append("push -3")
-                instrs[less_branch_index][1].append("roll")
-
-                instrs[less_branch_index][1].append("push 6")
-                instrs[less_branch_index][1].append("push -3")
-                instrs[less_branch_index][1].append("roll")
-
-                instrs[less_branch_index][1].append("push 1")
-                instrs[less_branch_index][1].append("sub")
-
-                instrs[less_branch_index][1].append("goto " + new_label)
-
-                instrs[greater_branch_index][1].append("pop")
-                instrs[greater_branch_index][1].append("dup")
-                # TODO: handle case of lists
-                instrs[greater_branch_index][1].append("push -2")
-                instrs[greater_branch_index][1].append("roll")
-                instrs[greater_branch_index][1].append("pop")
-
-                instrs[greater_branch_index][1].append("push 3")
-                instrs[greater_branch_index][1].append("push -1")
-                instrs[greater_branch_index][1].append("roll")
-
-                instrs[greater_branch_index][1].append("push 3")
-                instrs[greater_branch_index][1].append("push -1")
-                instrs[greater_branch_index][1].append("roll")
-                instrs[greater_branch_index][1].append("dup")
-                instrs[greater_branch_index][1].append("push 4")
-                instrs[greater_branch_index][1].append("push 1")
-                instrs[greater_branch_index][1].append("roll")
-
-                swap(greater_branch_index)
-                instrs[greater_branch_index][1].append("push 1")
-                instrs[greater_branch_index][1].append("sub")
-
-                instrs[greater_branch_index][1].append("#-set " + l[1])
-
-                index = greater_branch_index
-            else:
-                instrs[index][1].append("push 0") # Heap size
-                instrs[index][1].append("push " + str(len(var_list) - (var_index+2))) # Second round
-                instrs[index][1].append("push " + str(var_index+1)) # First round
-                label_index = len(instrs)
-                new_label = "l" + str(label_index)
-                instrs[index][1].append("goto " + new_label)
-
-                instrs.append((new_label, []))
-
-                ##################
-                # Fetch stk size #
-                ##################
-
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Add 3
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("dup")
-
-                # Roll stack one backwards
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Fetch size
-                instrs[label_index][1].append("dup")
-
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("dup")
-
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("push -1")
-                swap(label_index)
-                instrs[label_index][1].append("sub")
-
-                instrs[label_index][1].append("roll")
-
-                # Fetch stack size
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("sub")
-
-                swap(label_index)
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 6")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push -3")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Increment heap size counter
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 5")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
-
-                # Continue
-                instrs[label_index][1].append("push 5")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("sub")
-
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 0")
-                instrs[label_index][1].append("greater")
-                next_label_index = len(instrs)
-                next_new_label = "l" + str(next_label_index)
-
-                instrs[label_index][1].append("branch " + new_label + " " + next_new_label)
-
-                instrs.append((next_new_label, []))
-                instrs[next_label_index][1].append("pop")
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 4")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 4")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("sub")
-                instrs[next_label_index][1].append("push 2")
-                instrs[next_label_index][1].append("add")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 6")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("pop")
-
-                instrs[next_label_index][1].append("push 5")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("sub")
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                # Continue
-
-                final_label_index = len(instrs)
-                final_new_label = "l" + str(final_label_index)
-                instrs[next_label_index][1].append("goto " + final_new_label)
-
-                instrs.append((final_new_label, []))
-
-                ##################
-                # Fetch stk size #
-                ##################
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("dup")
-
-                # Roll stack one backwards
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                # fetch size
-                instrs[final_label_index][1].append("dup")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("dup")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                swap(final_label_index)
-
-                instrs[final_label_index][1].append("push -1")
-                swap(final_label_index)
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("roll")
-
-                # Increase heap size counter
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 7")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                swap(final_label_index)
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("sub")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                # Fetch stack size
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                swap(final_label_index)
-
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 5")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push -2")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("push 4")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 0")
-
-                instrs[final_label_index][1].append("greater")
-
-                index = len(instrs)
-                new_label = "l" + str(index)
-                instrs[final_label_index][1].append("branch " + final_new_label + " " + new_label)
-
-                instrs.append((new_label, []))
-
-                # TODO ROTATE HERE!
-                instrs[index][1].append("pop")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push -1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                swap(index)
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("add")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                swap(index)
-                instrs[index][1].append("roll")
-
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("sub")
-
-                instrs[index][1].append("#-set " + l[1])
+            new_index = get_offset_for_var_index(index, var_index)
+            swap(new_index)
+            instrs[new_index][1].append("dup")
+            instrs[new_index][1].append("push 4")
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("roll")
+            swap(new_index)
+            instrs[new_index][1].append("sub")
+            swap_at_depth(new_index)
+            instrs[new_index][1].append("pop")
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("sub")
+            instrs[new_index][1].append("#-set " + l[1])
+            index = new_index
 
         case "get":
             instrs[index][1].append("#+get " + l[1])
@@ -640,314 +474,20 @@ for l in inp_lines:
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            if var_index == 0:
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push -2") # TODO: change to index / varsize
-                instrs[index][1].append("roll")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 4")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push -1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("add")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 4")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("push 2") # TODO: change to index / varsize
-                instrs[index][1].append("roll")
-
-                instrs[index][1].append("#-get " + l[1])
-
-            elif len(var_list) < (var_index+2):
-                print ("TODO")
-                instrs[index][1].append("#-get " + l[1])
-            else:
-                instrs[index][1].append("push 0") # Heap size
-                instrs[index][1].append("push " + str(len(var_list) - (var_index+2))) # Second round
-                instrs[index][1].append("push " + str(var_index+1)) # First round
-                label_index = len(instrs)
-                new_label = "l" + str(label_index)
-                instrs[index][1].append("goto " + new_label)
-
-                instrs.append((new_label, []))
-
-                ##################
-                # Fetch stk size #
-                ##################
-
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Add 3
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("dup")
-
-                # Roll stack one backwards
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Fetch size
-                instrs[label_index][1].append("dup")
-
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("dup")
-
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("push -1")
-                swap(label_index)
-                instrs[label_index][1].append("sub")
-
-                instrs[label_index][1].append("roll")
-
-                # Fetch stack size
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("push 3")
-                instrs[label_index][1].append("sub")
-
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 6")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push -3")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-
-                # Increment heap size counter
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 5")
-                instrs[label_index][1].append("push -1")
-                instrs[label_index][1].append("roll")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push 2")
-                instrs[label_index][1].append("add")
-                instrs[label_index][1].append("push 4")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
-
-                # Continue
-                instrs[label_index][1].append("push 5")
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("roll")
-
-                instrs[label_index][1].append("push 1")
-                instrs[label_index][1].append("sub")
-
-                instrs[label_index][1].append("dup")
-                instrs[label_index][1].append("push 0")
-                instrs[label_index][1].append("greater")
-                next_label_index = len(instrs)
-                next_new_label = "l" + str(next_label_index)
-
-                instrs[label_index][1].append("branch " + new_label + " " + next_new_label)
-
-                instrs.append((next_new_label, []))
-                instrs[next_label_index][1].append("pop")
-
-                # Get Value HERE # TODO: FOR LIST
-                instrs[next_label_index][1].append("push 4")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 5")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("push 5")
-                instrs[next_label_index][1].append("add")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 4")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 5")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 4")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("dup")
-                instrs[next_label_index][1].append("push 5")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-                instrs[next_label_index][1].append("sub")
-                instrs[next_label_index][1].append("push 2")
-                instrs[next_label_index][1].append("add")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                # CONTINUE ?
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push -1")
-                instrs[next_label_index][1].append("roll")
-
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("add")
-
-                instrs[next_label_index][1].append("push 3")
-                instrs[next_label_index][1].append("push 1")
-                instrs[next_label_index][1].append("roll")
-
-                # instrs[next_label_index][1].append("goto term")
-
-                # Continue
-
-                final_label_index = len(instrs)
-                final_new_label = "l" + str(final_label_index)
-                instrs[next_label_index][1].append("goto " + final_new_label)
-
-                instrs.append((final_new_label, []))
-
-                ##################
-                # Fetch stk size #
-                ##################
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("dup")
-
-                # Roll stack one backwards
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                # fetch size
-                instrs[final_label_index][1].append("dup")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("dup")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                swap(final_label_index)
-
-                instrs[final_label_index][1].append("push -1")
-                swap(final_label_index)
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("roll")
-
-                # Increase heap size counter
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 7")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("sub")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                # Fetch stack size
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 2")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 5")
-                instrs[final_label_index][1].append("add")
-                instrs[final_label_index][1].append("push -2")
-                instrs[final_label_index][1].append("roll")
-                instrs[final_label_index][1].append("push 4")
-                instrs[final_label_index][1].append("push -1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("push 3")
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("roll")
-
-                instrs[final_label_index][1].append("push 1")
-                instrs[final_label_index][1].append("sub")
-
-                instrs[final_label_index][1].append("dup")
-                instrs[final_label_index][1].append("push 0")
-
-                instrs[final_label_index][1].append("greater")
-
-                index = len(instrs)
-                new_label = "l" + str(index)
-                instrs[final_label_index][1].append("branch " + final_new_label + " " + new_label)
-
-                instrs.append((new_label, []))
-
-                # TODO ROTATE HERE!
-                instrs[index][1].append("pop")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push -1")
-                instrs[index][1].append("roll")
-                instrs[index][1].append("dup")
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                swap(index)
-                instrs[index][1].append("push 3")
-                instrs[index][1].append("add")
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("roll")
-                swap(index)
-                instrs[index][1].append("roll")
-
-                instrs[index][1].append("push 1")
-                instrs[index][1].append("sub")
-                instrs[index][1].append("#-get " + l[1])
+            new_index = get_offset_for_var_index(index, var_index)
+            swap(new_index)
+            instrs[new_index][1].append("dup")
+            instrs[new_index][1].append("push 3")
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("roll")
+            swap(new_index)
+            instrs[new_index][1].append("sub")
+            dup_at_depth(new_index)
+            swap(new_index)
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("add")
+            instrs[new_index][1].append("#-get " + l[1])
+            index = new_index
 
         case "del":
             instrs[index][1].append("#+del " + l[1])
