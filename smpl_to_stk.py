@@ -78,6 +78,9 @@ def smpl_to_stk(i_file, o_file):
         instrs[index][1].append("push "+str(n))
         instrs[index][1].append("sub")
 
+    def number_or_ord(v):
+        return v if v.lstrip("-").isnumeric() else str(ord(v))
+        
     def eq(index):
         instrs[index][1].append("sub")
         instrs[index][1].append("dup")
@@ -261,7 +264,7 @@ def smpl_to_stk(i_file, o_file):
 
             case "push":
                 instrs[index][1].append("#+push" + l[1])
-                instrs[index][1].append("push " + l[1])
+                instrs[index][1].append("push " + number_or_ord(l[1]))
                 swap(index)
                 add(index,1)
                 instrs[index][1].append("#-push" + l[1])
@@ -276,7 +279,7 @@ def smpl_to_stk(i_file, o_file):
             case "eq":
                 instrs[index][1].append("#+eq")
                 swap(index)
-                instrs[index][1].append("push " + l[1])
+                instrs[index][1].append("push " + number_or_ord(l[1]))
                 eq(index)
                 swap(index)
                 instrs[index][1].append("#-eq")
