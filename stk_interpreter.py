@@ -134,6 +134,8 @@ def stk_interpreter(i_file):
                 continue
             case "term":
                 break
+            case "debug":
+                print (stack)
             case default:
                 print("Invalid cmd:", cmd)
         index += 1

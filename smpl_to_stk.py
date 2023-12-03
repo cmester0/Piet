@@ -518,6 +518,10 @@ def smpl_to_stk(i_file, o_file):
                 instrs[index][1].append("sub")
                 instrs[index][1].append("#-outN")
 
+            case "debug":
+                instrs[index][1].append("#+debug")
+                instrs[index][1].append("debug")
+                instrs[index][1].append("#-debug")
     # print (var_list)
     # print ("\n".join(instrs))
 
