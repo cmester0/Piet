@@ -144,16 +144,23 @@ def stk_to_piet(i_file, o_file, optim=True):
     blocks["term"] = ([], [])
     blocks_index["term"] = b_id
 
-    print ("Reading from:", i_file)
-    print ("Saving to:", o_file)
-
     for x in blocks:
         if len(blocks[x][1]) == 1: # is goto
-            goto_statement = make_block(command_from_str("push " + str(blocks_index[blocks[x][1][0]])))[0]
+            goto_nr = blocks_index[blocks[x][1][0]]
+            instrs = []
+            if goto_nr > 100:
+                instrs+=command_from_str("push 100")
+                instrs+=command_from_str("push " + str(goto_nr // 100))
+                instrs+=command_from_str("mul")
+                instrs+=command_from_str("push " + str(goto_nr % 100))
+                instrs+=command_from_str("add")
+            else:
+                instrs+=command_from_str("push " + str(goto_nr))
+            goto_statement = make_block(instrs)[0]
             blocks[x] = (blocks[x][0] + ["⚪"] + goto_statement, []) # TODO: make goto use color, instead of white!
 
     # Split blocks
-    j_width = 30
+    j_width = 50
     right_line_gap = 2
     left_line_gap = 1
     for x in blocks:
@@ -176,6 +183,9 @@ def stk_to_piet(i_file, o_file, optim=True):
                 offset += j_width
             block_blocks.append(blocks[x][0][last_offset:offset+(1 if running else 0)])
         blocks[x] = (block_blocks, blocks[x][1])
+
+    print ("Reading from:", i_file)
+    print ("Saving to:", o_file)
 
     with open(o_file, 'w') as f:
         final_output = []
