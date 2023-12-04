@@ -542,7 +542,7 @@ def smpl_to_stk(i_file, o_file):
                 index = new_index
 
             case "get_elem":
-                instrs[index][1].append("#+append " + l[1])
+                instrs[index][1].append("#+get_elem " + l[1])
                 var_index = 0
                 for i, x in enumerate(var_list):
                     if x == l[1]:

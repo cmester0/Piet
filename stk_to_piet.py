@@ -36,6 +36,8 @@ def stk_to_piet(i_file, o_file, optim=True):
         "🟣": (5,1),
         "🟪": (5,2)}
 
+    stack_optimizer = StackOptimizer()
+    
     def make_block(block):
         output = ["🔴"]
         previous_c = 0
@@ -130,7 +132,7 @@ def stk_to_piet(i_file, o_file, optim=True):
             cmd = x.split()
             if len(cmd) == 2 and cmd[0] == "push":
                 push_val = int(cmd[1])
-                cmds = cmds + (optimize_number(int(cmd[1])) if optim else (["push "+str(push_val)] if push_val > 0 else ["push 1", "not", "push "+str(push_val), "sub"]))
+                cmds = cmds + (stack_optimizer.optimize_number(int(cmd[1])) if optim else (["push "+str(push_val)] if push_val > 0 else ["push 1", "not", "push "+str(push_val), "sub"]))
             else:
                 if len(x) > 0:
                     cmds.append(x)
