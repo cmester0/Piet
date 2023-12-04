@@ -68,6 +68,7 @@ class StackOptimizer():
 if __name__ == "__main__":
     stack_optimizer = StackOptimizer()
     inp = list(map(str, map(lambda x: int(x) if x.lstrip("-").isnumeric() else ord(x), input().split(","))))
+    print (inp)
     for i in range(len(inp)):
         sub_inp = ",".join(inp[:i+1])
         stack_optimizer.optimize_stack(sub_inp)

@@ -52,7 +52,8 @@ def cmd_interpreter(cmd, stack):
                     print ("Error")
                 else:
                     a = a % b
-                    stack = stack[:-b] + stack[-a:] + stack[-b:-a]
+                    if a != 0:
+                        stack = stack[:-b] + stack[-a:] + stack[-b:-a]
         case "inN":
             if not input_eof:
                 value = sys.stdin.buffer.peek(1)
