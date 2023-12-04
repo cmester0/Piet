@@ -3,3 +3,9 @@ Working Piet (https://www.dangermouse.net/esoteric/piet.html) interpreter and st
 
 # Installation
 Uses pypng for reading and writing images.
+
+# Run
+Call
+```bash
+python cli <path_to_file.smpl> ([gen||stk||piet||debug],)*
+```

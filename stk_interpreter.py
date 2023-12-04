@@ -2,9 +2,7 @@ import sys
 import png
 import time
 
-def stk_interpreter(i_file):
-    debug = False # True
-
+def stk_interpreter(i_file, debug=False):
     inp_lines = []
     with open(i_file, 'r') as f:
         inp_lines = f.readlines()

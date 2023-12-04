@@ -11,9 +11,12 @@ stk_name = name + ".stk"
 ascii_name = name + ".ascii"
 piet_name = name + ".png"
 
-smpl_to_stk(smpl_name, stk_name)
-stk_to_piet(stk_name, ascii_name, optim=True)
-ascii_piet_to_piet(ascii_name, piet_name)
+if "gen" in sys.argv[2]:
+    smpl_to_stk(smpl_name, stk_name)
+    stk_to_piet(stk_name, ascii_name, optim=True)
+    ascii_piet_to_piet(ascii_name, piet_name)
 
-# stk_interpreter(stk_name)
-piet_interpreter(piet_name)
+if "stk" in sys.argv[2]:
+    stk_interpreter(stk_name, "debug" in sys.argv[2])
+if "piet" in sys.argv[2]:
+    piet_interpreter(piet_name, debug="debug" in sys.argv[2])
