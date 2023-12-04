@@ -42,7 +42,8 @@ def add_neighbors(weight, stack, total_instructions):
     add_next_instr(1, "div")
     add_next_instr(1, "mod")
     add_next_instr(1, "dup")
-    add_next_instr(1, "roll")
+    if len(stack) >= 2 and stack[-2] > 0: # only allow valid roll? (Otherwise is better pop, pop?)
+        add_next_instr(1, "roll")
 
 def optimize_number(N):
     while not N in solved:
@@ -66,5 +67,4 @@ if __name__ == "__main__":
     N = int(input())
     for i in range(N+1):
         optimize_number(i)
-        print (results)
         print (i, "(" + str(results[str(i)][0]) + ")", ":", results[str(i)][1])
