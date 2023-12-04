@@ -86,7 +86,7 @@ def smpl_to_stk(i_file, o_file):
 
     def number_or_ord(v):
         return v if v.lstrip("-").isnumeric() else str(ord(v))
-        
+
     def eq(index):
         instrs[index][1].append("sub")
         instrs[index][1].append("dup")

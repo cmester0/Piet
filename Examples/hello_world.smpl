@@ -52,3 +52,4 @@ push !
 outC
 push 10
 outC
+goto term

@@ -1,0 +1,19003 @@
+label main
+push 1
+#+var inp
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var inp
+#+var max_2
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var max_2
+#+var min_2
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var min_2
+#+var max_1
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var max_1
+#+var min_1
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var min_1
+#+var total1
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var total1
+#+var total2
+push 1
+push 0
+push 1
+push 4
+push -1
+roll
+push 3
+add
+dup
+push 5
+push 1
+roll
+push 3
+roll
+#-var total2
+#+goto setup_line
+goto setup_line
+#-goto setup_line
+
+label setup_line
+#+push0
+push 0
+push 2
+push 1
+roll
+push 1
+add
+#-push0
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set min_1
+push 0
+push 2
+goto l2
+
+label l2
+dup
+push 0
+greater
+branch l3 l4
+
+label l3
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l2
+
+label l4
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 2
+goto l5
+
+label l5
+dup
+push 0
+greater
+branch l6 l7
+
+label l6
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l5
+
+label l7
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set min_1
+#+set max_1
+push 0
+push 3
+goto l8
+
+label l8
+dup
+push 0
+greater
+branch l9 l10
+
+label l9
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l8
+
+label l10
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 3
+goto l11
+
+label l11
+dup
+push 0
+greater
+branch l12 l13
+
+label l12
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l11
+
+label l13
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set max_1
+#+set min_2
+push 0
+push 4
+goto l14
+
+label l14
+dup
+push 0
+greater
+branch l15 l16
+
+label l15
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l14
+
+label l16
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l17
+
+label l17
+dup
+push 0
+greater
+branch l18 l19
+
+label l18
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l17
+
+label l19
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set min_2
+#+set max_2
+push 0
+push 5
+goto l20
+
+label l20
+dup
+push 0
+greater
+branch l21 l22
+
+label l21
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l20
+
+label l22
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 5
+goto l23
+
+label l23
+dup
+push 0
+greater
+branch l24 l25
+
+label l24
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l23
+
+label l25
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set max_2
+#+goto get_inp
+goto get_inp
+#-goto get_inp
+
+label get_inp
+#+inC
+goto l27
+
+label l27
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l28 l29
+
+label l28
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l30
+
+label l29
+pop
+goto l30
+#-inC
+
+label l30
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l31
+
+label l31
+dup
+push 0
+greater
+branch l32 l33
+
+label l32
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l31
+
+label l33
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l34
+
+label l34
+dup
+push 0
+greater
+branch l35 l36
+
+label l35
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l34
+
+label l36
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone loop
+push 1
+sub
+push 2
+push 1
+roll
+branch done loop
+#-branch done loop
+
+label loop
+#+get inp
+push 0
+push 6
+goto l38
+
+label l38
+dup
+push 0
+greater
+branch l39 l40
+
+label l39
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l38
+
+label l40
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l41
+
+label l41
+dup
+push 0
+greater
+branch l42 l43
+
+label l42
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l41
+
+label l43
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push -1
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchprint_result check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch print_result check_num
+#-branch print_result check_num
+
+label check_num
+#+get inp
+push 0
+push 6
+goto l45
+
+label l45
+dup
+push 0
+greater
+branch l46 l47
+
+label l46
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l45
+
+label l47
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l48
+
+label l48
+dup
+push 0
+greater
+branch l49 l50
+
+label l49
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l48
+
+label l50
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+push57
+push 57
+push 2
+push 1
+roll
+push 1
+add
+#-push57
+#+greater
+push 3
+push 1
+roll
+greater
+push 2
+push 1
+roll
+push 1
+sub
+#-greater
+#+branchis_word is_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_word is_num
+#-branch is_word is_num
+
+label is_num
+#+get inp
+push 0
+push 6
+goto l52
+
+label l52
+dup
+push 0
+greater
+branch l53 l54
+
+label l53
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l52
+
+label l54
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l55
+
+label l55
+dup
+push 0
+greater
+branch l56 l57
+
+label l56
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l55
+
+label l57
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+push48
+push 48
+push 2
+push 1
+roll
+push 1
+add
+#-push48
+#+sub
+push 3
+push 1
+roll
+sub
+push 2
+push 1
+roll
+push 1
+sub
+#-sub
+#+goto is_val_1
+goto is_val_1
+#-goto is_val_1
+
+label is_word
+#+get inp
+push 0
+push 6
+goto l59
+
+label l59
+dup
+push 0
+greater
+branch l60 l61
+
+label l60
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l59
+
+label l61
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l62
+
+label l62
+dup
+push 0
+greater
+branch l63 l64
+
+label l63
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l62
+
+label l64
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 111
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_one_1 check_two_three
+push 1
+sub
+push 2
+push 1
+roll
+branch is_one_1 check_two_three
+#-branch is_one_1 check_two_three
+
+label is_one_1
+#+inC
+goto l66
+
+label l66
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l67 l68
+
+label l67
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l69
+
+label l68
+pop
+goto l69
+#-inC
+
+label l69
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l70
+
+label l70
+dup
+push 0
+greater
+branch l71 l72
+
+label l71
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l70
+
+label l72
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l73
+
+label l73
+dup
+push 0
+greater
+branch l74 l75
+
+label l74
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l73
+
+label l75
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_one_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_one_2
+#-branch done is_one_2
+
+label is_one_2
+#+get inp
+push 0
+push 6
+goto l77
+
+label l77
+dup
+push 0
+greater
+branch l78 l79
+
+label l78
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l77
+
+label l79
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l80
+
+label l80
+dup
+push 0
+greater
+branch l81 l82
+
+label l81
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l80
+
+label l82
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 110
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_one_3 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_one_3 check_num
+#-branch is_one_3 check_num
+
+label is_one_3
+#+inC
+goto l84
+
+label l84
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l85 l86
+
+label l85
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l87
+
+label l86
+pop
+goto l87
+#-inC
+
+label l87
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l88
+
+label l88
+dup
+push 0
+greater
+branch l89 l90
+
+label l89
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l88
+
+label l90
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l91
+
+label l91
+dup
+push 0
+greater
+branch l92 l93
+
+label l92
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l91
+
+label l93
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_one_4
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_one_4
+#-branch done is_one_4
+
+label is_one_4
+#+get inp
+push 0
+push 6
+goto l95
+
+label l95
+dup
+push 0
+greater
+branch l96 l97
+
+label l96
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l95
+
+label l97
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l98
+
+label l98
+dup
+push 0
+greater
+branch l99 l100
+
+label l99
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l98
+
+label l100
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_one is_nine_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_one is_nine_2
+#-branch is_one is_nine_2
+
+label is_one
+#+push1
+push 1
+push 2
+push 1
+roll
+push 1
+add
+#-push1
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label check_two_three
+#+get inp
+push 0
+push 6
+goto l103
+
+label l103
+dup
+push 0
+greater
+branch l104 l105
+
+label l104
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l103
+
+label l105
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l106
+
+label l106
+dup
+push 0
+greater
+branch l107 l108
+
+label l107
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l106
+
+label l108
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 116
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_two_three_1 check_four_five
+push 1
+sub
+push 2
+push 1
+roll
+branch is_two_three_1 check_four_five
+#-branch is_two_three_1 check_four_five
+
+label is_two_three_1
+#+inC
+goto l110
+
+label l110
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l111 l112
+
+label l111
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l113
+
+label l112
+pop
+goto l113
+#-inC
+
+label l113
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l114
+
+label l114
+dup
+push 0
+greater
+branch l115 l116
+
+label l115
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l114
+
+label l116
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l117
+
+label l117
+dup
+push 0
+greater
+branch l118 l119
+
+label l118
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l117
+
+label l119
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_two_three_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_two_three_2
+#-branch done is_two_three_2
+
+label is_two_three_2
+#+get inp
+push 0
+push 6
+goto l121
+
+label l121
+dup
+push 0
+greater
+branch l122 l123
+
+label l122
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l121
+
+label l123
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l124
+
+label l124
+dup
+push 0
+greater
+branch l125 l126
+
+label l125
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l124
+
+label l126
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 119
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_two_1 is_three_1
+push 1
+sub
+push 2
+push 1
+roll
+branch is_two_1 is_three_1
+#-branch is_two_1 is_three_1
+
+label is_two_1
+#+inC
+goto l128
+
+label l128
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l129 l130
+
+label l129
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l131
+
+label l130
+pop
+goto l131
+#-inC
+
+label l131
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l132
+
+label l132
+dup
+push 0
+greater
+branch l133 l134
+
+label l133
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l132
+
+label l134
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l135
+
+label l135
+dup
+push 0
+greater
+branch l136 l137
+
+label l136
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l135
+
+label l137
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_two_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_two_2
+#-branch done is_two_2
+
+label is_two_2
+#+get inp
+push 0
+push 6
+goto l139
+
+label l139
+dup
+push 0
+greater
+branch l140 l141
+
+label l140
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l139
+
+label l141
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l142
+
+label l142
+dup
+push 0
+greater
+branch l143 l144
+
+label l143
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l142
+
+label l144
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 111
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_two check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_two check_num
+#-branch is_two check_num
+
+label is_two
+#+push2
+push 2
+push 2
+push 1
+roll
+push 1
+add
+#-push2
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label is_three_1
+#+get inp
+push 0
+push 6
+goto l147
+
+label l147
+dup
+push 0
+greater
+branch l148 l149
+
+label l148
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l147
+
+label l149
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l150
+
+label l150
+dup
+push 0
+greater
+branch l151 l152
+
+label l151
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l150
+
+label l152
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 104
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_three_2 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_three_2 check_num
+#-branch is_three_2 check_num
+
+label is_three_2
+#+inC
+goto l154
+
+label l154
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l155 l156
+
+label l155
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l157
+
+label l156
+pop
+goto l157
+#-inC
+
+label l157
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l158
+
+label l158
+dup
+push 0
+greater
+branch l159 l160
+
+label l159
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l158
+
+label l160
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l161
+
+label l161
+dup
+push 0
+greater
+branch l162 l163
+
+label l162
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l161
+
+label l163
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_three_3
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_three_3
+#-branch done is_three_3
+
+label is_three_3
+#+get inp
+push 0
+push 6
+goto l165
+
+label l165
+dup
+push 0
+greater
+branch l166 l167
+
+label l166
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l165
+
+label l167
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l168
+
+label l168
+dup
+push 0
+greater
+branch l169 l170
+
+label l169
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l168
+
+label l170
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 114
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_three_4 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_three_4 check_num
+#-branch is_three_4 check_num
+
+label is_three_4
+#+inC
+goto l172
+
+label l172
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l173 l174
+
+label l173
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l175
+
+label l174
+pop
+goto l175
+#-inC
+
+label l175
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l176
+
+label l176
+dup
+push 0
+greater
+branch l177 l178
+
+label l177
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l176
+
+label l178
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l179
+
+label l179
+dup
+push 0
+greater
+branch l180 l181
+
+label l180
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l179
+
+label l181
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_three_5
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_three_5
+#-branch done is_three_5
+
+label is_three_5
+#+get inp
+push 0
+push 6
+goto l183
+
+label l183
+dup
+push 0
+greater
+branch l184 l185
+
+label l184
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l183
+
+label l185
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l186
+
+label l186
+dup
+push 0
+greater
+branch l187 l188
+
+label l187
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l186
+
+label l188
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_three_6 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_three_6 check_num
+#-branch is_three_6 check_num
+
+label is_three_6
+#+inC
+goto l190
+
+label l190
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l191 l192
+
+label l191
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l193
+
+label l192
+pop
+goto l193
+#-inC
+
+label l193
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l194
+
+label l194
+dup
+push 0
+greater
+branch l195 l196
+
+label l195
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l194
+
+label l196
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l197
+
+label l197
+dup
+push 0
+greater
+branch l198 l199
+
+label l198
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l197
+
+label l199
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_three_7
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_three_7
+#-branch done is_three_7
+
+label is_three_7
+#+get inp
+push 0
+push 6
+goto l201
+
+label l201
+dup
+push 0
+greater
+branch l202 l203
+
+label l202
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l201
+
+label l203
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l204
+
+label l204
+dup
+push 0
+greater
+branch l205 l206
+
+label l205
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l204
+
+label l206
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_three is_eight_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_three is_eight_2
+#-branch is_three is_eight_2
+
+label is_three
+#+push3
+push 3
+push 2
+push 1
+roll
+push 1
+add
+#-push3
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label check_four_five
+#+get inp
+push 0
+push 6
+goto l209
+
+label l209
+dup
+push 0
+greater
+branch l210 l211
+
+label l210
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l209
+
+label l211
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l212
+
+label l212
+dup
+push 0
+greater
+branch l213 l214
+
+label l213
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l212
+
+label l214
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 102
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_four_five_1 check_six_seven
+push 1
+sub
+push 2
+push 1
+roll
+branch is_four_five_1 check_six_seven
+#-branch is_four_five_1 check_six_seven
+
+label is_four_five_1
+#+inC
+goto l216
+
+label l216
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l217 l218
+
+label l217
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l219
+
+label l218
+pop
+goto l219
+#-inC
+
+label l219
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l220
+
+label l220
+dup
+push 0
+greater
+branch l221 l222
+
+label l221
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l220
+
+label l222
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l223
+
+label l223
+dup
+push 0
+greater
+branch l224 l225
+
+label l224
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l223
+
+label l225
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_four_five_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_four_five_2
+#-branch done is_four_five_2
+
+label is_four_five_2
+#+get inp
+push 0
+push 6
+goto l227
+
+label l227
+dup
+push 0
+greater
+branch l228 l229
+
+label l228
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l227
+
+label l229
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l230
+
+label l230
+dup
+push 0
+greater
+branch l231 l232
+
+label l231
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l230
+
+label l232
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 111
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_four_1 is_five_1
+push 1
+sub
+push 2
+push 1
+roll
+branch is_four_1 is_five_1
+#-branch is_four_1 is_five_1
+
+label is_four_1
+#+inC
+goto l234
+
+label l234
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l235 l236
+
+label l235
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l237
+
+label l236
+pop
+goto l237
+#-inC
+
+label l237
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l238
+
+label l238
+dup
+push 0
+greater
+branch l239 l240
+
+label l239
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l238
+
+label l240
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l241
+
+label l241
+dup
+push 0
+greater
+branch l242 l243
+
+label l242
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l241
+
+label l243
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_four_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_four_2
+#-branch done is_four_2
+
+label is_four_2
+#+get inp
+push 0
+push 6
+goto l245
+
+label l245
+dup
+push 0
+greater
+branch l246 l247
+
+label l246
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l245
+
+label l247
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l248
+
+label l248
+dup
+push 0
+greater
+branch l249 l250
+
+label l249
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l248
+
+label l250
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 117
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_four_3 is_one_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_four_3 is_one_2
+#-branch is_four_3 is_one_2
+
+label is_four_3
+#+inC
+goto l252
+
+label l252
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l253 l254
+
+label l253
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l255
+
+label l254
+pop
+goto l255
+#-inC
+
+label l255
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l256
+
+label l256
+dup
+push 0
+greater
+branch l257 l258
+
+label l257
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l256
+
+label l258
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l259
+
+label l259
+dup
+push 0
+greater
+branch l260 l261
+
+label l260
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l259
+
+label l261
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_four_4
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_four_4
+#-branch done is_four_4
+
+label is_four_4
+#+get inp
+push 0
+push 6
+goto l263
+
+label l263
+dup
+push 0
+greater
+branch l264 l265
+
+label l264
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l263
+
+label l265
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l266
+
+label l266
+dup
+push 0
+greater
+branch l267 l268
+
+label l267
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l266
+
+label l268
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 114
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_four check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_four check_num
+#-branch is_four check_num
+
+label is_four
+#+push4
+push 4
+push 2
+push 1
+roll
+push 1
+add
+#-push4
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label is_five_1
+#+get inp
+push 0
+push 6
+goto l271
+
+label l271
+dup
+push 0
+greater
+branch l272 l273
+
+label l272
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l271
+
+label l273
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l274
+
+label l274
+dup
+push 0
+greater
+branch l275 l276
+
+label l275
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l274
+
+label l276
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 105
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_five_2 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_five_2 check_num
+#-branch is_five_2 check_num
+
+label is_five_2
+#+inC
+goto l278
+
+label l278
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l279 l280
+
+label l279
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l281
+
+label l280
+pop
+goto l281
+#-inC
+
+label l281
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l282
+
+label l282
+dup
+push 0
+greater
+branch l283 l284
+
+label l283
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l282
+
+label l284
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l285
+
+label l285
+dup
+push 0
+greater
+branch l286 l287
+
+label l286
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l285
+
+label l287
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_five_3
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_five_3
+#-branch done is_five_3
+
+label is_five_3
+#+get inp
+push 0
+push 6
+goto l289
+
+label l289
+dup
+push 0
+greater
+branch l290 l291
+
+label l290
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l289
+
+label l291
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l292
+
+label l292
+dup
+push 0
+greater
+branch l293 l294
+
+label l293
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l292
+
+label l294
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 118
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_five_4 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_five_4 check_num
+#-branch is_five_4 check_num
+
+label is_five_4
+#+inC
+goto l296
+
+label l296
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l297 l298
+
+label l297
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l299
+
+label l298
+pop
+goto l299
+#-inC
+
+label l299
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l300
+
+label l300
+dup
+push 0
+greater
+branch l301 l302
+
+label l301
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l300
+
+label l302
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l303
+
+label l303
+dup
+push 0
+greater
+branch l304 l305
+
+label l304
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l303
+
+label l305
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_five_5
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_five_5
+#-branch done is_five_5
+
+label is_five_5
+#+get inp
+push 0
+push 6
+goto l307
+
+label l307
+dup
+push 0
+greater
+branch l308 l309
+
+label l308
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l307
+
+label l309
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l310
+
+label l310
+dup
+push 0
+greater
+branch l311 l312
+
+label l311
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l310
+
+label l312
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_five check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_five check_num
+#-branch is_five check_num
+
+label is_five
+#+push5
+push 5
+push 2
+push 1
+roll
+push 1
+add
+#-push5
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label check_six_seven
+#+get inp
+push 0
+push 6
+goto l315
+
+label l315
+dup
+push 0
+greater
+branch l316 l317
+
+label l316
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l315
+
+label l317
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l318
+
+label l318
+dup
+push 0
+greater
+branch l319 l320
+
+label l319
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l318
+
+label l320
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 115
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_six_seven_1 check_eight
+push 1
+sub
+push 2
+push 1
+roll
+branch is_six_seven_1 check_eight
+#-branch is_six_seven_1 check_eight
+
+label is_six_seven_1
+#+inC
+goto l322
+
+label l322
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l323 l324
+
+label l323
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l325
+
+label l324
+pop
+goto l325
+#-inC
+
+label l325
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l326
+
+label l326
+dup
+push 0
+greater
+branch l327 l328
+
+label l327
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l326
+
+label l328
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l329
+
+label l329
+dup
+push 0
+greater
+branch l330 l331
+
+label l330
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l329
+
+label l331
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_six_seven_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_six_seven_2
+#-branch done is_six_seven_2
+
+label is_six_seven_2
+#+get inp
+push 0
+push 6
+goto l333
+
+label l333
+dup
+push 0
+greater
+branch l334 l335
+
+label l334
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l333
+
+label l335
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l336
+
+label l336
+dup
+push 0
+greater
+branch l337 l338
+
+label l337
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l336
+
+label l338
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 105
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_six_1 is_seven_1
+push 1
+sub
+push 2
+push 1
+roll
+branch is_six_1 is_seven_1
+#-branch is_six_1 is_seven_1
+
+label is_six_1
+#+inC
+goto l340
+
+label l340
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l341 l342
+
+label l341
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l343
+
+label l342
+pop
+goto l343
+#-inC
+
+label l343
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l344
+
+label l344
+dup
+push 0
+greater
+branch l345 l346
+
+label l345
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l344
+
+label l346
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l347
+
+label l347
+dup
+push 0
+greater
+branch l348 l349
+
+label l348
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l347
+
+label l349
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_six_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_six_2
+#-branch done is_six_2
+
+label is_six_2
+#+get inp
+push 0
+push 6
+goto l351
+
+label l351
+dup
+push 0
+greater
+branch l352 l353
+
+label l352
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l351
+
+label l353
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l354
+
+label l354
+dup
+push 0
+greater
+branch l355 l356
+
+label l355
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l354
+
+label l356
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 120
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_six check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_six check_num
+#-branch is_six check_num
+
+label is_six
+#+push6
+push 6
+push 2
+push 1
+roll
+push 1
+add
+#-push6
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label is_seven_1
+#+get inp
+push 0
+push 6
+goto l359
+
+label l359
+dup
+push 0
+greater
+branch l360 l361
+
+label l360
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l359
+
+label l361
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l362
+
+label l362
+dup
+push 0
+greater
+branch l363 l364
+
+label l363
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l362
+
+label l364
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_seven_2 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_seven_2 check_num
+#-branch is_seven_2 check_num
+
+label is_seven_2
+#+inC
+goto l366
+
+label l366
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l367 l368
+
+label l367
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l369
+
+label l368
+pop
+goto l369
+#-inC
+
+label l369
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l370
+
+label l370
+dup
+push 0
+greater
+branch l371 l372
+
+label l371
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l370
+
+label l372
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l373
+
+label l373
+dup
+push 0
+greater
+branch l374 l375
+
+label l374
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l373
+
+label l375
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_seven_3
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_seven_3
+#-branch done is_seven_3
+
+label is_seven_3
+#+get inp
+push 0
+push 6
+goto l377
+
+label l377
+dup
+push 0
+greater
+branch l378 l379
+
+label l378
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l377
+
+label l379
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l380
+
+label l380
+dup
+push 0
+greater
+branch l381 l382
+
+label l381
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l380
+
+label l382
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 118
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_seven_4 is_eight_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_seven_4 is_eight_2
+#-branch is_seven_4 is_eight_2
+
+label is_seven_4
+#+inC
+goto l384
+
+label l384
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l385 l386
+
+label l385
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l387
+
+label l386
+pop
+goto l387
+#-inC
+
+label l387
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l388
+
+label l388
+dup
+push 0
+greater
+branch l389 l390
+
+label l389
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l388
+
+label l390
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l391
+
+label l391
+dup
+push 0
+greater
+branch l392 l393
+
+label l392
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l391
+
+label l393
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_seven_5
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_seven_5
+#-branch done is_seven_5
+
+label is_seven_5
+#+get inp
+push 0
+push 6
+goto l395
+
+label l395
+dup
+push 0
+greater
+branch l396 l397
+
+label l396
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l395
+
+label l397
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l398
+
+label l398
+dup
+push 0
+greater
+branch l399 l400
+
+label l399
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l398
+
+label l400
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_seven_6 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_seven_6 check_num
+#-branch is_seven_6 check_num
+
+label is_seven_6
+#+inC
+goto l402
+
+label l402
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l403 l404
+
+label l403
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l405
+
+label l404
+pop
+goto l405
+#-inC
+
+label l405
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l406
+
+label l406
+dup
+push 0
+greater
+branch l407 l408
+
+label l407
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l406
+
+label l408
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l409
+
+label l409
+dup
+push 0
+greater
+branch l410 l411
+
+label l410
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l409
+
+label l411
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_seven_7
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_seven_7
+#-branch done is_seven_7
+
+label is_seven_7
+#+get inp
+push 0
+push 6
+goto l413
+
+label l413
+dup
+push 0
+greater
+branch l414 l415
+
+label l414
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l413
+
+label l415
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l416
+
+label l416
+dup
+push 0
+greater
+branch l417 l418
+
+label l417
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l416
+
+label l418
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 110
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_seven is_eight_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_seven is_eight_2
+#-branch is_seven is_eight_2
+
+label is_seven
+#+push7
+push 7
+push 2
+push 1
+roll
+push 1
+add
+#-push7
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label check_eight
+#+get inp
+push 0
+push 6
+goto l421
+
+label l421
+dup
+push 0
+greater
+branch l422 l423
+
+label l422
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l421
+
+label l423
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l424
+
+label l424
+dup
+push 0
+greater
+branch l425 l426
+
+label l425
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l424
+
+label l426
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_eight_1 check_nine
+push 1
+sub
+push 2
+push 1
+roll
+branch is_eight_1 check_nine
+#-branch is_eight_1 check_nine
+
+label is_eight_1
+#+inC
+goto l428
+
+label l428
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l429 l430
+
+label l429
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l431
+
+label l430
+pop
+goto l431
+#-inC
+
+label l431
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l432
+
+label l432
+dup
+push 0
+greater
+branch l433 l434
+
+label l433
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l432
+
+label l434
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l435
+
+label l435
+dup
+push 0
+greater
+branch l436 l437
+
+label l436
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l435
+
+label l437
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_eight_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_eight_2
+#-branch done is_eight_2
+
+label is_eight_2
+#+get inp
+push 0
+push 6
+goto l439
+
+label l439
+dup
+push 0
+greater
+branch l440 l441
+
+label l440
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l439
+
+label l441
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l442
+
+label l442
+dup
+push 0
+greater
+branch l443 l444
+
+label l443
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l442
+
+label l444
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 105
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_eight_3 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_eight_3 check_num
+#-branch is_eight_3 check_num
+
+label is_eight_3
+#+inC
+goto l446
+
+label l446
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l447 l448
+
+label l447
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l449
+
+label l448
+pop
+goto l449
+#-inC
+
+label l449
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l450
+
+label l450
+dup
+push 0
+greater
+branch l451 l452
+
+label l451
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l450
+
+label l452
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l453
+
+label l453
+dup
+push 0
+greater
+branch l454 l455
+
+label l454
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l453
+
+label l455
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_eight_4
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_eight_4
+#-branch done is_eight_4
+
+label is_eight_4
+#+get inp
+push 0
+push 6
+goto l457
+
+label l457
+dup
+push 0
+greater
+branch l458 l459
+
+label l458
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l457
+
+label l459
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l460
+
+label l460
+dup
+push 0
+greater
+branch l461 l462
+
+label l461
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l460
+
+label l462
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 103
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_eight_5 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_eight_5 check_num
+#-branch is_eight_5 check_num
+
+label is_eight_5
+#+inC
+goto l464
+
+label l464
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l465 l466
+
+label l465
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l467
+
+label l466
+pop
+goto l467
+#-inC
+
+label l467
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l468
+
+label l468
+dup
+push 0
+greater
+branch l469 l470
+
+label l469
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l468
+
+label l470
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l471
+
+label l471
+dup
+push 0
+greater
+branch l472 l473
+
+label l472
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l471
+
+label l473
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_eight_6
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_eight_6
+#-branch done is_eight_6
+
+label is_eight_6
+#+get inp
+push 0
+push 6
+goto l475
+
+label l475
+dup
+push 0
+greater
+branch l476 l477
+
+label l476
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l475
+
+label l477
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l478
+
+label l478
+dup
+push 0
+greater
+branch l479 l480
+
+label l479
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l478
+
+label l480
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 104
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_eight_7 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_eight_7 check_num
+#-branch is_eight_7 check_num
+
+label is_eight_7
+#+inC
+goto l482
+
+label l482
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l483 l484
+
+label l483
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l485
+
+label l484
+pop
+goto l485
+#-inC
+
+label l485
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l486
+
+label l486
+dup
+push 0
+greater
+branch l487 l488
+
+label l487
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l486
+
+label l488
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l489
+
+label l489
+dup
+push 0
+greater
+branch l490 l491
+
+label l490
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l489
+
+label l491
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_eight_8
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_eight_8
+#-branch done is_eight_8
+
+label is_eight_8
+#+get inp
+push 0
+push 6
+goto l493
+
+label l493
+dup
+push 0
+greater
+branch l494 l495
+
+label l494
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l493
+
+label l495
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l496
+
+label l496
+dup
+push 0
+greater
+branch l497 l498
+
+label l497
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l496
+
+label l498
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 116
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_eight check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_eight check_num
+#-branch is_eight check_num
+
+label is_eight
+#+push8
+push 8
+push 2
+push 1
+roll
+push 1
+add
+#-push8
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label check_nine
+#+get inp
+push 0
+push 6
+goto l501
+
+label l501
+dup
+push 0
+greater
+branch l502 l503
+
+label l502
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l501
+
+label l503
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l504
+
+label l504
+dup
+push 0
+greater
+branch l505 l506
+
+label l505
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l504
+
+label l506
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 110
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_nine_1 get_inp
+push 1
+sub
+push 2
+push 1
+roll
+branch is_nine_1 get_inp
+#-branch is_nine_1 get_inp
+
+label is_nine_1
+#+inC
+goto l508
+
+label l508
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l509 l510
+
+label l509
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l511
+
+label l510
+pop
+goto l511
+#-inC
+
+label l511
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l512
+
+label l512
+dup
+push 0
+greater
+branch l513 l514
+
+label l513
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l512
+
+label l514
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l515
+
+label l515
+dup
+push 0
+greater
+branch l516 l517
+
+label l516
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l515
+
+label l517
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_nine_2
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_nine_2
+#-branch done is_nine_2
+
+label is_nine_2
+#+get inp
+push 0
+push 6
+goto l519
+
+label l519
+dup
+push 0
+greater
+branch l520 l521
+
+label l520
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l519
+
+label l521
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l522
+
+label l522
+dup
+push 0
+greater
+branch l523 l524
+
+label l523
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l522
+
+label l524
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 105
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_nine_3 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_nine_3 check_num
+#-branch is_nine_3 check_num
+
+label is_nine_3
+#+inC
+goto l526
+
+label l526
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l527 l528
+
+label l527
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l529
+
+label l528
+pop
+goto l529
+#-inC
+
+label l529
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l530
+
+label l530
+dup
+push 0
+greater
+branch l531 l532
+
+label l531
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l530
+
+label l532
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l533
+
+label l533
+dup
+push 0
+greater
+branch l534 l535
+
+label l534
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l533
+
+label l535
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_nine_4
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_nine_4
+#-branch done is_nine_4
+
+label is_nine_4
+#+get inp
+push 0
+push 6
+goto l537
+
+label l537
+dup
+push 0
+greater
+branch l538 l539
+
+label l538
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l537
+
+label l539
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l540
+
+label l540
+dup
+push 0
+greater
+branch l541 l542
+
+label l541
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l540
+
+label l542
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 110
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_nine_5 check_num
+push 1
+sub
+push 2
+push 1
+roll
+branch is_nine_5 check_num
+#-branch is_nine_5 check_num
+
+label is_nine_5
+#+inC
+goto l544
+
+label l544
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l545 l546
+
+label l545
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l547
+
+label l546
+pop
+goto l547
+#-inC
+
+label l547
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set inp
+push 0
+push 6
+goto l548
+
+label l548
+dup
+push 0
+greater
+branch l549 l550
+
+label l549
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l548
+
+label l550
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l551
+
+label l551
+dup
+push 0
+greater
+branch l552 l553
+
+label l552
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l551
+
+label l553
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set inp
+#+eq
+push 2
+push 1
+roll
+push 10
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchdone is_nine_6
+push 1
+sub
+push 2
+push 1
+roll
+branch done is_nine_6
+#-branch done is_nine_6
+
+label is_nine_6
+#+get inp
+push 0
+push 6
+goto l555
+
+label l555
+dup
+push 0
+greater
+branch l556 l557
+
+label l556
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l555
+
+label l557
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 6
+goto l558
+
+label l558
+dup
+push 0
+greater
+branch l559 l560
+
+label l559
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l558
+
+label l560
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get inp
+#+eq
+push 2
+push 1
+roll
+push 101
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchis_nine is_nine_2
+push 1
+sub
+push 2
+push 1
+roll
+branch is_nine is_nine_2
+#-branch is_nine is_nine_2
+
+label is_nine
+#+push9
+push 9
+push 2
+push 1
+roll
+push 1
+add
+#-push9
+#+goto is_val_2
+goto is_val_2
+#-goto is_val_2
+
+label is_val_1
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set max_1
+push 0
+push 3
+goto l563
+
+label l563
+dup
+push 0
+greater
+branch l564 l565
+
+label l564
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l563
+
+label l565
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 3
+goto l566
+
+label l566
+dup
+push 0
+greater
+branch l567 l568
+
+label l567
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l566
+
+label l568
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set max_1
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set max_2
+push 0
+push 5
+goto l569
+
+label l569
+dup
+push 0
+greater
+branch l570 l571
+
+label l570
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l569
+
+label l571
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 5
+goto l572
+
+label l572
+dup
+push 0
+greater
+branch l573 l574
+
+label l573
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l572
+
+label l574
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set max_2
+#+get min_1
+push 0
+push 2
+goto l575
+
+label l575
+dup
+push 0
+greater
+branch l576 l577
+
+label l576
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l575
+
+label l577
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 2
+goto l578
+
+label l578
+dup
+push 0
+greater
+branch l579 l580
+
+label l579
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l578
+
+label l580
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get min_1
+#+eq
+push 2
+push 1
+roll
+push 0
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchset_min_1_if_not_set cleanup
+push 1
+sub
+push 2
+push 1
+roll
+branch set_min_1_if_not_set cleanup
+#-branch set_min_1_if_not_set cleanup
+
+label is_val_2
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set max_2
+push 0
+push 5
+goto l582
+
+label l582
+dup
+push 0
+greater
+branch l583 l584
+
+label l583
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l582
+
+label l584
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 5
+goto l585
+
+label l585
+dup
+push 0
+greater
+branch l586 l587
+
+label l586
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l585
+
+label l587
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set max_2
+#+get min_2
+push 0
+push 4
+goto l588
+
+label l588
+dup
+push 0
+greater
+branch l589 l590
+
+label l589
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l588
+
+label l590
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l591
+
+label l591
+dup
+push 0
+greater
+branch l592 l593
+
+label l592
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l591
+
+label l593
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get min_2
+#+eq
+push 2
+push 1
+roll
+push 0
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchset_min_2_if_not_set_from_2 cleanup_from_2
+push 1
+sub
+push 2
+push 1
+roll
+branch set_min_2_if_not_set_from_2 cleanup_from_2
+#-branch set_min_2_if_not_set_from_2 cleanup_from_2
+
+label set_min_1_if_not_set
+#+dup
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+#-dup
+#+set min_1
+push 0
+push 2
+goto l595
+
+label l595
+dup
+push 0
+greater
+branch l596 l597
+
+label l596
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l595
+
+label l597
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 2
+goto l598
+
+label l598
+dup
+push 0
+greater
+branch l599 l600
+
+label l599
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l598
+
+label l600
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set min_1
+#+get min_2
+push 0
+push 4
+goto l601
+
+label l601
+dup
+push 0
+greater
+branch l602 l603
+
+label l602
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l601
+
+label l603
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l604
+
+label l604
+dup
+push 0
+greater
+branch l605 l606
+
+label l605
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l604
+
+label l606
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get min_2
+#+eq
+push 2
+push 1
+roll
+push 0
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchset_min_2_if_not_set cleanup
+push 1
+sub
+push 2
+push 1
+roll
+branch set_min_2_if_not_set cleanup
+#-branch set_min_2_if_not_set cleanup
+
+label set_min_2_if_not_set
+#+set min_2
+push 0
+push 4
+goto l608
+
+label l608
+dup
+push 0
+greater
+branch l609 l610
+
+label l609
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l608
+
+label l610
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l611
+
+label l611
+dup
+push 0
+greater
+branch l612 l613
+
+label l612
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l611
+
+label l613
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set min_2
+#+goto get_inp
+goto get_inp
+#-goto get_inp
+
+label set_min_2_if_not_set_from_2
+#+set min_2
+push 0
+push 4
+goto l615
+
+label l615
+dup
+push 0
+greater
+branch l616 l617
+
+label l616
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l615
+
+label l617
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l618
+
+label l618
+dup
+push 0
+greater
+branch l619 l620
+
+label l619
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l618
+
+label l620
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set min_2
+#+goto check_num
+goto check_num
+#-goto check_num
+
+label cleanup_from_2
+#+pop
+push 2
+push 1
+roll
+pop
+push 1
+sub
+#-pop
+#+goto check_num
+goto check_num
+#-goto check_num
+
+label cleanup
+#+pop
+push 2
+push 1
+roll
+pop
+push 1
+sub
+#-pop
+#+goto get_inp
+goto get_inp
+#-goto get_inp
+
+label done
+#+get min_1
+push 0
+push 2
+goto l624
+
+label l624
+dup
+push 0
+greater
+branch l625 l626
+
+label l625
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l624
+
+label l626
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 2
+goto l627
+
+label l627
+dup
+push 0
+greater
+branch l628 l629
+
+label l628
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l627
+
+label l629
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get min_1
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+mul
+push 3
+push 1
+roll
+mul
+push 2
+push 1
+roll
+push 1
+sub
+#-mul
+#+get max_1
+push 0
+push 3
+goto l630
+
+label l630
+dup
+push 0
+greater
+branch l631 l632
+
+label l631
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l630
+
+label l632
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 3
+goto l633
+
+label l633
+dup
+push 0
+greater
+branch l634 l635
+
+label l634
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l633
+
+label l635
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get max_1
+#+add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+#-add
+#+get total1
+push 0
+push 1
+goto l636
+
+label l636
+dup
+push 0
+greater
+branch l637 l638
+
+label l637
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l636
+
+label l638
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 1
+goto l639
+
+label l639
+dup
+push 0
+greater
+branch l640 l641
+
+label l640
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l639
+
+label l641
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get total1
+#+add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+#-add
+#+set total1
+push 0
+push 1
+goto l642
+
+label l642
+dup
+push 0
+greater
+branch l643 l644
+
+label l643
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l642
+
+label l644
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 1
+goto l645
+
+label l645
+dup
+push 0
+greater
+branch l646 l647
+
+label l646
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l645
+
+label l647
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set total1
+#+get min_2
+push 0
+push 4
+goto l648
+
+label l648
+dup
+push 0
+greater
+branch l649 l650
+
+label l649
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l648
+
+label l650
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 4
+goto l651
+
+label l651
+dup
+push 0
+greater
+branch l652 l653
+
+label l652
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l651
+
+label l653
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get min_2
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+mul
+push 3
+push 1
+roll
+mul
+push 2
+push 1
+roll
+push 1
+sub
+#-mul
+#+get max_2
+push 0
+push 5
+goto l654
+
+label l654
+dup
+push 0
+greater
+branch l655 l656
+
+label l655
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l654
+
+label l656
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 5
+goto l657
+
+label l657
+dup
+push 0
+greater
+branch l658 l659
+
+label l658
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l657
+
+label l659
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get max_2
+#+add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+#-add
+#+get total2
+push 0
+push 0
+goto l660
+
+label l660
+dup
+push 0
+greater
+branch l661 l662
+
+label l661
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l660
+
+label l662
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 0
+goto l663
+
+label l663
+dup
+push 0
+greater
+branch l664 l665
+
+label l664
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l663
+
+label l665
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get total2
+#+add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+#-add
+#+set total2
+push 0
+push 0
+goto l666
+
+label l666
+dup
+push 0
+greater
+branch l667 l668
+
+label l667
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l666
+
+label l668
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 0
+goto l669
+
+label l669
+dup
+push 0
+greater
+branch l670 l671
+
+label l670
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l669
+
+label l671
+pop
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+#-set total2
+#+goto setup_line
+goto setup_line
+#-goto setup_line
+
+label print_result
+#+get total1
+push 0
+push 1
+goto l673
+
+label l673
+dup
+push 0
+greater
+branch l674 l675
+
+label l674
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l673
+
+label l675
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 1
+goto l676
+
+label l676
+dup
+push 0
+greater
+branch l677 l678
+
+label l677
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l676
+
+label l678
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get total1
+#+outN
+push 2
+push 1
+roll
+outN
+push 1
+sub
+#-outN
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+get total2
+push 0
+push 0
+goto l679
+
+label l679
+dup
+push 0
+greater
+branch l680 l681
+
+label l680
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+add
+push -1
+roll
+dup
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+dup
+push 2
+add
+dup
+push 4
+add
+push -3
+roll
+push 4
+push -1
+roll
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+goto l679
+
+label l681
+pop
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 1
+add
+push 1
+roll
+push 0
+goto l682
+
+label l682
+dup
+push 0
+greater
+branch l683 l684
+
+label l683
+push 3
+push -1
+roll
+dup
+push 4
+push 1
+roll
+push 5
+push -1
+roll
+dup
+push 6
+push 1
+roll
+push 2
+add
+dup
+push 3
+push 1
+roll
+push 6
+push 2
+roll
+dup
+push 5
+add
+push 2
+push 1
+roll
+push 2
+add
+push 0
+push 2
+push 1
+roll
+sub
+roll
+push 2
+push 1
+roll
+push 2
+add
+push 2
+push 1
+roll
+roll
+push 1
+sub
+goto l682
+
+label l684
+pop
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+#-get total2
+#+outN
+push 2
+push 1
+roll
+outN
+push 1
+sub
+#-outN
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+goto term
+goto term
+#-goto term

@@ -432,3 +432,6 @@ outC
 push 1
 sub
 #-outC
+#+goto term
+goto term
+#-goto term
