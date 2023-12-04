@@ -5,6 +5,9 @@ from stk_to_piet import *
 from ascii_piet_to_piet import *
 from piet_interpreter import *
 
+if len(sys.argv) <= 2:
+    print ("missing argument, add one or more of",["gen","stk","piet","debug"],"seperated by a ','")
+
 smpl_name = sys.argv[1]
 name = smpl_name[:smpl_name.rfind(".")]
 stk_name = name + ".stk"

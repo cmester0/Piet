@@ -6,6 +6,8 @@ import png
 
 import time
 
+from stk_execute import *
+
 # 0 = right
 # 1 = down
 # 2 = left
@@ -21,7 +23,7 @@ last_bs = 0
 input_eof = False
 stack = []
 
-def piet_interpreter(i_file, o_file = ""):
+def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     global dp
     global cc
     global last_color
@@ -59,9 +61,6 @@ def piet_interpreter(i_file, o_file = ""):
     # C00000 C0C000 00C000 00C0C0 0000C0 C000C0
 
     # 000000
-
-    debug = False # True
-    gif_saved = True
 
     colors = [["❤","🧡","💛","💚","💙","💜"],
               ["🔴","🟠","🟡","🟢","🔵","🟣"],
@@ -320,65 +319,44 @@ def piet_interpreter(i_file, o_file = ""):
                 lc_c, lc_r = rev_map[last_color]
                 cc_c, cc_r = rev_map[c]
 
+                cmd = []
                 match (cc_c - lc_c) % 6, (cc_r - lc_r) % 3:
                     case (0,1): # push
                         if debug:
                             print("push",last_bs)
-                        stack.append(last_bs)
+                        cmd = ["push", str(last_bs)]
                     case (0,2): # pop
                         if debug:
                             print("pop")
-                        if len(stack) >= 1:
-                            stack.pop()
+                        cmd = ["pop"]
                     case (1,0): # add
                         if debug:
                             print("add")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            stack.append(a + b)
+                        cmd = ["add"]
                     case (1,1): # sub
                         if debug:
                             print("sub")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            stack.append(b - a)
+                        cmd = ["sub"]
                     case (1,2): # mul
                         if debug:
                             print("mul")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            stack.append(a * b)
+                        cmd = ["mul"]
                     case (2,0): # div
                         if debug:
                             print("div")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            if a != 0:
-                                stack.append(b // a) # TODO: Ignore if div by zero
+                        cmd = ["div"]
                     case (2,1): # mod
                         if debug:
                             print("mod")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            stack.append(b % a)
+                        cmd = ["mod"]
                     case (2,2): # not
                         if debug:
                             print("not")
-                        if len(stack) >= 1:
-                            a = stack.pop()
-                            stack.append(1 if a == 0 else 0)
+                        cmd = ["not"]
                     case (3,0): # greater
                         if debug:
                             print("greater")
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop()
-                            stack.append(1 if b > a else 0)
+                        cmd = ["greater"]
                     case (3,1): # pointer
                         if debug:
                             print("pointer", str(len(stack) >= 1))
@@ -396,22 +374,11 @@ def piet_interpreter(i_file, o_file = ""):
                     case (4,0): # dup
                         if debug:
                             print("dup")
-                        if len(stack) >= 1:
-                            a = stack.pop()
-                            stack.append(a)
-                            stack.append(a)
+                        cmd = ["dup"]
                     case (4,1): # roll
                         if debug:
                             print("roll")
-                        # TODO: more clever
-                        if len(stack) >= 2:
-                            a = stack.pop()
-                            b = stack.pop() # TODO: Ignore b negative
-                            if b < 0:
-                                print ("Error")
-                            else:
-                                a = a % b
-                                stack = stack[:-b] + stack[-a:] + stack[-b:-a]
+                        cmd = ["roll"]
                     case (4,2): # inN
                         if debug:
                             print("inN")
@@ -453,6 +420,9 @@ def piet_interpreter(i_file, o_file = ""):
                             print(chr(stack.pop()),end="")
                         if debug:
                             print("\n")
+
+                if cmd:
+                    stack = cmd_interpreter(cmd, stack)
 
             last_color = c
             last_bs = bs

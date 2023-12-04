@@ -1,58 +1,19 @@
+from stk_execute import *
+
 def evaluate(instrs, stk):
     stack = list(stk)
     for cmd in instrs:
         match cmd:
             case "push 1":
-                stack.append(1) # cmd[1]
+                stack.append(1)
             case "push 2":
-                stack.append(2) # cmd[1]
+                stack.append(2)
             case "push 3":
-                stack.append(3) # cmd[1]
+                stack.append(3)
             case "push 5":
-                stack.append(5) # cmd[1]
-            case "pop":
-                if len(stack) >= 1:
-                    stack.pop()
-            case "add":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop()
-                    stack.append(a + b)
-            case "sub":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop()
-                    stack.append(b - a)
-            case "mul":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop()
-                    stack.append(a * b)
-            case "div":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop()
-                    if a != 0:
-                        stack.append(b // a) # TODO: Ignore if div by zero
-            case "mod":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop()
-                    if a != 0:
-                        stack.append(b % a)
-            case "dup":
-                if len(stack) >= 1:
-                    a = stack.pop()
-                    stack.append(a)
-                    stack.append(a)
-            case "roll":
-                if len(stack) >= 2:
-                    a = stack.pop()
-                    b = stack.pop() # TODO: Ignore b negative
-                    if a > 0:
-                        stack = stack[:-b] + stack[-a:] + stack[-b:-a]
-                    if a < 0:
-                        stack = stack[:-b] + stack[-b-a:] + stack[-b:-b-a]
+                stack.append(5)
+            case default:
+                stack = cmd_interpreter([cmd], stack)
     return stack
 
 import heapq
@@ -99,7 +60,11 @@ def optimize_number(N):
             if len(stack) == 1 and not stack[0] in solved:
                 solved.add(stack[0])
 
-N = int(input())
-for i in range(N+1):
-    optimize_number(i)
-    print (i, "(" + str(results[str(i)][0]) + ")", ":", results[str(i)][1])
+    return results[str(N)][1]
+
+if __name__ == "__main__":
+    N = int(input())
+    for i in range(N+1):
+        optimize_number(i)
+        print (results)
+        print (i, "(" + str(results[str(i)][0]) + ")", ":", results[str(i)][1])
