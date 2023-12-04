@@ -37,7 +37,7 @@ def stk_to_piet(i_file, o_file, optim=True):
         "🟪": (5,2)}
 
     stack_optimizer = StackOptimizer()
-    
+
     def make_block(block):
         output = ["🔴"]
         previous_c = 0
@@ -145,82 +145,111 @@ def stk_to_piet(i_file, o_file, optim=True):
     with open(o_file, 'w') as f:
         final_output = []
 
-        push_max = len(blocks)*2
-        pre = len(blocks)*2
+        for _ in range(30):
+            final_output.append(["⚪"]*150)
 
-        final_output.append("⚪"*(pre+push_max+1))
-        for i in range(len(blocks)+1):
-            final_output.append("⚪"*(pre+push_max+1))
+        def block_line_left(yi, xi, gap=2):
+            final_output[yi][xi-3] = "⚫"
+            final_output[yi-2][xi-2] = "⚫"
+            final_output[yi-1][xi-1] = "⚫"
+            final_output[yi+gap+2][xi-2] = "⚫"
+            final_output[yi+gap+1][xi-4] = "⚫"
+            final_output[yi+gap][xi-3] = "⚫"
 
-        final_output[1] = final_output[1][:pre-1] + "⚫⚫" + final_output[i+1][pre-1+2:]
+        def block_line_right(yi, xi, gap=2):
+            final_output[yi][xi+1] = "⚫"
+            final_output[yi+gap+2][xi] = "⚫"
 
-        for i in range(1,len(blocks)):
-            j = i
-            final_output[i+1] = final_output[i+1][:pre-1-(j*2)] + "⚫" + final_output[i+1][pre-1-(j*2)+1:]
-            final_output[i+1] = final_output[i+1][:pre-1+(i*2)] + "⚫" + final_output[i+1][pre-1+(i*2)+1:]
+        # for x in blocks:
+        #     # print (x, blocks[x][0])
 
-        final_output[len(blocks)+1] = final_output[len(blocks)+1][:pre-1+(len(blocks)*2)] + "⚫" + final_output[i+1][pre-1+(len(blocks)*2)+1:]
+        x = "main"
+        j_width = len(blocks[x][0]) // 7
 
-        key_to_index = dict()
-        prev_size = 0
-        prev_clearance = 0
-        for i, l in enumerate(sorted(blocks, key=lambda x: len(blocks[x][0]))):
-            key_to_index[l] = i
-            curr_size = len(blocks[l][0])
+        start_index = 10
+        
+        final_output[0][start_index+1] = "⚫"
 
-            clearance = 2
-            if curr_size >= 2:
-                ac, ar = rev_map[blocks[l][0][-1]]
-                bc, br = rev_map[blocks[l][0][-2]]
-                clearance = 3 # if ((ac - bc) % 6 == 3 and (ar - br) % 3 == 1) else 2
-            else:
-                clearance = 2
+        print (len(blocks[x][0]))
+        li = 2 # line index
 
-            if curr_size <= prev_size + clearance:
-                blocks[l] = (["⚪"] * (prev_size + (0 if clearance == prev_clearance else -1) + clearance - curr_size) + blocks[l][0], blocks[l][1])
+        final_output[li+1][start_index] = "⚫"
+        final_output[li][start_index-2] = "⚫"
+        final_output[li-1][start_index-1] = "⚫"
 
-            prev_size = len(blocks[l][0])
-            prev_clearance = clearance
+        offset = 0
+        do_break = False
+        right_line_gap = 2
+        left_line_gap = 1
+        going_right = True
+        while True:
+            if going_right:
+                for j in range(j_width):
+                    if offset + j >= len(blocks[x][0]):
+                        do_break = True
+                        break
+                    if offset + j_width < len(blocks[x][0]):
+                        if len(set(blocks[x][0][offset+j:offset+j_width])) == 2:
+                            offset += j - 1
+                            break
+                    final_output[li][start_index+j] = blocks[x][0][offset+j]
+                else:
+                    offset += j_width - 1
+                if do_break:
+                    break
+                block_line_right(li, start_index+j_width, gap=right_line_gap)
+                li = li + right_line_gap + 1
+            else: # going left
+                for j in range(j_width):
+                    if offset + j >= len(blocks[x][0]):
+                        do_break = True
+                        break
+                    if offset + j_width < len(blocks[x][0]):
+                        if len(set(blocks[x][0][offset+j:offset+j_width])) == 2:
+                            offset += j - 1
+                            break
+                    final_output[li][j_width+start_index-1-j] = blocks[x][0][offset+j]
+                else:
+                    offset += j_width - 1
+                if do_break:
+                    break
+                block_line_left(li, start_index, gap=left_line_gap)
+                li = li + left_line_gap + 1
+            going_right = not going_right
 
+        if going_right:
+            block_line_right(li, start_index+j_width, gap=5)
+            li = li + 5 + 1
 
-        mid_section = []
-        max_block_len = max([len(blocks[l][0]) for l in blocks])
-        print (max_block_len)
-        for xi in range(max_block_len + 2):
-            xvals = ["⚪" for _ in range(pre + push_max + 1)]
-            mid_section = ["".join(xvals)] + mid_section
+            final_output[li-1][start_index] = "🔴"
+            final_output[li][start_index] = "🔴"
+            final_output[li+1][start_index] = "🔴"
+            final_output[li][start_index-1] = "🔴"
 
-        final_output_offset = len(final_output)
-        final_output = final_output + mid_section
+            final_output[li-1][start_index+1] = "⚫"
+            final_output[li-2][start_index] = "⚫"
+            final_output[li-1][start_index-1] = "⚫"
+            final_output[li][start_index-2] = "⚫"
+            final_output[li+1][start_index-1] = "⚫"
+            final_output[li+2][start_index] = "⚫"
+            final_output[li+1][start_index+1] = "⚫"
 
-        for l in blocks:
-            i = key_to_index[l]
-            for xi, x in enumerate(blocks[l][0]):
-                final_output[xi + final_output_offset] = final_output[xi+final_output_offset][:pre + (i*2)] + x + final_output[xi+final_output_offset][pre + (i*2) + 1:]
-            if len(blocks[l][1]) == 1:
-                j = key_to_index[blocks[l][1][0]]
-                final_output[len(blocks[l][0])-1+final_output_offset] = final_output[len(blocks[l][0])-1+final_output_offset][:pre-(j * 2+2)] + "⚫" + final_output[len(blocks[l][0])-1+final_output_offset][pre-(j * 2+2)+1:]
-                final_output[len(blocks[l][0])+final_output_offset] = final_output[len(blocks[l][0])+final_output_offset][:pre+(i*2)] + "⚫" + final_output[len(blocks[l][0])+final_output_offset][pre+i*2+1:]
-            if len(blocks[l][1]) == 2:
-                j = key_to_index[blocks[l][1][0]]
-                final_output[len(blocks[l][0])-1+final_output_offset] = final_output[len(blocks[l][0])-1+final_output_offset][:pre-(j * 2+2)] + "⚫" + final_output[len(blocks[l][0])-1+final_output_offset][pre-(j * 2+2)+1:]
+        else:
+            block_line_left(li, start_index, gap=5)
+            li = li + 5 + 1
 
-                j = key_to_index[blocks[l][1][1]]
-                final_output[len(blocks[l][0])+final_output_offset] = final_output[len(blocks[l][0])+final_output_offset][:pre-(j * 2+2)] + "⚫" + final_output[len(blocks[l][0])+final_output_offset][pre-(j * 2+2)+1:]
-                final_output[len(blocks[l][0])+1+final_output_offset] = final_output[len(blocks[l][0])+1+final_output_offset][:pre+i*2] + "⚫" + final_output[len(blocks[l][0])+1+final_output_offset][pre+i*2+1:]
+            final_output[li-1][start_index+j_width] = "🔴"
+            final_output[li][start_index+j_width] = "🔴"
+            final_output[li+1][start_index+j_width] = "🔴"
+            final_output[li][start_index+1+j_width] = "🔴"
 
-        i = key_to_index["term"]
-        final_output.append("⚪" * (pre+(i*2)-2) + "⚪⚫⚪⚫⚪" + "⚪" * (push_max-(i*2)-2))
-        final_output.append("⚪" * (pre+(i*2)-2) + "⚫🔴🔴🔴⚫" + "⚪" * (push_max-(i*2)-2))
-        final_output.append("⚪" * (pre+(i*2)-2) + "⚪⚫🔴⚫⚪" + "⚪" * (push_max-(i*2)-2))
-        final_output.append("⚪" * (pre+(i*2)-2) + "⚪⚪⚫⚪⚪" + "⚪" * (push_max-(i*2)-2))
-
-        final_output.append("⚪" * (pre  + push_max + 1))
-        main_goto = key_to_index["main"]
-        final_output[-1] = final_output[-1][:pre-(main_goto * 2+2)] + "⚫" + final_output[-1][pre-(main_goto * 2+2)+1:]
-
-        while (final_output[len(blocks)+3] == "⚪" * len(final_output[len(blocks)+3])):
-            final_output = final_output[:len(blocks)+3] + final_output[len(blocks)+4:]
+            final_output[li-1][start_index-1+j_width] = "⚫"
+            final_output[li-2][start_index+j_width] = "⚫"
+            final_output[li-1][start_index+1+j_width] = "⚫"
+            final_output[li][start_index+2+j_width] = "⚫"
+            final_output[li+1][start_index+1+j_width] = "⚫"
+            final_output[li+2][start_index+j_width] = "⚫"
+            final_output[li+1][start_index-1+j_width] = "⚫"
 
         for x in final_output:
             f.write("".join(list(x)) + "\n")
