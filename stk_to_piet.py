@@ -167,7 +167,7 @@ def stk_to_piet(i_file, o_file, optim=True):
         j_width = len(blocks[x][0]) // 7
 
         start_index = 10
-        
+
         final_output[0][start_index+1] = "⚫"
 
         print (len(blocks[x][0]))
