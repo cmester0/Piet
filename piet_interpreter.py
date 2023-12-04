@@ -382,44 +382,19 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                     case (4,2): # inN
                         if debug:
                             print("inN")
-                        if not input_eof:
-                            value = sys.stdin.buffer.peek(1)
-                            if value == b"":
-                                stack.append(-1)
-                                input_eof = True
-                            else:
-                                for x in reversed(range(len(value))):
-                                    if "".join(map(chr, value[:x+1])).isnumeric():
-                                        stack.append(int("".join(map(chr, sys.stdin.buffer.read(x+1)))))
-                                        break
-                        else:
-                            stack.append(-1)
+                        cmd = ["inN"]
                     case (5,0): # inC
                         if debug:
                             print("inC")
-                        if not input_eof:
-                            value = sys.stdin.buffer.peek(1)
-                            if value == b"":
-                                stack.append(-1)
-                                input_eof = True
-                            else:
-                                stack.append(ord(chr(sys.stdin.buffer.read(1)[0])))
-                        else:
-                            stack.append(-1)
+                        cmd = ["inC"]
                     case (5,1): # outN
                         if debug:
                             print("outN\n")
-                        if len(stack) > 0:
-                            print(stack.pop(),end="")
-                        if debug:
-                            print("\n")
+                        cmd = ["outN"]
                     case (5,2): # outC
                         if debug:
                             print("outC\n")
-                        if len(stack) > 0:
-                            print(chr(stack.pop()),end="")
-                        if debug:
-                            print("\n")
+                        cmd = ["outC"]
 
                 if cmd:
                     stack = cmd_interpreter(cmd, stack)

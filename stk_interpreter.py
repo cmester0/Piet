@@ -29,35 +29,6 @@ def stk_interpreter(i_file, debug=False):
         cmd = block[index].split()
         # print (" ".join(cmd), stack)
         match cmd[0]:
-            case "inN":
-                if not input_eof:
-                    value = sys.stdin.buffer.peek(1)
-                    if value == b"":
-                        stack.append(-1)
-                        input_eof = True
-                    else:
-                        for x in reversed(range(len(value))):
-                            if "".join(map(chr, value[:x+1])).isnumeric():
-                                stack.append(int("".join(map(chr, sys.stdin.buffer.read(x+1)))))
-                                break
-                else:
-                    stack.append(-1)
-            case "inC":
-                if not input_eof:
-                    value = sys.stdin.buffer.peek(1)
-                    if value == b"":
-                        stack.append(-1)
-                        input_eof = True
-                    else:
-                        stack.append(ord(chr(sys.stdin.buffer.read(1)[0])))
-                else:
-                    stack.append(-1)
-            case "outN":
-                if len(stack) >= 1:
-                    print(stack.pop(),end="")
-            case "outC":
-                if len(stack) >= 1:
-                    print(chr(stack.pop()),end="")
             case "branch":
                 a = stack.pop()
                 if (a == 0):
