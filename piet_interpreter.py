@@ -20,7 +20,6 @@ cc = 0
 
 last_color = "⚪"
 last_bs = 0
-input_eof = False
 stack = []
 
 def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
@@ -28,7 +27,6 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     global cc
     global last_color
     global last_bs
-    global input_eof
     global stack
 
     # 0 = right
@@ -43,7 +41,6 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
 
     last_color = "⚪"
     last_bs = 0
-    input_eof = False
     stack = []
 
     # ⚪
@@ -257,7 +254,6 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
         global cc
         global last_color
         global last_bs
-        global input_eof
         global stack
         (cx, cy) = k
         curr_pos = (cx, cy)
@@ -397,7 +393,7 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                         cmd = ["outC"]
 
                 if cmd:
-                    stack = cmd_interpreter(cmd, stack)
+                    cmd_interpreter(cmd, stack)
 
             last_color = c
             last_bs = bs
@@ -460,7 +456,7 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
         if debug:
             if last_color != "⚪":
                 time.sleep(0.01)
-                print (input_eof, pos, stack, len(frames))
+                print (pos, stack, len(frames))
 
         if gif_name != "" and not gif_saved and (max_count == -1 or len(frames) < max_count):
             img_changed = img.copy()

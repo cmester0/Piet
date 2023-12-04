@@ -1,4 +1,7 @@
+import sys
+input_eof = False
 def cmd_interpreter(cmd, stack):
+    global input_eof
     match cmd[0]:
         case "push":
             stack.append(int(cmd[1]))
@@ -53,7 +56,7 @@ def cmd_interpreter(cmd, stack):
                 else:
                     a = a % b
                     if a != 0:
-                        stack = stack[:-b] + stack[-a:] + stack[-b:-a]
+                        stack[-b:] = stack[-a:] + stack[-b:-a]
         case "inN":
             if not input_eof:
                 value = sys.stdin.buffer.peek(1)
@@ -85,4 +88,4 @@ def cmd_interpreter(cmd, stack):
                 print(chr(stack.pop()),end="")
         case default:
             print("Invalid cmd:", cmd)
-    return stack
+    # return stack

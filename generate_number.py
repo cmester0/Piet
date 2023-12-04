@@ -24,7 +24,7 @@ class StackOptimizer():
                 case "push 5":
                     stack.append(5)
                 case default:
-                    stack = cmd_interpreter([cmd], stack)
+                    cmd_interpreter([cmd], stack)
         return stack
 
     def add_neighbors(self, weight, stack, total_instructions):

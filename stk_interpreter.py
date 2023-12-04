@@ -21,8 +21,6 @@ def stk_interpreter(i_file, debug=False):
 
     stack = []
 
-    input_eof = False
-
     block = blocks["main"]
     index = 0
     while index < len(block):
@@ -54,7 +52,7 @@ def stk_interpreter(i_file, debug=False):
             case "debug":
                 print (stack)
             case default:
-                stack = cmd_interpreter(cmd, stack)
+                cmd_interpreter(cmd, stack)
         index += 1
 
         if debug:
