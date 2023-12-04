@@ -18,7 +18,6 @@ def evaluate(instrs, stk):
 
 import heapq
 
-solved = set([0])
 results = {"0": (2, ["push 1", "not"])}
 # Weight, Curr_Stack, Curr_instrs, Total_instrs
 heap = []
@@ -45,8 +44,8 @@ def add_neighbors(weight, stack, total_instructions):
     if len(stack) >= 2 and stack[-2] > 0: # only allow valid roll? (Otherwise is better pop, pop?)
         add_next_instr(1, "roll")
 
-def optimize_number(N):
-    while not N in solved:
+def optimize_stack(search_stack):
+    while not search_stack in results:
         weight, stack, instructions, total_instructions = heapq.heappop(heap)
         stack = evaluate(instructions, stack)
         stk_str = ",".join(map(str, stack))
@@ -58,13 +57,14 @@ def optimize_number(N):
             results[stk_str] = (weight, total_instructions)
             add_neighbors(weight, stack, total_instructions)
 
-            if len(stack) == 1 and not stack[0] in solved:
-                solved.add(stack[0])
+    return results[search_stack][1]
 
-    return results[str(N)][1]
+def optimize_number(N):
+    optimize_stack(str(N))
 
 if __name__ == "__main__":
-    N = int(input())
-    for i in range(N+1):
-        optimize_number(i)
-        print (i, "(" + str(results[str(i)][0]) + ")", ":", results[str(i)][1])
+    inp = list(map(str, map(lambda x: int(x) if x.isnumeric() else ord(x), input().split(","))))
+    for i in range(len(inp)):
+        sub_inp = ",".join(inp[:i+1])
+        optimize_stack(sub_inp)
+        print (sub_inp,"(" + str(results[sub_inp][0]) + ")", ":", results[sub_inp][1])
