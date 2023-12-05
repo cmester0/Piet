@@ -97,11 +97,11 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             cmd = inp.split()
             match cmd[0]:
                 case "branch":
-                    # pointer
-                    previous_c, previous_r = rev_map[output[-1]]
-                    previous_c = (previous_c + 3) % 6
-                    previous_r = (previous_r + 1) % 3
-                    output.append(colors[previous_r][previous_c])
+                    # # pointer
+                    # previous_c, previous_r = rev_map[output[-1]]
+                    # previous_c = (previous_c + 3) % 6
+                    # previous_r = (previous_r + 1) % 3
+                    # output.append(colors[previous_r][previous_c])
                     return output, [cmd[1], cmd[2]]
                 case "goto":
                     return output, [cmd[1]]
@@ -146,17 +146,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
 
     for x in blocks:
         if len(blocks[x][1]) == 1: # is goto
-            goto_nr = blocks_index[blocks[x][1][0]]
-            instrs = []
-            if goto_nr > 100:
-                instrs+=command_from_str("push 100")
-                instrs+=command_from_str("push " + str(goto_nr // 100))
-                instrs+=command_from_str("mul")
-                instrs+=command_from_str("push " + str(goto_nr % 100))
-                instrs+=command_from_str("add")
-            else:
-                instrs+=command_from_str("push " + str(goto_nr))
-            goto_statement = make_block(instrs)[0]
+            goto_statement = make_block(command_from_str("push " + str(blocks_index[blocks[x][1][0]])))[0]
             blocks[x] = (blocks[x][0] + ["⚪"] + goto_statement, []) # TODO: make goto use color, instead of white!
 
     # Split blocks
