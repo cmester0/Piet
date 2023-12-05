@@ -147,7 +147,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
 
     def id_to_coord(b_id):
         return (b_id % b_width, b_id // b_width)
-    
+
     for l in block_cmds:
         cmds = []
         for x in l[1:]:
@@ -178,7 +178,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             blocks[x] = (blocks[x][0], [goto_statement_1, goto_statement_2]) # TODO: make goto use color, instead of white!
 
     # Split blocks
-    j_width = max(50, len(blocks)//5)
+    j_width = max(30, max(b_width,b_height)//5)
     right_line_gap = 2
     left_line_gap = 1
 
@@ -227,8 +227,11 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
         final_output = []
 
         total_block_width = (j_width+4+1) + 6
-        most_lines = max(len(blocks[x][0]) for x in blocks) + 2
-        total_block_height = (most_lines + 1) // 2 * (right_line_gap+1) + (most_lines) // 2 * (left_line_gap+1) + max(len(blocks)//5, 10)
+        total_block_height = max(
+            (len(blocks[x][0]) + 1) // 2 * (right_line_gap + int(len(blocks[x][1]) > 0)) + \
+            (len(blocks[x][0])) // 2 * (left_line_gap + int(len(blocks[x][1]) > 0)) + \
+            (len(blocks[x][1][2:]) if len(blocks[x][1]) > 0 else 0)
+            for x in blocks) + 4
 
         pre = "⚪" * 8
         post = "⚪" * 1
@@ -247,7 +250,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
                 final_output.append(list(sym_line))
             final_output.append(list(pre + "⚫" * (total_block_width * b_width) + post))
             final_output.append(list("⚪" * (len(pre)-2) + "⚫⚪" + "⚪" * (total_block_width * b_width) + post))
-            
+
         for _ in range(2):
             final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
 
