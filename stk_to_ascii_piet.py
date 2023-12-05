@@ -3,7 +3,7 @@ import png
 
 from generate_number import * # optimize number
 
-def stk_to_piet(i_file, o_file, optim=True):
+def stk_to_ascii_piet(i_file, o_file, optim=True):
     # ⚪
 
     # ❤🧡💛💚💙💜
