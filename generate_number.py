@@ -84,7 +84,7 @@ class StackOptimizer():
     def optimize_number(self, N):
         instrs = []
         root = 1
-        while self.int_root(N,root) > 100:
+        while self.int_root(N,root) > 173:
             root += 1
         instrs += self.optimize_stack(str(self.int_root(N,root)))
         for i in range(root-1):
@@ -92,25 +92,9 @@ class StackOptimizer():
         for i in range(root-1):
             instrs.append("mul")
         if N - pow(self.int_root(N,root), root) > 0:
-            instrs += self.optimize_stack(str(N - pow(self.int_root(N,root),root)))
+            instrs+=self.optimize_number(N - pow(self.int_root(N,root),root))
             instrs.append("add")
 
-# 552 ['push 3', 'dup', 'mul', 'dup', 'mul', 'push 3', 'dup', 'dup', 'dup', 'dup', 'mul', 'dup', 'mul', 'sub', 'mul', 'dup', 'add', 'sub', 'add']
-# 81 3 3 3 3
-            
-        # if N > 100:
-        #     instrs+=self.optimize_stack(str(100))
-        #     print (instrs)
-        #     instrs+=self.optimize_stack(str(N // 100))
-        #     print (instrs)
-        #     instrs+=["mul"]
-        #     print (instrs)
-        #     instrs+=self.optimize_stack(str(N % 100))
-        #     print (instrs)
-        #     instrs+=["add"]
-        #     print (instrs)
-        # else:
-        #     instrs+=self.optimize_stack(str(N))
         return instrs
 
 if __name__ == "__main__":
