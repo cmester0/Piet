@@ -29,6 +29,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     global last_bs
     global stack
 
+    reset_stk_executer()
+
     # 0 = right
     # 1 = down
     # 2 = left

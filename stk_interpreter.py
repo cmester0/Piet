@@ -4,6 +4,8 @@ import time
 from stk_execute import *
 
 def stk_interpreter(i_file, debug=False):
+    reset_stk_executer()
+
     inp_lines = []
     with open(i_file, 'r') as f:
         inp_lines = f.readlines()

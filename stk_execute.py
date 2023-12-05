@@ -1,5 +1,9 @@
 import sys
 input_eof = False
+def reset_stk_executer():
+    global input_eof
+    input_eof = False
+
 def cmd_interpreter(cmd, stack):
     global input_eof
     match cmd[0]:
@@ -48,15 +52,12 @@ def cmd_interpreter(cmd, stack):
                 stack.append(a)
                 stack.append(a)
         case "roll":
-            if len(stack) >= 2:
+            if len(stack) >= 2 and stack[-2] >= 0:
                 a = stack.pop()
-                b = stack.pop() # TODO: Ignore b negative
-                if b < 0:
-                    print ("Error")
-                else:
-                    a = a % b
-                    if a != 0:
-                        stack[-b:] = stack[-a:] + stack[-b:-a]
+                b = stack.pop()
+                a = a % b
+                if a != 0:
+                    stack[-b:] = stack[-a:] + stack[-b:-a]
         case "inN":
             if not input_eof:
                 value = sys.stdin.buffer.peek(1)
@@ -88,4 +89,3 @@ def cmd_interpreter(cmd, stack):
                 print(chr(stack.pop()),end="")
         case default:
             print("Invalid cmd:", cmd)
-    # return stack
