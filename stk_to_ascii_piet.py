@@ -140,14 +140,14 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
     inv_block_index = []
     b_id = 0
     for l in [x.split("\n") for x in "".join(lines).split("\n\n")]:
-        cmds = []
+        cmds = ["pop"]
         for x in l[1:]:
             cmds += command_from_str(x)
         blocks[l[0].split()[1]] = make_block(cmds)
         blocks_index[l[0].split()[1]] = b_id
         inv_block_index.append(l[0].split()[1])
         b_id += 1
-    blocks["term"] = ([], [])
+    blocks["term"] = (make_block(["pop"]), [])
     blocks_index["term"] = b_id
     inv_block_index.append("term")
 
@@ -246,18 +246,23 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             li = 2 # line index
 
             if x == "term":
-                final_output[li][start_index-1-1] = "🔴"
-                final_output[li][start_index-1] = "🔴"
-                final_output[li][start_index+1-1] = "🔴"
-                final_output[li+1][start_index-1] = "🔴"
+                for j, y in enumerate(blocks[x][0][0][0]):
+                    final_output[li+j][start_index-1] = y
 
-                final_output[li-1][start_index-1-1] = "⚫"
-                final_output[li-1][start_index+1-1] = "⚫"
-                final_output[li][start_index-2-1] = "⚫"
-                final_output[li][start_index+2-1] = "⚫"
-                final_output[li+1][start_index-1-1] = "⚫"
-                final_output[li+1][start_index+1-1] = "⚫"
-                final_output[li+2][start_index-1] = "⚫"
+                heart_x, heart_y = li+1+len(blocks[x][0][0][0]), start_index-1
+
+                final_output[heart_x][heart_y-1] = "🔴"
+                final_output[heart_x][heart_y] = "🔴"
+                final_output[heart_x][heart_y+1] = "🔴"
+                final_output[heart_x+1][heart_y] = "🔴"
+
+                final_output[heart_x-1][heart_y-1] = "⚫"
+                final_output[heart_x-1][heart_y+1] = "⚫"
+                final_output[heart_x][heart_y-2] = "⚫"
+                final_output[heart_x][heart_y+2] = "⚫"
+                final_output[heart_x+1][heart_y-1] = "⚫"
+                final_output[heart_x+1][heart_y+1] = "⚫"
+                final_output[heart_x+2][heart_y] = "⚫"
                 # TODO: Make heart for term
                 continue
 
