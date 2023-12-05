@@ -211,7 +211,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
 
         total_block_width = (j_width+4+1)
         most_lines = max(len(blocks[x][0])for x in blocks) + 1
-        for _ in range((most_lines + 1) // 2 * (right_line_gap+1) + (most_lines) // 2 * (left_line_gap+1) + 7 + 2):
+        for _ in range((most_lines + 1) // 2 * (right_line_gap+1) + (most_lines) // 2 * (left_line_gap+1) + 7 + 2 + len(blocks) // 10):
             final_output.append(["⚪"]*(total_block_width*(len(blocks)-1)+20))
 
 
