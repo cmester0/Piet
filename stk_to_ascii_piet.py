@@ -139,29 +139,46 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
     blocks_index = dict()
     inv_block_index = []
     b_id = 0
-    for l in [x.split("\n") for x in "".join(lines).split("\n\n")]:
-        cmds = ["pop"]
+
+    block_cmds = [x.split("\n") for x in "".join(lines).split("\n\n")]
+
+    b_width = math.ceil(math.sqrt(len(block_cmds)))
+    b_height = math.ceil(len(block_cmds) / b_width)
+
+    def id_to_coord(b_id):
+        return (b_id % b_width, b_id // b_width)
+    
+    for l in block_cmds:
+        cmds = []
         for x in l[1:]:
             cmds += command_from_str(x)
         blocks[l[0].split()[1]] = make_block(cmds)
         blocks_index[l[0].split()[1]] = b_id
         inv_block_index.append(l[0].split()[1])
         b_id += 1
-    blocks["term"] = (make_block(["pop"]), [])
+    blocks["term"] = (make_block([]), [])
     blocks_index["term"] = b_id
     inv_block_index.append("term")
 
     for x in blocks:
         if len(blocks[x][1]) == 1: # is goto
-            goto_statement = make_block(command_from_str("push " + str(blocks_index[blocks[x][1][0]])))[0]
+            b_id = blocks_index[blocks[x][1][0]]
+            b_x, b_y = id_to_coord(b_id)
+            goto_statement = make_block(command_from_str("push " + str(b_x))+command_from_str("push " + str(b_y)))[0]
             blocks[x] = (blocks[x][0], [goto_statement]) # TODO: make goto use color, instead of white!
         if len(blocks[x][1]) == 2:
-            goto_statement_1 = make_block(["pointer"]+["nop"]+command_from_str("push " + str(blocks_index[blocks[x][1][0]])))[0]
-            goto_statement_2 = make_block(["pointer"]+["nop"]+command_from_str("push " + str(blocks_index[blocks[x][1][1]])))[0]
+            b_id_1 = blocks_index[blocks[x][1][0]]
+            b_id_2 = blocks_index[blocks[x][1][1]]
+
+            b_1_x, b_1_y = id_to_coord(b_id_1)
+            b_2_x, b_2_y = id_to_coord(b_id_2)
+
+            goto_statement_1 = make_block(["pointer"]+["nop"]+command_from_str("push " + str(b_1_x))+command_from_str("push " + str(b_1_y)))[0]
+            goto_statement_2 = make_block(["pointer"]+["nop"]+command_from_str("push " + str(b_2_x))+command_from_str("push " + str(b_2_y)))[0]
             blocks[x] = (blocks[x][0], [goto_statement_1, goto_statement_2]) # TODO: make goto use color, instead of white!
 
     # Split blocks
-    j_width = max(50, len(blocks) // 10)
+    j_width = max(50, len(blocks)//5)
     right_line_gap = 2
     left_line_gap = 1
 
@@ -209,18 +226,45 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
     with open(o_file, 'w') as f:
         final_output = []
 
-        total_block_width = (j_width+4+1)
-        most_lines = max(len(blocks[x][0])for x in blocks) + 1
-        for _ in range((most_lines + 1) // 2 * (right_line_gap+1) + (most_lines) // 2 * (left_line_gap+1) + 7 + 2 + len(blocks) // 10):
-            final_output.append(["⚪"]*(total_block_width*(len(blocks)-1)+20))
+        total_block_width = (j_width+4+1) + 6
+        most_lines = max(len(blocks[x][0]) for x in blocks) + 2
+        total_block_height = (most_lines + 1) // 2 * (right_line_gap+1) + (most_lines) // 2 * (left_line_gap+1) + max(len(blocks)//5, 10)
 
+        pre = "⚪" * 8
+        post = "⚪" * 1
+        final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
+        final_output.append(list("⚫" * (len(pre) + total_block_width * b_width) + post))
+        final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
+        for _ in range(b_height):
+            final_output.append(list("⚪" * (len(pre)-1) + "⚫" + "⚫" * (total_block_width * b_width) + post))
+            for _ in range(total_block_height-3):
+                sym_line = pre
+                for _ in range(b_width):
+                    for _ in range(total_block_width-1):
+                        sym_line += "⚪"
+                    sym_line += "⚪" # ⚫
+                sym_line += post
+                final_output.append(list(sym_line))
+            final_output.append(list(pre + "⚫" * (total_block_width * b_width) + post))
+            final_output.append(list("⚪" * (len(pre)-2) + "⚫⚪" + "⚪" * (total_block_width * b_width) + post))
+            
+        for _ in range(2):
+            final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
 
-        for j, branch_instr in enumerate(make_block(["push 1","not"])[0]):
+        for j, branch_instr in enumerate(make_block(["push 1","not","push 1","not"])[0]):
             final_output[0][j] = branch_instr
-        final_output[1][0] = "⚫"
-        final_output[2][5] = "⚫"
-        final_output[4][4] = "⚫"
-        final_output[3][3] = "⚫"
+
+        prepare_pointer = ["dup","push 1","not","greater","not","pointer","push 1","sub"]
+        prepare_pointer_index = prepare_pointer.index("pointer")+1
+
+        prepare_pointer_block = make_block(prepare_pointer)[0]
+        prepare_pointer_pop = make_block(prepare_pointer[:prepare_pointer_index]+["pop"])[0][prepare_pointer_index+1:]
+
+        for li in range(b_height):
+            for j, branch_instr in enumerate(prepare_pointer_block):
+                final_output[1+total_block_height*li+total_block_height-prepare_pointer_index+j+1][len(pre) + total_block_width * b_width] = branch_instr
+            for j, y in enumerate(prepare_pointer_pop):
+                final_output[1+total_block_height*li+total_block_height+1][len(pre) + total_block_width * b_width - 1 - j] = y
 
         def block_line_left(yi, xi, gap=2):
             final_output[yi][xi-3] = "⚫"
@@ -235,15 +279,13 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             final_output[yi+gap+2][xi] = "⚫"
 
         for si, x in enumerate(blocks):
-            start_index = 15 + total_block_width * si
+            start_index = 15 + total_block_width * (si % b_width)
+            li = 7 + total_block_height * (si // b_width) # line index
 
-            prepare_pointer = ["dup","push 1","not","greater","not","pointer","push 1","sub"]
-            prepare_pointer_block = make_block(prepare_pointer)[0]
-            prepare_pointer_index = prepare_pointer.index("pointer")+1
-            for j, branch_instr in enumerate(prepare_pointer_block):
-                final_output[0][start_index-prepare_pointer_index-1+j] = branch_instr
-
-            li = 2 # line index
+            for j, y in enumerate(prepare_pointer_block):
+                final_output[li-3][start_index-prepare_pointer_index-1+j] = y
+            for j, y in enumerate(prepare_pointer_pop):
+                final_output[li-3+1+j][start_index-1] = y
 
             if x == "term":
                 for j, y in enumerate(blocks[x][0][0][0]):
@@ -292,32 +334,6 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
                 final_output[li+1][start_index+j_width] = "⚪" # 🔴
             else:
                 final_output[li+1][start_index-2] = "⚪" # 🔴
-
-            # if going_right:
-            #     final_output[li][start_index+j_width+1] = "⚫"
-            # else:
-            #     block_line_left(li, start_index, gap=left_line_gap)
-            #     li = li + left_line_gap + 1
-            #     final_output[li][start_index+j_width+1] = "⚫"
-
-
-
-            
-            #     block_line_left(li, start_index, gap=3)
-            #     li = li + 3 + 1
-
-            #     final_output[li-1][start_index+j_width] = "🔴"
-            #     final_output[li][start_index+j_width] = "🔴"
-            #     final_output[li+1][start_index+j_width] = "🔴"
-            #     final_output[li][start_index+1+j_width] = "🔴"
-
-            #     final_output[li-1][start_index-1+j_width] = "⚫"
-            #     final_output[li-2][start_index+j_width] = "⚫"
-            #     final_output[li-1][start_index+1+j_width] = "⚫"
-            #     final_output[li][start_index+2+j_width] = "⚫"
-            #     final_output[li+1][start_index+1+j_width] = "⚫"
-            #     final_output[li+2][start_index+j_width] = "⚫"
-            #     final_output[li+1][start_index-1+j_width] = "⚫"
 
         for x in final_output:
             f.write("".join(list(x)) + "\n")

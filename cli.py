@@ -23,4 +23,8 @@ if "gen" in sys.argv[2]:
 if "stk" in sys.argv[2]:
     stk_interpreter(stk_name, "debug" in sys.argv[2])
 if "piet" in sys.argv[2]:
-    piet_interpreter(piet_name, o_file = (gif_name if "gif" in sys.argv[2] else ""), debug="debug" in sys.argv[2],max_count=(-1 if len(sys.argv)<3 else int(sys.argv[3])),gif_speed=(1 if len(sys.argv)<4 else int(sys.argv[4])))
+    piet_interpreter(piet_name,
+                     o_file = (gif_name if "gif" in sys.argv[2] else ""),
+                     debug="debug" in sys.argv[2],
+                     max_count=(-1 if len(sys.argv)<=3 else int(sys.argv[3])),
+                     gif_speed=(1 if len(sys.argv)<=4 else int(sys.argv[4])))
