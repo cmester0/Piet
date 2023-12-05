@@ -1,7 +1,7 @@
 import sys
 from smpl_to_stk import *
 from stk_interpreter import *
-from stk_to_piet import *
+from stk_to_ascii_piet import *
 from ascii_piet_to_piet import *
 from piet_interpreter import *
 
@@ -16,7 +16,7 @@ piet_name = name + ".png"
 
 if "gen" in sys.argv[2]:
     smpl_to_stk(smpl_name, stk_name)
-    stk_to_piet(stk_name, ascii_name, optim=True)
+    stk_to_ascii_piet(stk_name, ascii_name, optim=True)
     ascii_piet_to_piet(ascii_name, piet_name)
 
 if "stk" in sys.argv[2]:
