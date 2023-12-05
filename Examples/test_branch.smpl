@@ -1,0 +1,17 @@
+inN
+eq 13
+branch correct false
+
+label correct
+push Y
+outC
+push 10
+outC
+goto term
+
+label false
+push N
+outC
+push 10
+outC
+goto term

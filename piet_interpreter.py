@@ -22,12 +22,14 @@ last_color = "⚪"
 last_bs = 0
 stack = []
 
-def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
+def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1):
     global dp
     global cc
     global last_color
     global last_bs
     global stack
+
+    gif_saved=False
 
     # 0 = right
     # 1 = down
@@ -422,7 +424,6 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     last_bs = bs
 
     from PIL import Image
-    max_count = -1
     frames = []
     gif_name = o_file
 
@@ -458,15 +459,17 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                 time.sleep(0.01)
                 print (pos, stack, len(frames))
 
-        if gif_name != "" and not gif_saved and (max_count == -1 or len(frames) < max_count):
+        if gif_name != "" and not gif_saved and (max_count == -1 or len(frames)//gif_speed < max_count):
             img_changed = img.copy()
             img_changed.putpixel(pos, (30, 30, 30, 50))
             img_changed.putpixel(pos, (150 + (100 if dp == 0 else (-100 if dp == 2 else 0)),
                                        150 + (100 if dp == 1 else (-100 if dp == 3 else 0)),
                                        150 + (100 if cc == 0 else -100)))
-            frames.append(img_changed)
 
-            if max_count != -1 and len(frames) == max_count:
+            for i in range(gif_speed):
+                frames.append(img_changed)
+
+            if max_count != -1 and len(frames)//gif_speed == max_count:
                 save_image()
 
         total_steps += 1

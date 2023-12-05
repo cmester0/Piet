@@ -1,0 +1,133 @@
+label main
+push 1
+#+inN
+goto l1
+
+label l1
+push -2
+push -3
+inN
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l2 l3
+
+label l2
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l4
+
+label l3
+pop
+goto l4
+#-inN
+
+label l4
+#+eq
+push 2
+push 1
+roll
+push 13
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+#-eq
+#+branchcorrect false
+push 1
+sub
+push 2
+push 1
+roll
+branch correct false
+#-branch correct false
+
+label correct
+#+pushY
+push 89
+push 2
+push 1
+roll
+push 1
+add
+#-pushY
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+goto term
+goto term
+#-goto term
+
+label false
+#+pushN
+push 78
+push 2
+push 1
+roll
+push 1
+add
+#-pushN
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+push10
+push 10
+push 2
+push 1
+roll
+push 1
+add
+#-push10
+#+outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+#-outC
+#+goto term
+goto term
+#-goto term
