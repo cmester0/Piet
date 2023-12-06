@@ -188,27 +188,10 @@ def smpl_to_stk(i_file, o_file):
         instrs[loop_index][1].append("goto " + "l" + str(label_index))
 
         instrs[set_index][1].append("pop")
-        dup_value_x_deep(set_index, 2)
-
-        instrs[set_index][1].append("push 1")
-        instrs[set_index][1].append("add")
-        instrs[set_index][1].append("push -1")
-        instrs[set_index][1].append("roll")
-        instrs[set_index][1].append("dup")
-        instrs[set_index][1].append("push 3")
-        instrs[set_index][1].append("push -1")
-        instrs[set_index][1].append("roll")
-        instrs[set_index][1].append("add")
-
-        swap(set_index)
-        dup_value_x_deep(set_index, 3)
-        instrs[set_index][1].append("push 1")
-        instrs[set_index][1].append("add")
-        instrs[set_index][1].append("push 1")
-        instrs[set_index][1].append("roll")
 
         # Roll the entire stack back
         instrs[set_index][1].append("push "+str(var_index))
+
         label_index = goto_new_label(set_index)
         instrs[label_index][1].append("dup")
         instrs[label_index][1].append("push 0")
@@ -217,6 +200,7 @@ def smpl_to_stk(i_file, o_file):
 
         dup_value_x_deep(loop_index, 3) # stack size
         dup_value_x_deep(loop_index, 5) # var size
+
         instrs[loop_index][1].append("push 2")
         instrs[loop_index][1].append("add")
         instrs[loop_index][1].append("dup")
@@ -254,6 +238,8 @@ def smpl_to_stk(i_file, o_file):
         instrs[loop_index][1].append("goto " + "l" + str(label_index))
 
         instrs[set_index][1].append("pop")
+        instrs[set_index][1].append("push 1")
+        instrs[set_index][1].append("add")
 
         return set_index
 
@@ -482,125 +468,6 @@ def smpl_to_stk(i_file, o_file):
                 instrs[new_index][1].append("#-set " + l[1])
                 index = new_index
 
-            case "append":
-                instrs[index][1].append("#+append " + l[1])
-                var_index = 0
-                for i, x in enumerate(var_list):
-                    if x == l[1]:
-                        var_index = i
-                        break
-                else:
-                    print ("Variable", l[1], "was not defined")
-                    exit(1)
-
-                new_index = get_offset_for_var_index(index, var_index)
-
-                # Get size of list
-                dup_value_x_deep(new_index, 2)
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("sub")
-                dup_at_depth(new_index)
-
-                # Update first size of list
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("dup")
-                dup_value_x_deep(new_index, 4)
-                dup_value_x_deep(new_index, 4)
-                instrs[new_index][1].append("sub")
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("push 2")
-                instrs[new_index][1].append("add")
-                swap_at_depth(new_index)
-
-                # update second size of list
-                instrs[new_index][1].append("pop")
-                dup_value_x_deep(new_index, 3)
-                dup_value_x_deep(new_index, 3)
-                dup_value_x_deep(new_index, 3)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("sub")
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-                swap_at_depth(new_index)
-
-                # append new value
-                instrs[new_index][1].append("pop")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("push 4")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("roll")
-                instrs[new_index][1].append("sub")
-                put_at_depth(new_index)
-
-                index = new_index
-
-            case "get_elem":
-                instrs[index][1].append("#+get_elem " + l[1])
-                var_index = 0
-                for i, x in enumerate(var_list):
-                    if x == l[1]:
-                        var_index = i
-                        break
-                else:
-                    print ("Variable", l[1], "was not defined")
-                    exit(1)
-
-                new_index = get_offset_for_var_index(index, var_index)
-
-                # Get size of list
-                dup_value_x_deep(new_index, 2)
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("sub")
-                dup_at_depth(new_index)
-
-                # Update first size of list
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("dup")
-                dup_value_x_deep(new_index, 4)
-                dup_value_x_deep(new_index, 4)
-                instrs[new_index][1].append("sub")
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("push 2")
-                instrs[new_index][1].append("add")
-                swap_at_depth(new_index)
-
-                # update second size of list
-                instrs[new_index][1].append("pop")
-                dup_value_x_deep(new_index, 3)
-                dup_value_x_deep(new_index, 3)
-                dup_value_x_deep(new_index, 3)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("sub")
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("add")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-                swap_at_depth(new_index)
-
-                # append new value
-                instrs[new_index][1].append("pop")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
-
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("push 4")
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("roll")
-                instrs[new_index][1].append("sub")
-                put_at_depth(new_index)
-
-                index = new_index
-
-
             case "get":
                 instrs[index][1].append("#+get " + l[1])
                 var_index = 0
@@ -626,6 +493,144 @@ def smpl_to_stk(i_file, o_file):
                 instrs[new_index][1].append("add")
                 instrs[new_index][1].append("#-get " + l[1])
                 index = new_index
+
+            case "append":
+                instrs[index][1].append("#+append " + l[1])
+                var_index = 0
+                for i, x in enumerate(var_list):
+                    if x == l[1]:
+                        var_index = i
+                        break
+                else:
+                    print ("Variable", l[1], "was not defined")
+                    exit(1)
+
+                new_index = get_offset_for_var_index(index, var_index)
+
+                # Get size of list
+                dup_value_x_deep(new_index, 2)
+                dup_value_x_deep(new_index, 2)
+                instrs[new_index][1].append("sub")
+
+                # extra things ontop of maintained stack
+                instrs[new_index][1].append("push 2")
+                instrs[new_index][1].append("add")
+
+                dup_at_depth(new_index)
+
+                # Increment size of list
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+
+                # Update first size of list
+                dup_value_x_deep(new_index, 3)
+                dup_value_x_deep(new_index, 3)
+                instrs[new_index][1].append("sub")
+
+                dup_value_x_deep(new_index, 2)
+
+                swap(new_index)
+                # extra things ontop of maintained stack
+                instrs[new_index][1].append("push 3")
+                instrs[new_index][1].append("add")
+
+                # swap one deeper??
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+
+                swap_at_depth(new_index)
+
+                # update second size of list
+                instrs[new_index][1].append("pop")
+                dup_value_x_deep(new_index, 3)
+                dup_value_x_deep(new_index, 3)
+                dup_value_x_deep(new_index, 3)
+                instrs[new_index][1].append("add")
+                instrs[new_index][1].append("sub")
+
+                # extra things ontop of maintained stack
+                instrs[new_index][1].append("push 2")
+                instrs[new_index][1].append("add")
+
+                # swap one deeper??
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+
+                swap_at_depth(new_index)
+
+                # append new value
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+                instrs[new_index][1].append("add")
+
+                dup_value_x_deep(new_index, 2)
+                instrs[new_index][1].append("push 4")
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("roll")
+
+                instrs[new_index][1].append("sub")
+
+                # put one deeper ??
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+
+                put_at_depth(new_index)
+
+                instrs[new_index][1].append("#-append " + l[1])
+
+                index = new_index
+
+            case "get_size":
+                instrs[index][1].append("#+get_size " + l[1])
+                var_index = 0
+                for i, x in enumerate(var_list):
+                    if x == l[1]:
+                        var_index = i
+                        break
+                else:
+                    print ("Variable", l[1], "was not defined")
+                    exit(1)
+
+                new_index = get_offset_for_var_index(index, var_index)
+
+                # Get size of list
+                dup_value_x_deep(new_index, 2)
+                dup_value_x_deep(new_index, 2)
+                instrs[new_index][1].append("sub")
+                instrs[new_index][1].append("push 2")
+                instrs[new_index][1].append("add")
+                dup_at_depth(new_index)
+
+                swap(new_index)
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+                instrs[new_index][1].append("#-get_size " + l[1])
+                index = new_index
+
+            case "get_elem":
+                instrs[index][1].append("#+get_elem " + l[1])
+                var_index = 0
+                for i, x in enumerate(var_list):
+                    if x == l[1]:
+                        var_index = i
+                        break
+                else:
+                    print ("Variable", l[1], "was not defined")
+                    exit(1)
+
+                new_index = get_offset_for_var_index(index, var_index)
+
+                # Get size of list
+                dup_value_x_deep(new_index, 2)
+                dup_value_x_deep(new_index, 2)
+                instrs[new_index][1].append("sub")
+                dup_at_depth(new_index)
+
+                dup_value_x_deep(new_index, 2)
+                swap(new_index)
+
+                index = new_index
+
 
             case "outC":
                 instrs[index][1].append("#+outC")

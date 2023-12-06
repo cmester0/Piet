@@ -17,8 +17,8 @@ gif_name = name + ".gif"
 
 if "gen" in sys.argv[2]:
     smpl_to_stk(smpl_name, stk_name)
-    stk_to_ascii_piet(stk_name, ascii_name, optim=True)
-    ascii_piet_to_piet(ascii_name, piet_name)
+    # stk_to_ascii_piet(stk_name, ascii_name, optim=True)
+    # ascii_piet_to_piet(ascii_name, piet_name)
 
 if "stk" in sys.argv[2]:
     stk_interpreter(stk_name, "debug" in sys.argv[2])

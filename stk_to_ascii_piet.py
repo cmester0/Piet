@@ -93,6 +93,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
                 previous_r = (previous_r - 1) % 3
             case default:
                 print("Invalid cmd:", cmd)
+                return
         output.append(colors[previous_r][previous_c])
 
     def make_block(block):
@@ -251,7 +252,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             final_output.append(list(pre + "⚫" * (total_block_width * b_width) + post))
             final_output.append(list("⚪" * (len(pre)-2) + "⚫⚪" + "⚪" * (total_block_width * b_width) + post))
 
-        for _ in range(2):
+        for _ in range(10):
             final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
 
         for j, branch_instr in enumerate(make_block(["push 1","not","push 1","not"])[0]):
