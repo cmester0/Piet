@@ -317,6 +317,25 @@ def smpl_to_stk(i_file, o_file):
                 instrs[index][1].append("add")
                 instrs[index][1].append("#-dup")
 
+            case "roll":
+                instrs[index][1].append("#+roll")
+                dup_value_x_deep(index, 3)
+                dup_value_x_deep(index, 3)
+                instrs[index][1].append("sub")
+                instrs[index][1].append("push 1")
+                instrs[index][1].append("add")
+                # Skip args in stack
+                instrs[index][1].append("push 2")
+                instrs[index][1].append("add")
+                # Put stack size, such that it will get rolled back to the front
+                put_at_depth(index)
+                swap(index)
+                instrs[index][1].append("push 1")
+                instrs[index][1].append("add")
+                swap(index)
+                instrs[index][1].append("roll")
+                instrs[index][1].append("#-roll")
+
             case "inN":
                 instrs[index][1].append("#+inN")
                 label_index = len(instrs)
