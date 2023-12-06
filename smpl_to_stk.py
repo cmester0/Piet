@@ -595,11 +595,11 @@ def smpl_to_stk(i_file, o_file):
 
                 # Get size of list
                 dup_value_x_deep(new_index, 2)
-                dup_value_x_deep(new_index, 2)
+                swap(new_index)
                 instrs[new_index][1].append("sub")
 
                 # extra things ontop of maintained stack
-                instrs[new_index][1].append("push 2")
+                instrs[new_index][1].append("push 1")
                 instrs[new_index][1].append("add")
 
                 dup_at_depth(new_index)
