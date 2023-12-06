@@ -624,8 +624,6 @@ def smpl_to_stk(i_file, o_file):
                 new_index = get_offset_for_var_index(index, var_index)
                 # TODO: get_offset_for_var_index should point to the variable ?
 
-                instrs[new_index][1].append("debug")
-
                 instrs[new_index][1].append("push 3")
                 instrs[new_index][1].append("push -1")
                 instrs[new_index][1].append("roll")
@@ -643,8 +641,6 @@ def smpl_to_stk(i_file, o_file):
                 dup_at_depth(new_index)
 
                 swap(new_index)
-                instrs[new_index][1].append("push 1")
-                instrs[new_index][1].append("add")
 
                 index = new_index
 
