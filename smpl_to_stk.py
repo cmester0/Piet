@@ -597,8 +597,11 @@ def smpl_to_stk(i_file, o_file):
                 dup_value_x_deep(new_index, 2)
                 dup_value_x_deep(new_index, 2)
                 instrs[new_index][1].append("sub")
+
+                # extra things ontop of maintained stack
                 instrs[new_index][1].append("push 2")
                 instrs[new_index][1].append("add")
+
                 dup_at_depth(new_index)
 
                 swap(new_index)
@@ -619,15 +622,29 @@ def smpl_to_stk(i_file, o_file):
                     exit(1)
 
                 new_index = get_offset_for_var_index(index, var_index)
+                # TODO: get_offset_for_var_index should point to the variable ?
 
-                # Get size of list
-                dup_value_x_deep(new_index, 2)
-                dup_value_x_deep(new_index, 2)
-                instrs[new_index][1].append("sub")
-                dup_at_depth(new_index)
+                instrs[new_index][1].append("debug")
 
+                instrs[new_index][1].append("push 3")
+                instrs[new_index][1].append("push -1")
+                instrs[new_index][1].append("roll")
+                instrs[new_index][1].append("add")
+
+                # Add one extra ??
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
+
+                # Get relative index of element
                 dup_value_x_deep(new_index, 2)
                 swap(new_index)
+                instrs[new_index][1].append("sub")
+
+                dup_at_depth(new_index)
+
+                swap(new_index)
+                instrs[new_index][1].append("push 1")
+                instrs[new_index][1].append("add")
 
                 index = new_index
 
