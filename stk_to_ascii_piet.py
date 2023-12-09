@@ -144,7 +144,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
     block_cmds = [x.split("\n") for x in "".join(lines).split("\n\n")]
 
     b_width = math.ceil(math.sqrt(len(block_cmds)))
-    b_height = math.ceil(len(block_cmds) / b_width)
+    b_height = math.ceil(len(block_cmds) / b_width) + 1
 
     def id_to_coord(b_id):
         return (b_id % b_width, b_id // b_width)
@@ -232,7 +232,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             (len(blocks[x][0]) + 1) // 2 * (right_line_gap + int(len(blocks[x][1]) > 0)) + \
             (len(blocks[x][0])) // 2 * (left_line_gap + int(len(blocks[x][1]) > 0)) + \
             (len(blocks[x][1][2:]) if len(blocks[x][1]) > 0 else 0)
-            for x in blocks) + 4
+            for x in blocks) + 4 # TODO: Fix
 
         pre = "⚪" * 8
         post = "⚪" * 1
@@ -252,7 +252,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             final_output.append(list(pre + "⚫" * (total_block_width * b_width) + post))
             final_output.append(list("⚪" * (len(pre)-2) + "⚫⚪" + "⚪" * (total_block_width * b_width) + post))
 
-        for _ in range(10):
+        for _ in range(15):
             final_output.append(list("⚪" * (len(pre) + total_block_width * b_width + len(post))))
 
         for j, branch_instr in enumerate(make_block(["push 1","not","push 1","not"])[0]):
