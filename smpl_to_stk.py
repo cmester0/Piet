@@ -368,7 +368,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
-            
+
             instrs[next_index][1].append("push 1") # Dummy value?
             instrs[next_index][1].append("goto l" + str(fail_label_index))
 
@@ -439,8 +439,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             instrs[next_index][1].append("goto " + continue_new_label)
 
-            
-            
             # instrs[realloc_index][1].append("push 3")
             swap(instrs, realloc_index)
             instrs[realloc_index][1].append("pop")
@@ -514,7 +512,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             dup_value_x_deep(instrs, label_index, 3)
             eq(instrs, label_index)
             done_index, loop_index = branch_new_labels(instrs, label_index)
-            
+
             dup_value_x_deep(instrs, loop_index, 4)
             dup_value_x_deep(instrs, loop_index, 3)
             instrs[loop_index][1].append("add")
@@ -556,7 +554,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
             instrs[next_index][1].append("goto l" + str(in_bounds_index))
-            
+
             # instrs[realloc_index][1].append("goto " + continue_new_label)
 
             # _, next_index = handle_smpl_instr(var_list, instrs, realloc_index, ["malloc"])
@@ -696,11 +694,11 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
         case "malloc":
             instrs[index][1].append("dup")
-            
+
             instrs[index][1].append("push 3")
             instrs[index][1].append("push -1")
             instrs[index][1].append("roll")
-            
+
             instrs[index][1].append("dup")
             instrs[index][1].append("dup")
 

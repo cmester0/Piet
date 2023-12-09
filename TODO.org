@@ -1,0 +1,3 @@
+# TODO: Make instructions into sepearte labels,
+# so you can simply call std lib functions
+# this drastically reduces the blocks with the same code !!!
