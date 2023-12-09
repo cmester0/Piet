@@ -15,7 +15,7 @@ def dup_value_x_deep(instrs, index, x):
 
 def swap(instrs, index):
     instrs[index][1].append("push 2")
-    instrs[index][1].append("push 1")
+    instrs[index][1].append("push -1")
     instrs[index][1].append("roll")
 
 def dup_at_depth(instrs, index):
@@ -91,8 +91,8 @@ def binop(instrs, index,op):
     instrs[index][1].append("roll")
     instrs[index][1].append(op)
     swap(instrs, index)
-    instrs[index][1].append("push 1")
-    instrs[index][1].append("sub")
+    instrs[index][1].append("push -1")
+    instrs[index][1].append("add")
 
 def goto_new_label(instrs, index):
     label_index = len(instrs)
@@ -182,7 +182,7 @@ def get_offset_for_var_index(instrs, index, var_index):
     # Roll the entire stack back
     instrs[set_index][1].append("push "+str(var_index))
 
-    label_index = goto_new_label(set_index)
+    label_index = goto_new_label(instrs, set_index)
     instrs[label_index][1].append("dup")
     instrs[label_index][1].append("push 0")
     instrs[label_index][1].append("greater")
@@ -234,69 +234,41 @@ def get_offset_for_var_index(instrs, index, var_index):
     return set_index
 
 def malloc(instrs, index):
-    instrs[index][1].append("#+malloc")
-    instrs[index][1].append("#-malloc")
+    pass
 
-def handle_smpl_instr(instrs, index, l):
+def handle_smpl_instr(var_list, instrs, index, l):
+    next_index = index
     match l[0]:
         case "label":
             index = len(instrs)
+            next_index = len(instrs)
             instrs.append((l[1], []))
 
         case "push":
-            instrs[index][1].append("#+push" + l[1])
+            add(instrs, index,1)
             instrs[index][1].append("push " + number_or_ord(l[1]))
             swap(instrs, index)
-            add(instrs, index,1)
-            instrs[index][1].append("#-push" + l[1])
 
         case "pop":
-            instrs[index][1].append("#+pop")
             swap(instrs, index)
             instrs[index][1].append("pop")
             sub(instrs, index,1)
-            instrs[index][1].append("#-pop")
 
         case "eq":
-            instrs[index][1].append("#+eq")
             swap(instrs, index)
             instrs[index][1].append("push " + number_or_ord(l[1]))
             eq(instrs, index)
             swap(instrs, index)
-            instrs[index][1].append("#-eq")
 
-        case "add":
-            instrs[index][1].append("#+add")
-            binop(instrs, index,"add")
-            instrs[index][1].append("#-add")
+        case "not":
+            swap(instrs, index)
+            instrs[index][1].append("not")
+            swap(instrs, index)
 
-        case "greater":
-            instrs[index][1].append("#+greater")
-            binop(instrs, index,"greater")
-            instrs[index][1].append("#-greater")
-
-        case "sub":
-            instrs[index][1].append("#+sub")
-            binop(instrs, index,"sub")
-            instrs[index][1].append("#-sub")
-
-        case "div":
-            instrs[index][1].append("#+div")
-            binop(instrs, index,"div")
-            instrs[index][1].append("#-div")
-
-        case "mod":
-            instrs[index][1].append("#+mod")
-            binop(instrs, index,"mod")
-            instrs[index][1].append("#-mod")
-
-        case "mul":
-            instrs[index][1].append("#+mul")
-            binop(instrs, index,"mul")
-            instrs[index][1].append("#-mul")
+        case "add" | "greater" | "sub" | "div" | "mod" | "mul":
+            binop(instrs, index, l[0])
 
         case "dup":
-            instrs[index][1].append("#+dup")
             swap(instrs, index)
             instrs[index][1].append("dup")
             instrs[index][1].append("push 3")
@@ -304,10 +276,8 @@ def handle_smpl_instr(instrs, index, l):
             instrs[index][1].append("roll")
             instrs[index][1].append("push 1")
             instrs[index][1].append("add")
-            instrs[index][1].append("#-dup")
 
         case "inN":
-            instrs[index][1].append("#+inN")
             label_index = len(instrs)
             new_label = "l" + str(label_index)
             instrs[index][1].append("goto " + new_label)
@@ -339,12 +309,11 @@ def handle_smpl_instr(instrs, index, l):
             instrs[fail_label_index][1].append("pop")
             instrs[fail_label_index][1].append("goto " + continue_new_label)
 
-            instrs[fail_label_index][1].append("#-inN")
 
-            index = continue_label_index
+            index = fail_label_index
+            next_index = continue_label_index
 
         case "inC":
-            instrs[index][1].append("#+inC")
             label_index = len(instrs)
             new_label = "l" + str(label_index)
             instrs[index][1].append("goto " + new_label)
@@ -376,63 +345,19 @@ def handle_smpl_instr(instrs, index, l):
             instrs[fail_label_index][1].append("pop")
             instrs[fail_label_index][1].append("goto " + continue_new_label)
 
-            instrs[fail_label_index][1].append("#-inC")
-
-            index = continue_label_index
+            index = fail_label_index
+            next_index = continue_label_index
 
         case "goto":
-            instrs[index][1].append("#+goto " + l[1])
             instrs[index][1].append("goto " + l[1])
-            instrs[index][1].append("#-goto " + l[1])
 
         case "branch":
-            instrs[index][1].append("#+branch" + l[1] + " " + l[2])
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
             swap(instrs, index)
             instrs[index][1].append("branch " + l[1] + " " + l[2])
-            instrs[index][1].append("#-branch " + l[1] + " " + l[2])
-
-        case "var":
-            instrs[index][1].append("#+var " + l[1])
-            var_list = [l[1]] + var_list
-
-            # Allocate empty variable
-            instrs[index][1].append("push " + str(data_type_size[l[2]]))
-            for _ in range(data_type_size[l[2]]):
-                instrs[index][1].append("push 0")
-            instrs[index][1].append("push " + str(data_type_size[l[2]]))
-            new_data_size = 2 + data_type_size[l[2]]
-
-            ####################
-            # Fetch stack size #
-            ####################
-
-            instrs[index][1].append("push " + str(new_data_size+1))
-            instrs[index][1].append("push -1")
-            instrs[index][1].append("roll")
-
-            # Update size
-            instrs[index][1].append("push " + str(new_data_size))
-            instrs[index][1].append("add")
-
-            instrs[index][1].append("dup")
-
-            instrs[index][1].append("push " + str(new_data_size+2))
-            instrs[index][1].append("push 1")
-            instrs[index][1].append("roll")
-
-            ######################
-            # Rotate into bottom #
-            ######################
-
-            instrs[index][1].append("push " + str(new_data_size))
-            instrs[index][1].append("roll")
-
-            instrs[index][1].append("#-var " + l[1])
 
         case "set":
-            instrs[index][1].append("#+set " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -454,11 +379,11 @@ def handle_smpl_instr(instrs, index, l):
             instrs[new_index][1].append("pop")
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("sub")
-            instrs[new_index][1].append("#-set " + l[1])
+
             index = new_index
+            next_index = new_index
 
         case "get":
-            instrs[index][1].append("#+get " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -480,11 +405,11 @@ def handle_smpl_instr(instrs, index, l):
             swap(instrs, new_index)
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("add")
-            instrs[new_index][1].append("#-get " + l[1])
+
             index = new_index
+            next_index = new_index
 
         case "append":
-            instrs[index][1].append("#+append " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -565,12 +490,10 @@ def handle_smpl_instr(instrs, index, l):
 
             put_at_depth(instrs, new_index)
 
-            instrs[new_index][1].append("#-append " + l[1])
-
             index = new_index
+            next_index = new_index
 
         case "get_size":
-            instrs[index][1].append("#+get_size " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -596,11 +519,11 @@ def handle_smpl_instr(instrs, index, l):
             swap(instrs, new_index)
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("add")
-            instrs[new_index][1].append("#-get_size " + l[1])
+
             index = new_index
+            next_index = new_index
 
         case "get_elem":
-            instrs[index][1].append("#+get_elem " + l[1])
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -632,30 +555,24 @@ def handle_smpl_instr(instrs, index, l):
             swap(instrs, new_index)
 
             index = new_index
-
+            next_index = new_index
 
         case "outC":
-            instrs[index][1].append("#+outC")
             swap(instrs, index)
             instrs[index][1].append("outC")
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
-            instrs[index][1].append("#-outC")
 
         case "outN":
-            instrs[index][1].append("#+outN")
             swap(instrs, index)
             instrs[index][1].append("outN")
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
-            instrs[index][1].append("#-outN")
 
         case "debug":
-            instrs[index][1].append("#+debug")
             instrs[index][1].append("debug")
-            instrs[index][1].append("#-debug")
 
-    return index
+    return index, next_index
 
 def smpl_to_stk(i_file, o_file):
     inp_lines = []
@@ -670,14 +587,51 @@ def smpl_to_stk(i_file, o_file):
     index = 0
     label_count = 0
     var_list = []
-    for l in inp_lines:
+
+    for inp_line_index, l in enumerate(inp_lines):
+        if l[0] != "var":
+            break
+
+        var_list = [l[1]] + var_list
+
+        # Allocate empty variable
+        instrs[index][1].append("push " + str(data_type_size[l[2]]))
+        for _ in range(data_type_size[l[2]]):
+            instrs[index][1].append("push 0")
+        instrs[index][1].append("push " + str(data_type_size[l[2]]))
+        new_data_size = 2 + data_type_size[l[2]]
+
+        ####################
+        # Fetch stack size #
+        ####################
+
+        instrs[index][1].append("push " + str(new_data_size+1))
+        instrs[index][1].append("push -1")
+        instrs[index][1].append("roll")
+
+        # Update size
+        instrs[index][1].append("push " + str(new_data_size))
+        instrs[index][1].append("add")
+
+        instrs[index][1].append("dup")
+
+        instrs[index][1].append("push " + str(new_data_size+2))
+        instrs[index][1].append("push 1")
+        instrs[index][1].append("roll")
+
+        ######################
+        # Rotate into bottom #
+        ######################
+
+        instrs[index][1].append("push " + str(new_data_size))
+        instrs[index][1].append("roll")
+
+    for l in inp_lines[inp_line_index:]:
         if len(l) == 0 or l[0] == "#":
             continue
-        instrs[index][1].append("#A+" + " ".join(l))
-        index = handle_smpl_instr(instrs, index, l)
-        instrs[index][1].append("#A-" + " ".join(l))
-            # print (var_list)
-    # print ("\n".join(instrs))
+        instrs[index][1].append("#+" + " ".join(l))
+        last_index, index = handle_smpl_instr(var_list, instrs, index, l)
+        instrs[last_index][1].append("#-" + " ".join(l))
 
     with open(o_file, 'w') as f:
         f.write("\n\n".join(["\n".join(["label " + label] + instr) for label, instr in instrs]))
