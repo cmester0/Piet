@@ -506,38 +506,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
 
-            label_index = goto_new_label(instrs, next_index) # move all elements to new array
-
-            dup_value_x_deep(instrs, label_index, 3)
-            dup_value_x_deep(instrs, label_index, 3)
-            eq(instrs, label_index)
-            done_index, loop_index = branch_new_labels(instrs, label_index)
-
-            dup_value_x_deep(instrs, loop_index, 4)
-            dup_value_x_deep(instrs, loop_index, 3)
-            instrs[loop_index][1].append("add")
-            instrs[loop_index][1].append("push 2")
-            instrs[loop_index][1].append("add")
-
-            swap(instrs, loop_index)
-            instrs[loop_index][1].append("push 1")
-            instrs[loop_index][1].append("add")
-            _, next_index = handle_smpl_instr(var_list, instrs, loop_index, ["get_heap"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
-            swap(instrs, next_index)
-            dup_value_x_deep(instrs, next_index, 4)
-            instrs[next_index][1].append("add")
-            instrs[next_index][1].append("push 2")
-            instrs[next_index][1].append("add")
-            swap(instrs, next_index)
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-            swap(instrs, next_index)
-            instrs[next_index][1].append("push 1")
-            instrs[next_index][1].append("add")
-            swap(instrs, next_index)
-
-            instrs[next_index][1].append("goto l" + str(label_index))
+            _, done_index = handle_smpl_instr(var_list, instrs, next_index, ["copy_memory", l[1]])
+            instrs[done_index][1].append("debug")
 
 
             # Done index
@@ -546,7 +516,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
             swap(instrs, next_index)
-            _, next_index = handle_smpl_instr(var_list, instrs, done_index, ["set_heap", l[1]])
+
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap", l[1]])
             instrs[next_index][1].append("push 3")
             instrs[next_index][1].append("push -1")
             instrs[next_index][1].append("roll")
@@ -554,14 +525,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
             instrs[next_index][1].append("goto l" + str(in_bounds_index))
-
-            # instrs[realloc_index][1].append("goto " + continue_new_label)
-
-            # _, next_index = handle_smpl_instr(var_list, instrs, realloc_index, ["malloc"])
-
-            # realloc_index
-
-            # TODO: Realloc!
 
             index = next_index
             next_index = continue_label_index
@@ -613,7 +576,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             index = index
             next_index = index
-            
 
 
         case "get_size":
@@ -754,8 +716,48 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = roll_index
             next_index = roll_index
 
+        case "copy_memory":
+            label_index = goto_new_label(instrs, index) # move all elements to new array
+
+            dup_value_x_deep(instrs, label_index, 3)
+            dup_value_x_deep(instrs, label_index, 3)
+            eq(instrs, label_index)
+            done_index, loop_index = branch_new_labels(instrs, label_index)
+
+            dup_value_x_deep(instrs, loop_index, 4)
+            dup_value_x_deep(instrs, loop_index, 3)
+            instrs[loop_index][1].append("add")
+            instrs[loop_index][1].append("push 2")
+            instrs[loop_index][1].append("add")
+
+            swap(instrs, loop_index)
+            instrs[loop_index][1].append("push 1")
+            instrs[loop_index][1].append("add")
+            _, next_index = handle_smpl_instr(var_list, instrs, loop_index, ["get_heap"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
+            swap(instrs, next_index)
+            dup_value_x_deep(instrs, next_index, 4)
+            instrs[next_index][1].append("add")
+            instrs[next_index][1].append("push 2")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
+
+            swap(instrs, next_index)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+
+            instrs[next_index][1].append("goto l" + str(label_index))
+
+            index = next_index
+            next_index = done_index
+
         case "debug":
             instrs[index][1].append("debug")
+
+        case default:
+            print ("Did not find", l)
 
     return index, next_index
 
