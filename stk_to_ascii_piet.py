@@ -232,7 +232,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
             (len(blocks[x][0]) + 1) // 2 * (right_line_gap + int(len(blocks[x][1]) > 0)) + \
             (len(blocks[x][0])) // 2 * (left_line_gap + int(len(blocks[x][1]) > 0)) + \
             (len(blocks[x][1][2:]) if len(blocks[x][1]) > 0 else 0)
-            for x in blocks) + 4 # TODO: Fix
+            for x in blocks) + 4 + 15 # TODO: Fix
 
         pre = "⚪" * 8
         post = "⚪" * 1
