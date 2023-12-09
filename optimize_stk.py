@@ -188,16 +188,21 @@ def optimize_stk(i_file, o_file):
                 j = 0
                 continue
 
-            success, indexes = find_match(j, instr, [
-                    "push _", "push _"])
-            if success:
-                v0 = int(instr[indexes[0]].split()[1])
-                v1 = int(instr[indexes[1]].split()[1])
-                if v0 == v1:
-                    instr[indexes[0]] = "push "+str(v0)
-                    instr[indexes[1]] = "dup"
-                    j = 0
-                    continue
+            dup_success = False
+            for i in range(10):
+                success, indexes = find_match(j, instr, [
+                    "push _"] + ["dup"] * i + ["push _"])
+                if success:
+                    v0 = int(instr[indexes[0]].split()[1])
+                    v1 = int(instr[indexes[-1]].split()[1])
+                    if v0 == v1:
+                        instr[indexes[0]] = "push "+str(v0)
+                        instr[indexes[-1]] = "dup"
+                        dup_success = True
+                        break
+            if dup_success:
+                j = 0
+                continue
 
             j += 1
 

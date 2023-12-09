@@ -116,125 +116,8 @@ def branch_new_labels(instrs, index):
     return label1_index, label2_index
 
 def get_offset_for_var_index(instrs, index, var_index):
-    instrs[index][1].append("push 0") # Offset to variable
-    instrs[index][1].append("push "+str(var_index))
-
-    label_index = goto_new_label(instrs, index)
-    instrs[label_index][1].append("dup")
-    instrs[label_index][1].append("push 0")
-    instrs[label_index][1].append("greater")
-    loop_index, set_index = branch_new_labels(instrs, label_index)
-
-    # Old stack size + 2
-    dup_value_x_deep(instrs, loop_index, 3)
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-
-    # Get size of variable
-    instrs[loop_index][1].append("push -1")
-    instrs[loop_index][1].append("roll")
-    instrs[loop_index][1].append("dup")
-
-    # Old stack size + 2
-    dup_value_x_deep(instrs, loop_index, 5)
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-
-    # Roll until next element
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("push 1")
-    instrs[loop_index][1].append("add")
-    instrs[loop_index][1].append("push 0")
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("sub")
-    instrs[loop_index][1].append("roll")
-
-    # Calculate extra offset from this var
-    instrs[loop_index][1].append("dup")
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-    instrs[loop_index][1].append("dup")
-
-    # Get stack size and offset accumulator to the top
-    instrs[loop_index][1].append("push 4")
-    instrs[loop_index][1].append("add")
-    instrs[loop_index][1].append("push -3")
-    instrs[loop_index][1].append("roll")
-
-    # Update accumulator
-    instrs[loop_index][1].append("push 4")
-    instrs[loop_index][1].append("push -1")
-    instrs[loop_index][1].append("roll")
-    instrs[loop_index][1].append("push 3")
-    instrs[loop_index][1].append("push -1")
-    instrs[loop_index][1].append("roll")
-    instrs[loop_index][1].append("add")
-    swap(instrs, loop_index)
-
-    # Update iterator
-    instrs[loop_index][1].append("push 1")
-    instrs[loop_index][1].append("sub")
-
-    instrs[loop_index][1].append("goto " + "l" + str(label_index))
-
-    instrs[set_index][1].append("pop")
-
-    # Roll the entire stack back
-    instrs[set_index][1].append("push "+str(var_index))
-
-    label_index = goto_new_label(instrs, set_index)
-    instrs[label_index][1].append("dup")
-    instrs[label_index][1].append("push 0")
-    instrs[label_index][1].append("greater")
-    loop_index, set_index = branch_new_labels(instrs, label_index)
-
-    dup_value_x_deep(instrs, loop_index, 3) # stack size
-    dup_value_x_deep(instrs, loop_index, 5) # var size
-
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-    instrs[loop_index][1].append("dup")
-
-    instrs[loop_index][1].append("push 3")
-    instrs[loop_index][1].append("push 1")
-    instrs[loop_index][1].append("roll")
-
-    instrs[loop_index][1].append("push 6")
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("roll")
-
-    instrs[loop_index][1].append("dup")
-    instrs[loop_index][1].append("push 5")
-    instrs[loop_index][1].append("add")
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-
-    # negate
-    instrs[loop_index][1].append("push 0")
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("sub")
-
-    instrs[loop_index][1].append("roll")
-
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("push 2")
-    instrs[loop_index][1].append("add")
-    swap(instrs, loop_index)
-    instrs[loop_index][1].append("roll")
-
-    instrs[loop_index][1].append("push 1")
-    instrs[loop_index][1].append("sub")
-    instrs[loop_index][1].append("goto " + "l" + str(label_index))
-
-    instrs[set_index][1].append("pop")
-    instrs[set_index][1].append("push 1")
-    instrs[set_index][1].append("add")
-
-    return set_index
-
-def malloc(instrs, index):
-    pass
+    instrs[index][1].append("push "+str(var_index+1))
+    return index
 
 def handle_smpl_instr(var_list, instrs, index, l):
     next_index = index
@@ -370,12 +253,27 @@ def handle_smpl_instr(var_list, instrs, index, l):
             new_index = get_offset_for_var_index(instrs, index, var_index)
             swap(instrs, new_index)
             instrs[new_index][1].append("dup")
-            instrs[new_index][1].append("push 4")
+
+            instrs[new_index][1].append("push 3")
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("roll")
             swap(instrs, new_index)
             instrs[new_index][1].append("sub")
+
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("add")
+            # Add 1?
+            # instrs[new_index][1].append("push 1")
+            # instrs[new_index][1].append("add")
+
+            instrs[new_index][1].append("push 3")
+            instrs[new_index][1].append("push -1")
+            instrs[new_index][1].append("roll")
+
+            swap(instrs, new_index)
+
             swap_at_depth(instrs, new_index)
+
             instrs[new_index][1].append("pop")
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("sub")
@@ -396,12 +294,19 @@ def handle_smpl_instr(var_list, instrs, index, l):
             new_index = get_offset_for_var_index(instrs, index, var_index)
             swap(instrs, new_index)
             instrs[new_index][1].append("dup")
+
             instrs[new_index][1].append("push 3")
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("roll")
             swap(instrs, new_index)
             instrs[new_index][1].append("sub")
+
+            # Add 1?
+            instrs[new_index][1].append("push 1")
+            instrs[new_index][1].append("add")
+
             dup_at_depth(instrs, new_index)
+
             swap(instrs, new_index)
             instrs[new_index][1].append("push 1")
             instrs[new_index][1].append("add")
@@ -410,88 +315,175 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "append":
-            var_index = 0
-            for i, x in enumerate(var_list):
-                if x == l[1]:
-                    var_index = i
-                    break
-            else:
-                print ("Variable", l[1], "was not defined")
-                exit(1)
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
 
-            new_index = get_offset_for_var_index(instrs, index, var_index)
+            swap(instrs, next_index)
+            instrs[next_index][1].append("dup")
 
-            # Get size of list
-            dup_value_x_deep(instrs, new_index, 2)
-            dup_value_x_deep(instrs, new_index, 2)
-            instrs[new_index][1].append("sub")
+            # Is it -1?
+            instrs[next_index][1].append("push -1")
+            eq(instrs, next_index)
 
-            # extra things ontop of maintained stack
-            instrs[new_index][1].append("push 2")
-            instrs[new_index][1].append("add")
+            suc_label_index, fail_label_index = branch_new_labels(instrs, next_index)
 
-            dup_at_depth(instrs, new_index)
+            continue_label_index = len(instrs)
+            continue_new_label = "l" + str(continue_label_index)
+            instrs.append((continue_new_label, []))
 
-            # Increment size of list
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
+            instrs[suc_label_index][1].append("pop")
+            instrs[suc_label_index][1].append("push 3")
+            swap(instrs, suc_label_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, suc_label_index, ["malloc"])
 
-            # Update first size of list
-            dup_value_x_deep(instrs, new_index, 3)
-            dup_value_x_deep(instrs, new_index, 3)
-            instrs[new_index][1].append("sub")
+            instrs[next_index][1].append("dup")
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
 
-            dup_value_x_deep(instrs, new_index, 2)
+            dup_at_depth(instrs, next_index)
 
-            swap(instrs, new_index)
-            # extra things ontop of maintained stack
-            instrs[new_index][1].append("push 3")
-            instrs[new_index][1].append("add")
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("sub")
 
-            # swap one deeper??
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
+            swap(instrs, next_index)
 
-            swap_at_depth(instrs, new_index)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
 
-            # update second size of list
-            instrs[new_index][1].append("pop")
-            dup_value_x_deep(instrs, new_index, 3)
-            dup_value_x_deep(instrs, new_index, 3)
-            dup_value_x_deep(instrs, new_index, 3)
-            instrs[new_index][1].append("add")
-            instrs[new_index][1].append("sub")
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
 
-            # extra things ontop of maintained stack
-            instrs[new_index][1].append("push 2")
-            instrs[new_index][1].append("add")
+            instrs[next_index][1].append("push 0")
 
-            # swap one deeper??
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
+            dup_value_x_deep(instrs, next_index, 3)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
 
-            swap_at_depth(instrs, new_index)
+            instrs[next_index][1].append("push 1")
 
-            # append new value
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
-            instrs[new_index][1].append("add")
+            instrs[next_index][1].append("push 5")
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("roll")
 
-            dup_value_x_deep(instrs, new_index, 2)
-            instrs[new_index][1].append("push 4")
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("roll")
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("add")
 
-            instrs[new_index][1].append("sub")
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
 
-            # put one deeper ??
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
+            instrs[next_index][1].append("goto l" + str(fail_label_index))
 
-            put_at_depth(instrs, new_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, fail_label_index, ["get", l[1]])
 
-            index = new_index
-            next_index = new_index
+            dup_value_x_deep(instrs, next_index, 2)
+            swap(instrs, next_index)
+
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
+
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("push -1")
+            instrs[next_index][1].append("roll")
+
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
+
+            dup_value_x_deep(instrs, next_index, 3)
+            dup_value_x_deep(instrs, next_index, 3)
+            instrs[next_index][1].append("greater")
+
+            in_bounds_index, realloc_index = branch_new_labels(instrs, next_index)
+
+            instrs[in_bounds_index][1].append("push 3")
+            instrs[in_bounds_index][1].append("push 1")
+            instrs[in_bounds_index][1].append("roll")
+            swap(instrs, in_bounds_index)
+
+            instrs[in_bounds_index][1].append("pop")
+            instrs[in_bounds_index][1].append("push 1")
+            instrs[in_bounds_index][1].append("add")
+            instrs[in_bounds_index][1].append("dup")
+
+            instrs[in_bounds_index][1].append("push 3")
+            instrs[in_bounds_index][1].append("push 2")
+            instrs[in_bounds_index][1].append("roll")
+
+            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["get", l[1]])
+            swap(instrs, next_index)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
+            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["get", l[1]])
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("roll")
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
+
+            # TODO: Realloc!
+
+            index = next_index
+            next_index = next_index
+
+        case "get_heap":
+            instrs[index][1].append("dup")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("add")
+
+            dup_at_depth(instrs, index)
+            dup_value_x_deep(instrs, index, 2)
+            instrs[index][1].append("add")
+
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
+            instrs[index][1].append("sub")
+
+            dup_at_depth(instrs, index)
+            swap(instrs, index)
+
+        case "set_heap":
+
+            instrs[index][1].append("dup")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("add")
+
+            dup_at_depth(instrs, index)
+            dup_value_x_deep(instrs, index, 2)
+            instrs[index][1].append("add")
+            # instrs[index][1].append("push 1")
+            # instrs[index][1].append("add")
+
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
+            instrs[index][1].append("sub")
+
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
+
+            swap(instrs, index)
+            swap_at_depth(instrs, index)
+
+            instrs[index][1].append("pop")
+            instrs[index][1].append("push 2")
+            instrs[index][1].append("sub")
+
+            index = index
+            next_index = index
+            
+
 
         case "get_size":
             var_index = 0
@@ -569,6 +561,68 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
 
+        case "malloc":
+            instrs[index][1].append("dup")
+            
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
+            
+            instrs[index][1].append("dup")
+            instrs[index][1].append("dup")
+
+            instrs[index][1].append("push 4")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
+            instrs[index][1].append("add")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("add")
+
+            swap(instrs, index)
+            instrs[index][1].append("dup")
+
+            label_index = goto_new_label(instrs, index)
+            instrs[label_index][1].append("dup")
+            instrs[label_index][1].append("push 0")
+            instrs[label_index][1].append("greater")
+            loop_index, roll_index = branch_new_labels(instrs, label_index)
+
+            instrs[loop_index][1].append("push 0")
+
+            instrs[loop_index][1].append("push 4")
+            instrs[loop_index][1].append("push 1")
+            instrs[loop_index][1].append("roll")
+
+            instrs[loop_index][1].append("push 1")
+            instrs[loop_index][1].append("sub")
+            instrs[loop_index][1].append("goto " + "l" + str(label_index))
+
+            instrs[roll_index][1].append("pop")
+            instrs[roll_index][1].append("roll")
+
+            dup_value_x_deep(instrs, roll_index, 2)
+
+            # # Add 1 extra??
+            instrs[roll_index][1].append("push 1")
+            instrs[roll_index][1].append("add")
+
+            dup_at_depth(instrs, roll_index)
+            instrs[roll_index][1].append("add")
+
+            dup_value_x_deep(instrs, roll_index, 2)
+            # # Add 1 extra??
+            instrs[roll_index][1].append("push 1")
+            instrs[roll_index][1].append("add")
+            swap_at_depth(instrs, roll_index)
+            instrs[roll_index][1].append("pop")
+
+            # Decrement stack size
+            instrs[roll_index][1].append("push 1")
+            instrs[roll_index][1].append("sub")
+
+            index = roll_index
+            next_index = roll_index
+
         case "debug":
             instrs[index][1].append("debug")
 
@@ -580,7 +634,7 @@ def smpl_to_stk(i_file, o_file):
         inp_lines = f.readlines()
     inp_lines = list(map(lambda x: x.split(), inp_lines))
 
-    instrs = [("main",["push 1"])]
+    instrs = [("main",["push 0", "push 1"])]
 
     data_type_size = {"num": 1, "list": 0}
 
@@ -595,35 +649,26 @@ def smpl_to_stk(i_file, o_file):
         var_list = [l[1]] + var_list
 
         # Allocate empty variable
-        instrs[index][1].append("push " + str(data_type_size[l[2]]))
-        for _ in range(data_type_size[l[2]]):
-            instrs[index][1].append("push 0")
-        instrs[index][1].append("push " + str(data_type_size[l[2]]))
-        new_data_size = 2 + data_type_size[l[2]]
+        instrs[index][1].append("push " + ("0" if l[2] == "num" else "-1"))
 
         ####################
         # Fetch stack size #
         ####################
-
-        instrs[index][1].append("push " + str(new_data_size+1))
-        instrs[index][1].append("push -1")
-        instrs[index][1].append("roll")
-
+        swap(instrs, index)
         # Update size
-        instrs[index][1].append("push " + str(new_data_size))
+        instrs[index][1].append("push 1")
         instrs[index][1].append("add")
 
         instrs[index][1].append("dup")
 
-        instrs[index][1].append("push " + str(new_data_size+2))
+        instrs[index][1].append("push 3")
         instrs[index][1].append("push 1")
         instrs[index][1].append("roll")
 
         ######################
         # Rotate into bottom #
         ######################
-
-        instrs[index][1].append("push " + str(new_data_size))
+        instrs[index][1].append("push 1")
         instrs[index][1].append("roll")
 
     for l in inp_lines[inp_line_index:]:
