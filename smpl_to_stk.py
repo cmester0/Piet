@@ -119,11 +119,11 @@ def get_offset_for_var_index(instrs, index, var_index):
     instrs[index][1].append("push 0") # Offset to variable
     instrs[index][1].append("push "+str(var_index))
 
-    label_index = goto_new_label(index)
+    label_index = goto_new_label(instrs, index)
     instrs[label_index][1].append("dup")
     instrs[label_index][1].append("push 0")
     instrs[label_index][1].append("greater")
-    loop_index, set_index = branch_new_labels(label_index)
+    loop_index, set_index = branch_new_labels(instrs, label_index)
 
     # Old stack size + 2
     dup_value_x_deep(instrs, loop_index, 3)
@@ -186,7 +186,7 @@ def get_offset_for_var_index(instrs, index, var_index):
     instrs[label_index][1].append("dup")
     instrs[label_index][1].append("push 0")
     instrs[label_index][1].append("greater")
-    loop_index, set_index = branch_new_labels(label_index)
+    loop_index, set_index = branch_new_labels(instrs, label_index)
 
     dup_value_x_deep(instrs, loop_index, 3) # stack size
     dup_value_x_deep(instrs, loop_index, 5) # var size
@@ -238,7 +238,7 @@ def malloc(instrs, index):
     instrs[index][1].append("#-malloc")
 
 def handle_smpl_instr(instrs, index, l):
-    match l:
+    match l[0]:
         case "label":
             index = len(instrs)
             instrs.append((l[1], []))
@@ -247,52 +247,52 @@ def handle_smpl_instr(instrs, index, l):
             instrs[index][1].append("#+push" + l[1])
             instrs[index][1].append("push " + number_or_ord(l[1]))
             swap(instrs, index)
-            add(index,1)
+            add(instrs, index,1)
             instrs[index][1].append("#-push" + l[1])
 
         case "pop":
             instrs[index][1].append("#+pop")
             swap(instrs, index)
             instrs[index][1].append("pop")
-            sub(index,1)
+            sub(instrs, index,1)
             instrs[index][1].append("#-pop")
 
         case "eq":
             instrs[index][1].append("#+eq")
             swap(instrs, index)
             instrs[index][1].append("push " + number_or_ord(l[1]))
-            eq(index)
+            eq(instrs, index)
             swap(instrs, index)
             instrs[index][1].append("#-eq")
 
         case "add":
             instrs[index][1].append("#+add")
-            binop(index,"add")
+            binop(instrs, index,"add")
             instrs[index][1].append("#-add")
 
         case "greater":
             instrs[index][1].append("#+greater")
-            binop(index,"greater")
+            binop(instrs, index,"greater")
             instrs[index][1].append("#-greater")
 
         case "sub":
             instrs[index][1].append("#+sub")
-            binop(index,"sub")
+            binop(instrs, index,"sub")
             instrs[index][1].append("#-sub")
 
         case "div":
             instrs[index][1].append("#+div")
-            binop(index,"div")
+            binop(instrs, index,"div")
             instrs[index][1].append("#-div")
 
         case "mod":
             instrs[index][1].append("#+mod")
-            binop(index,"mod")
+            binop(instrs, index,"mod")
             instrs[index][1].append("#-mod")
 
         case "mul":
             instrs[index][1].append("#+mul")
-            binop(index,"mul")
+            binop(instrs, index,"mul")
             instrs[index][1].append("#-mul")
 
         case "dup":
@@ -320,9 +320,9 @@ def handle_smpl_instr(instrs, index, l):
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
-            eq(label_index)
+            eq(instrs, label_index)
 
-            succ_label_index, fail_label_index = branch_new_labels(label_index)
+            succ_label_index, fail_label_index = branch_new_labels(instrs, label_index)
 
             continue_label_index = len(instrs)
             continue_new_label = "l" + str(continue_label_index)
@@ -357,9 +357,9 @@ def handle_smpl_instr(instrs, index, l):
 
             # Is it -3 ?
             instrs[label_index][1].append("push -3")
-            eq(label_index)
+            eq(instrs, label_index)
 
-            succ_label_index, fail_label_index = branch_new_labels(label_index)
+            succ_label_index, fail_label_index = branch_new_labels(instrs, label_index)
 
             continue_label_index = len(instrs)
             continue_new_label = "l" + str(continue_label_index)
@@ -442,7 +442,7 @@ def handle_smpl_instr(instrs, index, l):
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            new_index = get_offset_for_var_index(index, var_index)
+            new_index = get_offset_for_var_index(instrs, index, var_index)
             swap(instrs, new_index)
             instrs[new_index][1].append("dup")
             instrs[new_index][1].append("push 4")
@@ -468,7 +468,7 @@ def handle_smpl_instr(instrs, index, l):
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            new_index = get_offset_for_var_index(index, var_index)
+            new_index = get_offset_for_var_index(instrs, index, var_index)
             swap(instrs, new_index)
             instrs[new_index][1].append("dup")
             instrs[new_index][1].append("push 3")
@@ -494,7 +494,7 @@ def handle_smpl_instr(instrs, index, l):
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            new_index = get_offset_for_var_index(index, var_index)
+            new_index = get_offset_for_var_index(instrs, index, var_index)
 
             # Get size of list
             dup_value_x_deep(instrs, new_index, 2)
@@ -580,7 +580,7 @@ def handle_smpl_instr(instrs, index, l):
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            new_index = get_offset_for_var_index(index, var_index)
+            new_index = get_offset_for_var_index(instrs, index, var_index)
 
             # Get size of list
             dup_value_x_deep(instrs, new_index, 2)
@@ -610,7 +610,7 @@ def handle_smpl_instr(instrs, index, l):
                 print ("Variable", l[1], "was not defined")
                 exit(1)
 
-            new_index = get_offset_for_var_index(index, var_index)
+            new_index = get_offset_for_var_index(instrs, index, var_index)
             # TODO: get_offset_for_var_index should point to the variable ?
 
             instrs[new_index][1].append("push 3")
@@ -655,6 +655,8 @@ def handle_smpl_instr(instrs, index, l):
             instrs[index][1].append("debug")
             instrs[index][1].append("#-debug")
 
+    return index
+
 def smpl_to_stk(i_file, o_file):
     inp_lines = []
     with open(i_file, 'r') as f:
@@ -671,7 +673,9 @@ def smpl_to_stk(i_file, o_file):
     for l in inp_lines:
         if len(l) == 0 or l[0] == "#":
             continue
-        handle_smpl_instr(instrs, index, l)
+        instrs[index][1].append("#A+" + " ".join(l))
+        index = handle_smpl_instr(instrs, index, l)
+        instrs[index][1].append("#A-" + " ".join(l))
             # print (var_list)
     # print ("\n".join(instrs))
 
