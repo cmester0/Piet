@@ -8,6 +8,7 @@ from piet_interpreter import *
 
 if len(sys.argv) <= 2:
     print ("missing argument, add one or more of",["gen_all","gen_stk","gen_piet","run_stk","run_piet","debug","gif"],"seperated by a ','")
+    exit()
 
 smpl_name = sys.argv[1]
 name = smpl_name[:smpl_name.rfind(".")]

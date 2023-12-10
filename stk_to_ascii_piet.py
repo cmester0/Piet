@@ -144,7 +144,7 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
     block_cmds = [x.split("\n") for x in "".join(lines).split("\n\n")]
 
     b_width = math.ceil(math.sqrt(len(block_cmds)))
-    b_height = math.ceil(len(block_cmds) / b_width) + 1
+    b_height = math.ceil(len(block_cmds) // b_width) + 1
 
     def id_to_coord(b_id):
         return (b_id % b_width, b_id // b_width)

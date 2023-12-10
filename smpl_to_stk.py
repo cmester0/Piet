@@ -507,8 +507,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("add")
 
             _, done_index = handle_smpl_instr(var_list, instrs, next_index, ["copy_memory", l[1]])
-            instrs[done_index][1].append("debug")
-
 
             # Done index
             _, next_index = handle_smpl_instr(var_list, instrs, done_index, ["get", l[1]])
@@ -609,38 +607,110 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "get_elem":
-            var_index = 0
-            for i, x in enumerate(var_list):
-                if x == l[1]:
-                    var_index = i
-                    break
-            else:
-                print ("Variable", l[1], "was not defined")
-                exit(1)
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push","2"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
 
-            new_index = get_offset_for_var_index(instrs, index, var_index)
-            # TODO: get_offset_for_var_index should point to the variable ?
+            index = next_index
+            next_index = next_index
 
-            instrs[new_index][1].append("push 3")
-            instrs[new_index][1].append("push -1")
-            instrs[new_index][1].append("roll")
-            instrs[new_index][1].append("add")
+        case "get_list":
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["length", l[1]])
 
-            # Add one extra ??
-            instrs[new_index][1].append("push 1")
-            instrs[new_index][1].append("add")
+            label_index = goto_new_label(instrs, next_index) # move all elements to new array
+            _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
 
-            # Get relative index of element
-            dup_value_x_deep(instrs, new_index, 2)
-            swap(instrs, new_index)
-            instrs[new_index][1].append("sub")
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
 
-            dup_at_depth(instrs, new_index)
+            swap(instrs, next_index)
+            return_index, in_bounds_index = branch_new_labels(instrs, next_index)
 
-            swap(instrs, new_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["dup"])
 
-            index = new_index
-            next_index = new_index
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_elem", l[1]])
+
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("push 2")
+            instrs[next_index][1].append("roll")
+            swap(instrs, next_index)
+
+            instrs[next_index][1].append("goto l" + str(label_index))
+
+            _, next_index = handle_smpl_instr(var_list, instrs, return_index, ["pop", l[1]])
+
+            index = next_index
+            next_index = next_index
+
+        case "print_listC":
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get_list", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["length", l[1]])
+
+            label_index = goto_new_label(instrs, next_index) # move all elements to new array
+            _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
+
+            swap(instrs, next_index)
+            return_index, in_bounds_index = branch_new_labels(instrs, next_index)
+
+            instrs[in_bounds_index][1].append("push 3")
+            instrs[in_bounds_index][1].append("push -1")
+            instrs[in_bounds_index][1].append("roll")
+            swap(instrs, in_bounds_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["outC"])
+
+            instrs[next_index][1].append("goto l" + str(label_index))
+
+            _, next_index = handle_smpl_instr(var_list, instrs, return_index, ["pop", l[1]])
+
+            index = next_index
+            next_index = next_index
+
+        case "print_listN":
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["push",str(ord("["))])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_list", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["length", l[1]])
+
+            label_index = goto_new_label(instrs, next_index) # move all elements to new array
+            _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
+
+            swap(instrs, next_index)
+            return_index, in_bounds_index = branch_new_labels(instrs, next_index)
+
+            instrs[in_bounds_index][1].append("push 3")
+            instrs[in_bounds_index][1].append("push -1")
+            instrs[in_bounds_index][1].append("roll")
+            swap(instrs, in_bounds_index)
+            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["outN"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord(","))])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+
+            instrs[next_index][1].append("goto l" + str(label_index))
+
+            _, next_index = handle_smpl_instr(var_list, instrs, return_index, ["pop", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord("]"))])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+
+            index = next_index
+            next_index = next_index
 
         case "outC":
             swap(instrs, index)
