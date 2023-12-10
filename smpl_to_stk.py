@@ -734,6 +734,27 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[index][1].append("push 1")
             instrs[index][1].append("sub")
 
+
+        case "roll":
+            dup_value_x_deep(instrs, index, 2)
+            dup_value_x_deep(instrs, index, 4)
+            instrs[index][1].append("mod")
+
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("add")
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("roll")
+
+            dup_value_x_deep(instrs, index, 2)
+            instrs[index][1].append("mod")
+
+            swap(instrs, index)
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("add")
+            swap(instrs, index)
+
+            instrs[index][1].append("roll")
+
         case "malloc":
             instrs[index][1].append("dup")
 
@@ -864,7 +885,7 @@ def smpl_to_stk(i_file, o_file):
     var_list = []
 
     for inp_line_index, l in enumerate(inp_lines):
-        if l[0] != "var":
+        if len(l) < 1 or l[0] != "var":
             break
 
         var_list = [l[1]] + var_list
