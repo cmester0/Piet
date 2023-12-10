@@ -616,6 +616,16 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = next_index
             next_index = next_index
 
+        case "set_elem":
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push","2"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
+
+            index = next_index
+            next_index = next_index
+
         case "get_list":
             _, next_index = handle_smpl_instr(var_list, instrs, index, ["length", l[1]])
 
