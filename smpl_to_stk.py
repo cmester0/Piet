@@ -716,6 +716,14 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = roll_index
             next_index = roll_index
 
+        case "length":
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
+            swap(instrs, next_index)
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("add")
+            swap(instrs, next_index)
+            index, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
+
         case "copy_memory":
             label_index = goto_new_label(instrs, index) # move all elements to new array
 
