@@ -544,6 +544,9 @@ def handle_smpl_instr(var_list, instrs, index, l):
             dup_at_depth(instrs, index)
             swap(instrs, index)
 
+            index = index
+            next_index = index
+
         case "set_heap":
 
             instrs[index][1].append("dup")
@@ -754,6 +757,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             swap(instrs, index)
 
             instrs[index][1].append("roll")
+            instrs[index][1].append("push 2")
+            instrs[index][1].append("sub")
 
         case "malloc":
             instrs[index][1].append("dup")
