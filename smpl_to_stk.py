@@ -241,6 +241,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[index][1].append("branch " + l[1] + " " + l[2])
 
         case "set":
+            assert (len(l) == 2)
+
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -282,6 +284,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "get":
+            assert (len(l) == 2)
+
             var_index = 0
             for i, x in enumerate(var_list):
                 if x == l[1]:
@@ -314,12 +318,9 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = new_index
             next_index = new_index
 
-        case "append_heap_addr":
-            pass
-
         case "append":
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
-            
+            assert (len(l) == 1)
+
             swap(instrs, next_index)
             instrs[next_index][1].append("dup")
 
@@ -352,9 +353,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
 
-            # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set", l[1]]) # Always 0
-            # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]]) # Always 0
-
             swap(instrs, next_index)
             instrs[next_index][1].append("dup")
 
@@ -380,9 +378,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             instrs[next_index][1].append("push 3")
             instrs[next_index][1].append("add")
-                        
+
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-            
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
 
             instrs[next_index][1].append("push 3")
@@ -399,7 +396,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[fail_label_index][1].append("push 1")
             instrs[fail_label_index][1].append("roll")
 
-            # _, next_index = handle_smpl_instr(var_list, instrs, fail_label_index, ["get", l[1]])
             dup_value_x_deep(instrs, fail_label_index, 3)
             swap(instrs, fail_label_index)
             instrs[fail_label_index][1].append("push 1")
@@ -451,8 +447,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[in_bounds_index][1].append("push 2")
             instrs[in_bounds_index][1].append("roll")
 
-            # _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["get", l[1]])
-
             next_index = in_bounds_index
             dup_value_x_deep(instrs, next_index, 5)
             swap(instrs, next_index)
@@ -465,8 +459,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             swap(instrs, next_index)
 
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-            # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
 
             dup_value_x_deep(instrs, next_index, 4)
             swap(instrs, next_index)
@@ -484,9 +476,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("sub")
 
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-            # TODO<>: Update the result variable
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set", l[1]])
 
             instrs[next_index][1].append("goto " + continue_new_label)
 
@@ -511,7 +500,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[realloc_index][1].append("push 3")
             instrs[realloc_index][1].append("push 2")
             instrs[realloc_index][1].append("roll")
-    
+
             _, next_index = handle_smpl_instr(var_list, instrs, realloc_index, ["malloc"])
 
             # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
@@ -599,7 +588,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
 
-            _, done_index = handle_smpl_instr(var_list, instrs, next_index, ["copy_memory", l[1]])
+            _, done_index = handle_smpl_instr(var_list, instrs, next_index, ["copy_memory"])
 
             instrs[done_index][1].append("push 5")
             instrs[done_index][1].append("push -1")
@@ -625,7 +614,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             ########################
             # end of realloc block #
             ########################
-            
+
             index = next_index
             next_index = continue_label_index
 
