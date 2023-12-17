@@ -1,0 +1,45 @@
+var l list
+
+push 10
+push 15
+push 13
+push 14
+get l
+append
+append
+append
+append
+set l
+
+push 0
+get l
+get_elem
+outN
+push ,
+outC
+
+push 1
+get l
+get_elem
+outN
+push ,
+outC
+
+push 2
+get l
+get_elem
+outN
+push ,
+outC
+
+push 3
+get l
+get_elem
+outN
+push ,
+outC
+
+push 10
+outC
+
+goto term

@@ -81,8 +81,9 @@ def ascii_piet_to_piet(i_file, o_file):
                 t.append(y)
         img.append(t)
 
-    print ("Reading from:", i_file)
-    print ("Saving to:", o_file)
+    # if debug:
+    #     print ("Reading from:", i_file)
+    #     print ("Saving to:", o_file)
 
     with open(o_file, 'wb') as f:
         w = png.Writer(len(img[0]) // 3, len(img), greyscale=False)

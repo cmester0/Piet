@@ -1,1 +1,5 @@
 __pycache__/
+Examples/*.ascii
+Examples/*.stk
+Tests/*.ascii
+Tests/*.stk

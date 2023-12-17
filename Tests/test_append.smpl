@@ -1,0 +1,21 @@
+var l list
+
+push 110
+push 115
+push 113
+push 119
+push 114
+get l
+append
+append
+append
+append
+append
+set l
+
+get l
+print_listN
+push 10
+outC
+
+goto term

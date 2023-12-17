@@ -1,5 +1,7 @@
 import heapq
 from stk_execute import *
+import sys
+import math
 
 class StackOptimizer():
     def __init__(self):
@@ -62,14 +64,48 @@ class StackOptimizer():
 
         return self.results[search_stack][1]
 
+    def int_root(self, x, n):
+        if x <= 0 or n <= 1:
+            return x
+
+        L = 0
+        R = x
+        while L <= R:
+            m = (L + R) // 2
+            if pow(m,n) < x:
+                L = m + 1
+            elif pow(m,n) > x:
+                R = m - 1
+            else:
+                return m
+        return R
+
+    # TODO: Handle negative numbers!
     def optimize_number(self, N):
-        return self.optimize_stack(str(N))
+        instrs = []
+        root = 1
+        while self.int_root(N,root) > 173:
+            root += 1
+        instrs += self.optimize_stack(str(self.int_root(N,root)))
+        for i in range(root-1):
+            instrs.append("dup")
+        for i in range(root-1):
+            instrs.append("mul")
+        if N - pow(self.int_root(N,root), root) > 0:
+            instrs+=self.optimize_number(N - pow(self.int_root(N,root),root))
+            instrs.append("add")
+
+        return instrs
 
 if __name__ == "__main__":
     stack_optimizer = StackOptimizer()
-    inp = list(map(str, map(lambda x: int(x) if x.lstrip("-").isnumeric() else ord(x), input().split(","))))
-    print (inp)
-    for i in range(len(inp)):
-        sub_inp = ",".join(inp[:i+1])
-        stack_optimizer.optimize_stack(sub_inp)
-        print (sub_inp,"(" + str(stack_optimizer.results[sub_inp][0]) + ")", ":", stack_optimizer.results[sub_inp][1])
+    if len(sys.argv) >= 2 and sys.argv[1] == "num":
+        for i in range(int(input())):
+            print (i,stack_optimizer.optimize_number(i))
+    else:
+        inp = list(map(str, map(lambda x: int(x) if x.lstrip("-").isnumeric() else ord(x), input().split(","))))
+        print (inp)
+        for i in range(len(inp)):
+            sub_inp = ",".join(inp[:i+1])
+            stack_optimizer.optimize_stack(sub_inp)
+            print (sub_inp,"(" + str(stack_optimizer.results[sub_inp][0]) + ")", ":", stack_optimizer.results[sub_inp][1])

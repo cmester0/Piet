@@ -22,7 +22,7 @@ last_color = "⚪"
 last_bs = 0
 stack = []
 
-def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
+def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1):
     global dp
     global cc
     global last_color
@@ -88,7 +88,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     reader = png.Reader(filename=i_file)
     (width, height, rows, info) = reader.read()
 
-    print ("Read image of:",width,height)
+    if debug:
+        print ("Read image of:",width,height)
 
     pxls = []
     for x in rows:
@@ -174,7 +175,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
             blobs[p].add((pi,ci))
             total_coords += 1
 
-    print ("Get all blobs")
+    if debug:
+        print ("Get all blobs")
     coords_checked = 0
     all_blobs = []
 
@@ -201,14 +203,16 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
         for x in seperate_blobs:
             all_blobs.append((l, x))
 
-    print ("Pix to blob")
+    if debug:
+        print ("Pix to blob")
     pix_to_blob = []
     for ci, c in enumerate(pxls):
         pix_to_blob.append([])
         for pi in range(len(c)):
             pix_to_blob[ci].append(-1)
 
-    print ("Index all blobs")
+    if debug:
+        print ("Index all blobs")
     all_blobs_indexed = []
     for i, (c, blob) in enumerate(all_blobs):
         r_u = max(list(blob), key = lambda x: (x[0], -x[1]))
@@ -272,7 +276,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                 if block >= 8:
                     # for _ in sys.stdin:
                     #     pass
-                    print ("Should term", block)
+                    if debug:
+                        print ("Should term", block)
                     # exit()
                     return (0,0), True
 
@@ -424,7 +429,6 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
     last_bs = bs
 
     from PIL import Image
-    max_count = -1
     frames = []
     gif_name = o_file
 
@@ -439,12 +443,15 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                 img.putpixel((y // 3, xi), tuple(l[y:y+3] + [255]))
 
     def save_image():
-        print ("SAVING GIF TO:", gif_name)
+        if debug:
+            print ("SAVING GIF TO:", gif_name)
         frames[0].save(gif_name, format='GIF', append_images=frames[1:], save_all=True, duration=60, loop=0)
-        print ("DONE SAVING GIF")
+        if debug:
+            print ("DONE SAVING GIF")
         gif_saved = True
 
-    print ("Start running..")
+    if debug:
+        print ("Start running..")
     total_steps = 0
     while True:
         pos, terminate = step(pos)
@@ -460,24 +467,28 @@ def piet_interpreter(i_file, o_file = "",debug=False,gif_saved=False):
                 time.sleep(0.01)
                 print (pos, stack, len(frames))
 
-        if gif_name != "" and not gif_saved and (max_count == -1 or len(frames) < max_count):
+        if gif_name != "" and not gif_saved and (max_count == -1 or len(frames)//gif_speed < max_count):
             img_changed = img.copy()
             img_changed.putpixel(pos, (30, 30, 30, 50))
             img_changed.putpixel(pos, (150 + (100 if dp == 0 else (-100 if dp == 2 else 0)),
                                        150 + (100 if dp == 1 else (-100 if dp == 3 else 0)),
                                        150 + (100 if cc == 0 else -100)))
-            frames.append(img_changed)
 
-            if max_count != -1 and len(frames) == max_count:
+            for i in range(gif_speed):
+                frames.append(img_changed)
+
+            if max_count != -1 and len(frames)//gif_speed == max_count:
                 save_image()
 
         total_steps += 1
 
-    print ("Total steps: ", total_steps)
-    print ("Total steps: ", total_steps)
-    print ("Total steps: ", total_steps)
+    if debug:
+        print ("Total steps: ", total_steps)
+        print ("Total steps: ", total_steps)
+        print ("Total steps: ", total_steps)
 
     if gif_name != "" and not gif_saved:
         save_image()
 
-    print (gif_saved)
+    if debug:
+        print (gif_saved)
