@@ -3,3 +3,10 @@ test_length=7;
 test_append=[114,119,113,115,110,];
 test_print_listC=hello world;
 test_readC_until=some=some test string;
+test_readlines=hello
+world how
+are you
+doing=hello
+world how
+are you
+doing;

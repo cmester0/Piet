@@ -1,0 +1,5 @@
+push -1
+readC_until 32
+outN
+
+goto term

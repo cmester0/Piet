@@ -1,16 +1,23 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd );
 
-inp=()
+filenames=()
+expectations=()
+inputs=()
 while read -d ";" -r var; do
-    inp+=("$var")
+    filename="$(echo -n "$var" | tr "\n" "\0" | cut -d "=" -f 1 | tr "\0" "\n")";
+    expected="$(echo -n "$var" | tr "\n" "\0" | cut -d "=" -f 2 | tr "\0" "\n")";
+    input="$(echo -n "$var" | tr "\n" "\0" | cut -d "=" -f 3 | tr "\0" "\n")";
+
+    filenames+=("$filename");
+    expectations+=("$expected");
+    inputs+=("$input");
 done < $SCRIPT_DIR/test_results.txt;
 
 echo "==============="
 echo "Generate stk translation"
 echo "==============="
-for ((i = 0; i < ${#inp[@]}; i++)) do
-    var=${inp[$i]};
-    filename=$(echo "$var" | cut -d "=" -f 1)
+for ((i = 0; i < ${#filenames[@]}; i++)) do
+    filename=${filenames[$i]};
     echo "Generating '$filename'";
     python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" gen_stk;
 done
@@ -20,15 +27,14 @@ echo "==============="
 echo "Run tests with stk-interpreter"
 echo "==============="
 results_stk=()
-for ((i = 0; i < ${#inp[@]}; i++)) do
-    var=${inp[$i]};
-    filename=$(echo "$var" | cut -d "=" -f 1)
-    expected=$(echo "$var" | cut -d "=" -f 2)
-    stdin=$(echo "$var" | cut -d "=" -f 3)
+for ((i = 0; i < ${#filenames[@]}; i++)) do
+    filename=${filenames[$i]}
+    expected=${expectations[$i]}
+    stdin=${inputs[$i]}
 
-    echo "'$filename' expects '$expected' on input '$stdin'";
+    echo "Filename: '$filename'"; # expects '$expected' on input '$stdin'
     result_stk=$(echo "$stdin" | python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" run_stk);
-    echo "'$result_stk'"
+    echo "Results: '$result_stk'"
     if [ "$result_stk" = "$expected" ]; then
         results_stk+=(1)
     else
@@ -57,9 +63,8 @@ echo ""
 echo "==============="
 echo "Generate piet translation"
 echo "==============="
-for ((i = 0; i < ${#inp[@]}; i++)) do
-    var=${inp[$i]};
-    filename=$(echo "$var" | cut -d "=" -f 1)
+for ((i = 0; i < ${#filenames[@]}; i++)) do
+    filename=${filenames[$i]}
     echo "Generating '$filename'";
     python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" gen_piet;
 done
@@ -69,15 +74,14 @@ echo "==============="
 echo "Run tests with piet-interpreter"
 echo "==============="
 results_piet=()
-for ((i = 0; i < ${#inp[@]}; i++)) do
-    var=${inp[$i]};
-    filename=$(echo "$var" | cut -d "=" -f 1)
-    expected=$(echo "$var" | cut -d "=" -f 2)
-    stdin=$(echo "$var" | cut -d "=" -f 3)
+for ((i = 0; i < ${#filenames[@]}; i++)) do
+    filename=${filenames[$i]}
+    expected=${expectations[$i]}
+    stdin=${inputs[$i]}
 
-    echo "'$filename' expects '$expected' on input '$stdin'";
+    echo "Filename: '$filename'"; # expects '$expected' on input '$stdin'
     result_piet=$(echo "$stdin" | python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" run_piet);
-    echo "'$result_piet'"
+    echo "Result: '$result_piet'"
     if [ "$result_piet" = "$expected" ]; then
         results_piet+=(1)
     else
