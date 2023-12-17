@@ -88,7 +88,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
     reader = png.Reader(filename=i_file)
     (width, height, rows, info) = reader.read()
 
-    print ("Read image of:",width,height)
+    if debug:
+        print ("Read image of:",width,height)
 
     pxls = []
     for x in rows:
@@ -174,7 +175,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
             blobs[p].add((pi,ci))
             total_coords += 1
 
-    print ("Get all blobs")
+    if debug:
+        print ("Get all blobs")
     coords_checked = 0
     all_blobs = []
 
@@ -201,14 +203,16 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
         for x in seperate_blobs:
             all_blobs.append((l, x))
 
-    print ("Pix to blob")
+    if debug:
+        print ("Pix to blob")
     pix_to_blob = []
     for ci, c in enumerate(pxls):
         pix_to_blob.append([])
         for pi in range(len(c)):
             pix_to_blob[ci].append(-1)
 
-    print ("Index all blobs")
+    if debug:
+        print ("Index all blobs")
     all_blobs_indexed = []
     for i, (c, blob) in enumerate(all_blobs):
         r_u = max(list(blob), key = lambda x: (x[0], -x[1]))
@@ -272,7 +276,8 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
                 if block >= 8:
                     # for _ in sys.stdin:
                     #     pass
-                    print ("Should term", block)
+                    if debug:
+                        print ("Should term", block)
                     # exit()
                     return (0,0), True
 
@@ -438,12 +443,15 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
                 img.putpixel((y // 3, xi), tuple(l[y:y+3] + [255]))
 
     def save_image():
-        print ("SAVING GIF TO:", gif_name)
+        if debug:
+            print ("SAVING GIF TO:", gif_name)
         frames[0].save(gif_name, format='GIF', append_images=frames[1:], save_all=True, duration=60, loop=0)
-        print ("DONE SAVING GIF")
+        if debug:
+            print ("DONE SAVING GIF")
         gif_saved = True
 
-    print ("Start running..")
+    if debug:
+        print ("Start running..")
     total_steps = 0
     while True:
         pos, terminate = step(pos)
@@ -474,11 +482,13 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
 
         total_steps += 1
 
-    print ("Total steps: ", total_steps)
-    print ("Total steps: ", total_steps)
-    print ("Total steps: ", total_steps)
+    if debug:
+        print ("Total steps: ", total_steps)
+        print ("Total steps: ", total_steps)
+        print ("Total steps: ", total_steps)
 
     if gif_name != "" and not gif_saved:
         save_image()
 
-    print (gif_saved)
+    if debug:
+        print (gif_saved)

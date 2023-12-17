@@ -701,8 +701,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "get_elem":
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push","2"])
+            assert (len(l) == 1)
+            _, next_index = handle_smpl_instr(var_list, instrs, index, ["push","2"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
@@ -817,7 +817,35 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = next_index
 
         case "readC_until":
-            pass
+            label_index = goto_new_label(instrs, index)
+            _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["inC"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", l[1]])
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
+            swap(instrs, next_index)
+            done_index, append_index = branch_new_labels(instrs, next_index)
+
+            dup_value_x_deep(instrs, append_index, 3)
+            swap(instrs, append_index)
+            instrs[append_index][1].append("push 1")
+            instrs[append_index][1].append("add")
+            _, next_index = handle_smpl_instr(var_list, instrs, append_index, ["append"])
+            instrs[next_index][1].append("push 3")
+            instrs[next_index][1].append("push -1")
+            instrs[next_index][1].append("roll")
+            instrs[next_index][1].append("pop")
+            instrs[next_index][1].append("push 1")
+            instrs[next_index][1].append("sub")
+
+            instrs[next_index][1].append("goto l" + str(label_index))
+
+
+            _, next_index = handle_smpl_instr(var_list, instrs, done_index, ["pop"])
+            instrs[next_index][1].append("debug")
+
+            index = next_index
+            next_index = next_index
 
         case "outC":
             swap(instrs, index)
@@ -917,8 +945,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = roll_index
 
         case "length":
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
-            swap(instrs, next_index)
+            assert (len(l) == 1)
+            swap(instrs, index)
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
             swap(instrs, next_index)

@@ -221,8 +221,9 @@ def stk_to_ascii_piet(i_file, o_file, optim=True):
 
         blocks[x] = (splits, branch_blocks)
 
-    print ("Reading from:", i_file)
-    print ("Saving to:", o_file)
+    # if debug:
+    #     print ("Reading from:", i_file)
+    #     print ("Saving to:", o_file)
 
     with open(o_file, 'w') as f:
         final_output = []
