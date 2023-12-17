@@ -138,6 +138,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             sub(instrs, index,1)
 
         case "eq":
+            assert (len(l) == 2)
             swap(instrs, index)
             instrs[index][1].append("push " + number_or_ord(l[1]))
             eq(instrs, index)
@@ -818,9 +819,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             instrs[next_index][1].append("goto l" + str(label_index))
 
-
             _, next_index = handle_smpl_instr(var_list, instrs, done_index, ["pop"])
-            instrs[next_index][1].append("debug")
 
             index = next_index
             next_index = next_index
