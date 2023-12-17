@@ -1,8 +1,5 @@
 push -1
-readC_until 32
-outN
-
-push 10
-outC
+readlines
+printC_list_of_list
 
 goto term
