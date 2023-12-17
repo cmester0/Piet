@@ -730,8 +730,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = next_index
 
         case "print_listC":
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get_list", l[1]])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["length", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_list"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["length"])
 
             label_index = goto_new_label(instrs, next_index) # move all elements to new array
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])

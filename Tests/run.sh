@@ -1,13 +1,14 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd );
 
 results=()
-while read var; do
-    set -- $var;
-    echo "'$1' is '$2'";
-    python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$1.smpl" gen_all;
-    result=$(python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$1.smpl" run_piet);
+while read -d ";" -r var; do
+    filename=$(echo "$var" | cut -d "=" -f 1)
+    expected=$(echo "$var" | cut -d "=" -f 2)
+    echo "'$filename' expects '$expected'";
+    python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" gen_all;
+    result=$(python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" run_piet);
     echo "'$result'"
-    if [ "$result" = "$2" ]; then
+    if [ "$result" = "$expected" ]; then
 	results+=(1)
     else
 	results+=(0)
