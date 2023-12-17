@@ -2,4 +2,7 @@ push -1
 readC_until 32
 outN
 
+push 10
+outC
+
 goto term

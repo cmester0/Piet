@@ -17,7 +17,7 @@ echo "==============="
 echo "Generate stk translation"
 echo "==============="
 for ((i = 0; i < ${#filenames[@]}; i++)) do
-    filename=${filenames[$i]};
+    filename="${filenames[$i]}";
     echo "Generating '$filename'";
     python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" gen_stk;
 done
@@ -28,27 +28,28 @@ echo "Run tests with stk-interpreter"
 echo "==============="
 results_stk=()
 for ((i = 0; i < ${#filenames[@]}; i++)) do
-    filename=${filenames[$i]}
-    expected=${expectations[$i]}
-    stdin=${inputs[$i]}
+    filename="${filenames[$i]}"
+    expected="${expectations[$i]}"
+    stdin="${inputs[$i]}"
 
     echo "Filename: '$filename'"; # expects '$expected' on input '$stdin'
     result_stk=$(echo "$stdin" | python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" run_stk);
-    echo "Results: '$result_stk'"
-    if [ "$result_stk" = "$expected" ]; then
+    echo "Result: '$result_stk'"
+    if [ "$result_stk" == "$expected" ]; then
         results_stk+=(1)
     else
+	echo "Expected value: '$expected'";
         results_stk+=(0)
     fi
+    echo ""
 done
 
 counter=0
-echo ""
 echo "---------------"
 echo "Results (stk):"
 echo "---------------"
 for result in ${results_stk[@]}; do
-    if [ $result ];
+    if [ "$result" == "1" ];
     then echo -en "\e[0;32m"; echo -n "O";((counter=counter+1));
     else echo -en '\e[0;31m'; echo -n "X";
     fi; echo -en "\e[0;0m";
@@ -64,7 +65,7 @@ echo "==============="
 echo "Generate piet translation"
 echo "==============="
 for ((i = 0; i < ${#filenames[@]}; i++)) do
-    filename=${filenames[$i]}
+    filename="${filenames[$i]}";
     echo "Generating '$filename'";
     python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" gen_piet;
 done
@@ -75,27 +76,28 @@ echo "Run tests with piet-interpreter"
 echo "==============="
 results_piet=()
 for ((i = 0; i < ${#filenames[@]}; i++)) do
-    filename=${filenames[$i]}
-    expected=${expectations[$i]}
-    stdin=${inputs[$i]}
+    filename="${filenames[$i]}"
+    expected="${expectations[$i]}"
+    stdin="${inputs[$i]}"
 
     echo "Filename: '$filename'"; # expects '$expected' on input '$stdin'
     result_piet=$(echo "$stdin" | python3 "$SCRIPT_DIR/../cli.py" "$SCRIPT_DIR/$filename.smpl" run_piet);
     echo "Result: '$result_piet'"
-    if [ "$result_piet" = "$expected" ]; then
+    if [ "$result_piet" == "$expected" ]; then
         results_piet+=(1)
     else
+	echo "Expected value: '$expected'";
         results_piet+=(0)
     fi
+    echo ""
 done
 
 counter=0
-echo ""
 echo "---------------"
 echo "Results (piet):"
 echo "---------------"
 for result in ${results_piet[@]}; do
-    if [ $result ];
+    if [ "$result" == "1" ];
     then echo -en "\e[0;32m"; echo -n "O";((counter=counter+1));
     else echo -en '\e[0;31m'; echo -n "X";
     fi; echo -en "\e[0;0m";
