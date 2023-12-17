@@ -138,11 +138,15 @@ def handle_smpl_instr(var_list, instrs, index, l):
             sub(instrs, index,1)
 
         case "eq":
-            assert (len(l) == 2)
+            assert (len(l) == 1)
             swap(instrs, index)
-            instrs[index][1].append("push " + number_or_ord(l[1]))
+            instrs[index][1].append("push 3")
+            instrs[index][1].append("push -1")
+            instrs[index][1].append("roll")
             eq(instrs, index)
             swap(instrs, index)
+            instrs[index][1].append("push 1")
+            instrs[index][1].append("sub")
 
         case "not":
             swap(instrs, index)
@@ -700,7 +704,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
 
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
@@ -738,7 +743,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
 
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
@@ -770,7 +776,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
 
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
@@ -799,7 +806,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             label_index = goto_new_label(instrs, index)
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["inC"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", l[1]])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
             swap(instrs, next_index)
@@ -828,7 +836,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             label_index = goto_new_label(instrs, index)
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["inC"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")
             swap(instrs, next_index)
@@ -862,7 +871,8 @@ def handle_smpl_instr(var_list, instrs, index, l):
             _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
+            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
 
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("sub")

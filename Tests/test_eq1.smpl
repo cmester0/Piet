@@ -1,0 +1,7 @@
+push 4
+push 4
+eq
+outN
+push 10
+outC
+goto term

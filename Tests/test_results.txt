@@ -1,5 +1,7 @@
 test_set_var_get_var=42;
 test_length=7;
+test_eq0=0;
+test_eq1=1;
 test_append=[114,119,113,115,110,];
 test_print_listC=hello world;
 test_readC_until=some=some test string;
