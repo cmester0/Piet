@@ -1,21 +1,20 @@
 var l list
 
-push 10
-push 15
-push 13
-push 14
+push 110
+push 115
+push 113
+push 119
+push 114
 get l
+append
 append
 append
 append
 append
 set l
 
-push 2
 get l
-get_elem
-
-outN
+print_listN
 push 10
 outC
 
