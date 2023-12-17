@@ -1,0 +1,7 @@
+push -1
+readC_until 10
+print_listC
+push 10
+outC
+
+goto term
