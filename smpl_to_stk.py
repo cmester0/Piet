@@ -816,6 +816,9 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = next_index
             next_index = next_index
 
+        case "readC_until":
+            pass
+
         case "outC":
             swap(instrs, index)
             instrs[index][1].append("outC")
