@@ -174,12 +174,15 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
         for pi, p in enumerate(c):
             blobs[p].add((pi,ci))
             total_coords += 1
+            if (p == "⚫" or p == "⚪"):
+                continue
 
     if debug:
         print ("Get all blobs")
     coords_checked = 0
     all_blobs = []
 
+    
     # Watershed (image processing)
     for l in blobs:
         if (l == "⚫" or l == "⚪"):
@@ -200,6 +203,7 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
                         queue.append((xn,yn))
             if len(sep_blob) > 0:
                 seperate_blobs.append(sep_blob)
+
         for x in seperate_blobs:
             all_blobs.append((l, x))
 
@@ -214,6 +218,7 @@ def piet_interpreter(i_file, o_file = "",debug=False,max_count = -1,gif_speed=1)
     if debug:
         print ("Index all blobs")
     all_blobs_indexed = []
+
     for i, (c, blob) in enumerate(all_blobs):
         r_u = max(list(blob), key = lambda x: (x[0], -x[1]))
         r_d = max(list(blob), key = lambda x: (x[0], x[1]))

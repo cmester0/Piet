@@ -12,3 +12,4 @@ doing=hello
 world how
 are you
 doing;
+test_swap=23 43=23 43;

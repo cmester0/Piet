@@ -1,5 +1,21 @@
 import sys
 
+def load_file(file_path):
+    inp_lines = []
+    with open(file_path, 'r') as f:
+        inp_lines = f.readlines()
+    inp_lines = list(map(lambda x: x.split(), inp_lines))
+    return inp_lines
+
+matches = {}
+# Get the current path of the file
+import pathlib
+paths = pathlib.Path(__file__).parent
+p_res = str(paths.resolve())
+for p in paths.glob("Code/*.smpl"):
+    instr_str = str(p)[len(p_res)+len("/Code/"):-len(".smpl")]
+    matches[instr_str] = load_file(p)
+
 def dup_value_x_deep(instrs, index, x):
     # Get the value to the top
     instrs[index][1].append("push "+str(x))
@@ -121,6 +137,12 @@ def get_offset_for_var_index(instrs, index, var_index):
 
 def handle_smpl_instr(var_list, instrs, index, l):
     next_index = index
+
+    if len(l) == 1 and l[0] in matches:
+        for smpl_instr in matches[l[0]]:
+            index, next_index = handle_smpl_instr(var_list, instrs, index, smpl_instr)
+        return index, next_index
+
     match l[0]:
         case "label":
             index = len(instrs)
@@ -675,16 +697,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             index = index
             next_index = index
-
-        case "get_elem":
-            assert (len(l) == 1)
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["push","2"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
-
-            index = next_index
-            next_index = next_index
 
         case "set_elem":
             _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])

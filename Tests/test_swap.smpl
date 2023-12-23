@@ -1,0 +1,11 @@
+inN
+inC
+pop
+inN
+swap
+outN
+push 32
+outC
+outN
+
+goto term
