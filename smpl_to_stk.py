@@ -698,16 +698,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
             index = index
             next_index = index
 
-        case "set_elem":
-            _, next_index = handle_smpl_instr(var_list, instrs, index, ["get", l[1]])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push","2"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["add"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-            index = next_index
-            next_index = next_index
-
         case "get_list":
             _, next_index = handle_smpl_instr(var_list, instrs, index, ["dup"])
             _, next_index = handle_smpl_instr(var_list, instrs, index, ["length"])
@@ -776,7 +766,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             index = next_index
             next_index = next_index
-            
+
         case "print_listN":
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord("["))])
             _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
@@ -1079,6 +1069,7 @@ def smpl_to_stk(i_file, o_file):
     label_count = 0
     var_list = []
 
+    # Stack frame
     for inp_line_index, l in enumerate(inp_lines):
         if len(l) < 1 or l[0] != "var":
             break
