@@ -4,7 +4,7 @@ def load_file(file_path):
     inp_lines = []
     with open(file_path, 'r') as f:
         inp_lines = f.readlines()
-    inp_lines = list(map(lambda x: x.split(), inp_lines))
+    inp_lines = list(filter(lambda l: not (len(l) == 0 or l[0] == "#"), map(lambda x: x.split(), inp_lines)))
     return inp_lines
 
 matches = {}
@@ -15,6 +15,7 @@ p_res = str(paths.resolve())
 for p in paths.glob("Code/*.smpl"):
     instr_str = str(p)[len(p_res)+len("/Code/"):-len(".smpl")]
     matches[instr_str] = load_file(p)
+match_count = 0
 
 def dup_value_x_deep(instrs, index, x):
     # Get the value to the top
@@ -136,10 +137,23 @@ def get_offset_for_var_index(instrs, index, var_index):
     return index
 
 def handle_smpl_instr(var_list, instrs, index, l):
+    global match_count
+    
     next_index = index
 
     if len(l) == 1 and l[0] in matches:
+        smpl_matches = []
+        did_match = False
         for smpl_instr in matches[l[0]]:
+            match smpl_instr[0]:
+                case "label" | "branch" | "goto":
+                    did_match = True
+                    smpl_matches.append([smpl_instr[0],*list(map(lambda x: x + "_" + str(match_count), smpl_instr[1:]))])
+                case default:
+                    smpl_matches.append(smpl_instr)
+        if did_match:
+            match_count += 1
+        for smpl_instr in smpl_matches:
             index, next_index = handle_smpl_instr(var_list, instrs, index, smpl_instr)
         return index, next_index
 
@@ -218,7 +232,6 @@ def handle_smpl_instr(var_list, instrs, index, l):
 
             instrs[fail_label_index][1].append("pop")
             instrs[fail_label_index][1].append("goto " + continue_new_label)
-
 
             index = fail_label_index
             next_index = continue_label_index

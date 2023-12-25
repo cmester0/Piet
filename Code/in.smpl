@@ -1,0 +1,39 @@
+get_list
+length
+dup
+push 2
+add
+get_at_depth
+push 0
+
+goto for_loop
+
+label for_loop
+push 3
+get_at_depth
+push 1
+sub
+dup
+push 4
+push 1
+roll
+push -1
+eq
+branch done loop
+
+label loop
+push 2
+dup_at_depth
+push 5
+get_at_depth
+eq
+add
+goto for_loop
+
+label done
+not
+not
+push 3
+put_at_depth
+pop
+pop

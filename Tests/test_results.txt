@@ -15,3 +15,5 @@ doing;
 test_swap=23 43=23 43;
 test_set_elem_get_elem=14
 11;
+test_dup_at_depth=43;
+test_in=10;
