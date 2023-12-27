@@ -138,7 +138,7 @@ def get_offset_for_var_index(instrs, index, var_index):
 
 def handle_smpl_instr(var_list, instrs, index, l):
     global match_count
-    
+
     next_index = index
 
     if len(l) == 1 and l[0] in matches:
@@ -148,7 +148,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             match smpl_instr[0]:
                 case "label" | "branch" | "goto":
                     did_match = True
-                    smpl_matches.append([smpl_instr[0],*list(map(lambda x: x + "_" + str(match_count), smpl_instr[1:]))])
+                    smpl_matches.append([smpl_instr[0],*list(map(lambda x: x if x in ["main","term"] else x + "_" + str(match_count), smpl_instr[1:]))])
                 case default:
                     smpl_matches.append(smpl_instr)
         if did_match:
@@ -174,7 +174,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             sub(instrs, index,1)
 
         case "eq":
-            assert (len(l) == 1)
+            assert (len(l) == 1) # eq
             swap(instrs, index)
             instrs[index][1].append("push 3")
             instrs[index][1].append("push -1")
@@ -281,7 +281,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             instrs[index][1].append("branch " + l[1] + " " + l[2])
 
         case "set":
-            assert (len(l) == 2)
+            assert (len(l) == 2) # set
 
             var_index = 0
             for i, x in enumerate(var_list):
@@ -324,7 +324,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "get":
-            assert (len(l) == 2)
+            assert (len(l) == 2) # get
 
             var_index = 0
             for i, x in enumerate(var_list):
@@ -359,7 +359,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = new_index
 
         case "append":
-            assert (len(l) == 1)
+            assert (len(l) == 1) # append
 
             swap(instrs, next_index)
             instrs[next_index][1].append("dup")
@@ -659,7 +659,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = continue_label_index
 
         case "get_heap":
-            assert (len(l) == 1)
+            assert (len(l) == 1) # get_heap
             instrs[index][1].append("dup")
             instrs[index][1].append("push 1")
             instrs[index][1].append("add")
@@ -680,7 +680,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = index
 
         case "set_heap":
-            assert (len(l) == 1)
+            assert (len(l) == 1) # set_heap
 
             instrs[index][1].append("dup")
             instrs[index][1].append("push 1")
@@ -1008,7 +1008,7 @@ def handle_smpl_instr(var_list, instrs, index, l):
             next_index = roll_index
 
         case "length":
-            assert (len(l) == 1)
+            assert (len(l) == 1) # length
             swap(instrs, index)
             instrs[next_index][1].append("push 1")
             instrs[next_index][1].append("add")
@@ -1082,15 +1082,11 @@ def smpl_to_stk(i_file, o_file):
     label_count = 0
     var_list = []
 
-    # Stack frame
-    for inp_line_index, l in enumerate(inp_lines):
-        if len(l) < 1 or l[0] != "var":
-            break
-
-        var_list = [l[1]] + var_list
+    def add_var(var_list, var_name, var_type):
+        var_list = [var_name] + var_list
 
         # Allocate empty variable
-        instrs[index][1].append("push " + ("0" if l[2] == "num" else "-1"))
+        instrs[index][1].append("push " + ("0" if var_type == "num" else "-1"))
 
         ####################
         # Fetch stack size #
@@ -1111,6 +1107,23 @@ def smpl_to_stk(i_file, o_file):
         ######################
         instrs[index][1].append("push 1")
         instrs[index][1].append("roll")
+        return var_list
+
+    var_list = add_var(var_list, "__R0__", "num")
+    var_list = add_var(var_list, "__R1__", "num")
+    var_list = add_var(var_list, "__R2__", "num")
+    var_list = add_var(var_list, "__R3__", "num")
+    var_list = add_var(var_list, "__R4__", "num")
+    var_list = add_var(var_list, "__R5__", "num")
+    var_list = add_var(var_list, "__R6__", "num")
+    var_list = add_var(var_list, "__R7__", "num")
+
+    # Stack frame
+    for inp_line_index, l in enumerate(inp_lines):
+        if len(l) < 1 or l[0] != "var":
+            break
+
+        var_list = add_var(l[1], l[2])
 
     for l in inp_lines[inp_line_index:]:
         if len(l) == 0 or l[0] == "#":

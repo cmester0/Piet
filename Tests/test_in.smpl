@@ -15,12 +15,20 @@ append
 dup
 
 push 123 # is 123 in list?
-swap
+push 1
+
+push 3
+get_at_depth
+
 in
 outN
 
 push 321 # is 321 in list?
-swap
+push 1
+
+push 3
+get_at_depth
+
 in
 outN
 

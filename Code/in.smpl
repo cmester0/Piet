@@ -1,39 +1,78 @@
+swap
+
+# Tuple size
+set __R0__
+
 get_list
 length
-dup
-push 2
-add
-get_at_depth
-push 0
 
-goto for_loop
+# Length
+set __R1__
 
-label for_loop
-push 3
-get_at_depth
+get __R0__
+
+goto get_tuple
+
+label get_tuple
 push 1
 sub
 dup
-push 4
-push 1
-roll
 push -1
 eq
-branch done loop
+branch get_tuple_done get_tuple_loop
 
-label loop
+label get_tuple_loop
+get __R1__
+push 2
+add
 push 2
 dup_at_depth
-push 5
-get_at_depth
-eq
 add
-goto for_loop
+get_at_depth
 
-label done
-not
-not
-push 3
-put_at_depth
+swap
+
+goto get_tuple
+
+label get_tuple_done
 pop
-pop
+debug
+goto term
+
+# push 0
+
+# goto for_loop
+
+# label for_loop
+# push 3
+# get_at_depth
+# push 1
+# sub
+# dup
+# push 4
+# push 1
+# roll
+# push -1
+# eq
+# branch done loop
+
+# label loop
+# push 2
+# dup_at_depth
+# push 5
+# get_at_depth
+# eq
+# add
+# goto for_loop
+
+# label done
+# not
+# not
+# push 3
+# put_at_depth
+# pop
+# pop
+
+# debug
+
+# goto term
