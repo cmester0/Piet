@@ -80,12 +80,19 @@ class StackOptimizer():
                 return m
         return R
 
+    def optimal_number(self, N):
+        return self.optimize_stack(str(N))
+
     # TODO: Handle negative numbers!
     def optimize_number(self, N):
         instrs = []
         root = 1
+        print ("Calculate int root", N)
         while self.int_root(N,root) > 173:
             root += 1
+        if root > 2:
+            print(root, self.int_root(N,root), N)
+
         instrs += self.optimize_stack(str(self.int_root(N,root)))
         for i in range(root-1):
             instrs.append("dup")
@@ -99,8 +106,20 @@ class StackOptimizer():
 
 if __name__ == "__main__":
     stack_optimizer = StackOptimizer()
+    print (sys.argv)
     if len(sys.argv) >= 2 and sys.argv[1] == "num":
-        for i in range(int(input())):
+        if input("optimal (y/N): "):
+            for i in range(int(input())):
+                print (i,stack_optimizer.optimal_number(i))
+        else:
+            for i in range(int(input())):
+                print (i,stack_optimizer.optimize_number(i))
+    elif len(sys.argv) >= 2 and sys.argv[1] == "target":
+        if input("optimal (y/N): "):
+            i = int(input())
+            print(i, stack_optimizer.optimal_number(i))
+        else:
+            i = int(input())
             print (i,stack_optimizer.optimize_number(i))
     else:
         inp = list(map(str, map(lambda x: int(x) if x.lstrip("-").isnumeric() else ord(x), input().split(","))))

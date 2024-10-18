@@ -1,0 +1,17 @@
+[package]
+name = "Piet"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "piet"
+
+[[bin]]
+name = "smpl"
+
+[dependencies]
+image = "*"
+clap = { version = "*", features = ["derive"] }
+phf = { version = "0.11", features = ["macros"] }
+itertools = "*"
+ndarray = "*"
