@@ -1,12 +1,8 @@
 use image::open;
-// use image::GenericImage;
-// use image::GenericImageView;
-// use image::ImageBuffer;
 use image::Rgb;
 
 use std::collections::HashMap;
 use std::collections::HashSet;
-// use std::env;
 
 use clap::Parser;
 
@@ -15,10 +11,13 @@ use phf::phf_map;
 use itertools::Itertools;
 
 use ndarray::ArrayView;
-// use ndarray::Dim;
 use ndarray::Ix2;
 
 use std::fmt;
+
+use std::io::{Read};
+
+// use num::bigint::BigInt;
 
 // Color name guide: https://www.colorhexa.com/
 #[derive(Copy, Clone, Eq, Hash, PartialEq)]
@@ -130,13 +129,13 @@ impl fmt::Debug for ValidColor {
     }
 }
 
-const COLORS: [[&str; 6]; 3] = [
-    ["❤", "🧡", "💛", "💚", "💙", "💜"],
-    ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"],
-    ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪"],
-];
+// const COLORS: [[&str; 6]; 3] = [
+//     ["❤", "🧡", "💛", "💚", "💙", "💜"],
+//     ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"],
+//     ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪"],
+// ];
 
-const rev_map: phf::Map<&str, (u8, u8)> = phf_map! {
+const REV_MAP: phf::Map<&str, (u8, u8)> = phf_map! {
     "❤" => (0,0),
     "🔴" => (0,1),
     "🟥" => (0,2),
@@ -237,18 +236,24 @@ impl<'a> PietExecution<'a> {
             3 if cy > 0 => (cx, cy - 1),
             _ => return ((usize::MAX, usize::MAX), false),
         };
-        let hit_wall = self.check_valid_pixel((nx,ny));
+        let hit_wall = self.check_valid_pixel((nx, ny));
 
         ((nx, ny), hit_wall)
     }
 
-    fn step(&mut self) -> bool {
+    fn step(&mut self, input: &mut std::iter::Peekable<std::io::Bytes<std::io::Stdin>>) -> bool {
         let curr_pos = (self.cursor.cx, self.cursor.cy);
         let (next_pos, valid_pix) = self.next_step_from_dp(curr_pos);
-        self.continue_step(curr_pos, next_pos, valid_pix)
+        self.continue_step(curr_pos, next_pos, valid_pix, input)
     }
 
-    fn continue_step(&mut self, mut curr_pos: (usize,usize), mut next_pos: (usize,usize), mut valid_pix: bool) -> bool {
+    fn continue_step(
+        &mut self,
+        mut curr_pos: (usize, usize),
+        mut next_pos: (usize, usize),
+        mut valid_pix: bool,
+        input: &mut std::iter::Peekable<std::io::Bytes<std::io::Stdin>>,
+    ) -> bool {
         if !valid_pix {
             let mut block = 0;
             while !valid_pix {
@@ -260,7 +265,6 @@ impl<'a> PietExecution<'a> {
 
                 block += 1;
                 if block >= 8 {
-                    (self.cursor.cx, self.cursor.cy) = (0, 0);
                     return true;
                 }
 
@@ -283,7 +287,7 @@ impl<'a> PietExecution<'a> {
                         _ => panic!(),
                     };
                 }
-                (next_pos, valid_pix) = self.next_step_from_dp(curr_pos);
+                (_, valid_pix) = self.next_step_from_dp(curr_pos);
             }
             (self.cursor.cx, self.cursor.cy) = curr_pos;
             return false;
@@ -292,7 +296,7 @@ impl<'a> PietExecution<'a> {
             let mut last_pos = next_pos;
             while self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
                 last_pos = next_pos;
-                (next_pos, valid_pix) = self.next_step_from_dp(next_pos);
+                (next_pos, _) = self.next_step_from_dp(next_pos);
             }
             (self.cursor.cx, self.cursor.cy) = last_pos;
             return false;
@@ -301,8 +305,8 @@ impl<'a> PietExecution<'a> {
             let abi = self.map.all_blobs_indexed[self.map.pix_to_blob[&next_pos]];
 
             if self.cursor.last_color != ValidColor::from("⚪") {
-                let (lc_c, lc_r) = rev_map[self.cursor.last_color.into()];
-                let (cc_c, cc_r) = rev_map[abi.c.into()];
+                let (lc_c, lc_r) = REV_MAP[self.cursor.last_color.into()];
+                let (cc_c, cc_r) = REV_MAP[abi.c.into()];
 
                 if let Some(cmd) = match ((cc_c + 6 - lc_c) % 6, (cc_r + 3 - lc_r) % 3) {
                     (0, 1) => Some(CMD::Push(self.cursor.last_bs as isize)),
@@ -338,7 +342,7 @@ impl<'a> PietExecution<'a> {
                     (5, 2) => Some(CMD::OutC),
                     _ => None,
                 } {
-                    self.interpret(cmd);
+                    self.interpret(cmd, input);
                 }
             }
 
@@ -360,9 +364,11 @@ impl<'a> PietExecution<'a> {
         }
     }
 
-    fn interpret(&mut self, cmd: CMD) {
-        println!("CMD ({:?}): {:?}", cmd, self.stack);
-
+    fn interpret(
+        &mut self,
+        cmd: CMD,
+        input: &mut std::iter::Peekable<std::io::Bytes<std::io::Stdin>>,
+    ) {
         match cmd {
             CMD::Push(v) => self.stack.push(v),
             CMD::Pop => {
@@ -371,22 +377,22 @@ impl<'a> PietExecution<'a> {
             CMD::Add => {
                 let a = self.stack.pop().unwrap();
                 let b = self.stack.pop().unwrap();
-                self.stack.push(b+a);
+                self.stack.push(b + a);
             }
             CMD::Sub => {
                 let a = self.stack.pop().unwrap();
                 let b = self.stack.pop().unwrap();
-                self.stack.push(b-a);
+                self.stack.push(b - a);
             }
             CMD::Mul => {
                 let a = self.stack.pop().unwrap();
                 let b = self.stack.pop().unwrap();
-                self.stack.push(b*a);
+                self.stack.push(b * a);
             }
             CMD::Div => {
                 let a = self.stack.pop().unwrap();
                 let b = self.stack.pop().unwrap();
-                self.stack.push(b/a);
+                self.stack.push(b / a);
             }
             CMD::Mod => {
                 let a = self.stack.pop().unwrap();
@@ -419,22 +425,45 @@ impl<'a> PietExecution<'a> {
 
                 if a != 0 {
                     let s = self.stack.len();
-                    self.stack[s-b..].rotate_right(a);
+                    self.stack[s - b..].rotate_right(a);
                 }
             }
             CMD::InN => {
-                println!("IN NNNNNNN")
-                // let mut f = File::open("foo.txt")?;
-                // let mut byte = [0_u8];
-                // sys.stdin.read();
+                let mut char_vec: Vec<char> = Vec::new();
 
-                // Option_map ~f:(byte) (stdin_handle.read_exact(&mut byte)) {
+                while let Some(Ok(c)) = input.peek() {
+                    if let Some(a) = char::from_u32(*c as u32) {
+                        if a.is_digit(10) {
+                            char_vec.push(a);
+                            input.next();
+                            continue;
+                        }
+                    }
 
-                // }
-                // if !input_eof
+                    break;
+                }
+
+                if input.size_hint().0 == 0 {
+                    self.stack.push(-1isize);
+                } else if char_vec.len() == 0 {
+                    // self.stack.push(-1isize);
+                } else {
+                    self.stack.push(
+                        char_vec
+                            .iter()
+                            .cloned()
+                            .collect::<String>()
+                            .parse::<isize>()
+                            .unwrap(),
+                    );
+                }
             }
             CMD::InC => {
-                println!("IN CCCCCCCCC")
+                if let Some(Ok(c)) = input.next() {
+                    self.stack.push(c as isize)
+                } else {
+                    self.stack.push(-1isize)
+                }
             }
             CMD::OutN => {
                 let a = self.stack.pop().unwrap();
@@ -450,7 +479,6 @@ impl<'a> PietExecution<'a> {
 }
 
 fn interpret(filepath: String) {
-    println!("Got: {:?}", filepath);
     let img = open(filepath).unwrap().into_rgb8();
     let (w, h) = img.dimensions();
 
@@ -621,26 +649,21 @@ fn interpret(filepath: String) {
             all_blobs_indexed,
         },
         stack: Vec::new(),
+        //
     };
 
-    let mut total_steps = 0;
-
-    println!(
-        "{}: ({}, {})",
-        total_steps, runner.cursor.cx, runner.cursor.cy
-    );
-
+    // let mut total_steps = 0;
+    let mut input = std::io::stdin().bytes().peekable();
     // runner
-    if !runner.continue_step((0,0),(0,0),runner.check_valid_pixel((0,0))) {
-        while !runner.step() {
-            total_steps += 1;
-            println!(
-                "{}: ({}, {}), {:?}",
-                total_steps, runner.cursor.cx, runner.cursor.cy, runner.stack
-            );
+    if !runner.continue_step((0, 0), (0, 0), runner.check_valid_pixel((0, 0)), &mut input) {
+        while !runner.step(&mut input) {
+            // total_steps += 1;
         }
     }
-    println!("total_steps: {}", total_steps);
+    // println!(
+    //     "{}: ({}, {}), {:?}",
+    //     total_steps, runner.cursor.cx, runner.cursor.cy, runner.stack
+    // );
 }
 
 #[derive(Parser, Debug)]
