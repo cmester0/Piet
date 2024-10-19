@@ -6,155 +6,17 @@ use std::collections::HashSet;
 
 use clap::Parser;
 
-use phf::phf_map;
-
 use itertools::Itertools;
 
 use ndarray::ArrayView;
 use ndarray::Ix2;
 
-use std::fmt;
+use std::io::Read;
 
-use std::io::{Read};
+use piet::piet_color::*;
+use piet::piet_interpreter::*;
 
 // use num::bigint::BigInt;
-
-// Color name guide: https://www.colorhexa.com/
-#[derive(Copy, Clone, Eq, Hash, PartialEq)]
-#[repr(usize)]
-enum ValidColor {
-    White,           // "⚪",
-    Black,           // "⚫",
-    VeryPaleRed,     // "❤",
-    VeryPaleYellow,  // "🧡",
-    VeryPaleGreen,   // "💛",
-    VeryPaleCyan,    // "💚",
-    VeryPaleBlue,    // "💙",
-    VeryPaleMagenta, // "💜",
-    Red,             // "🔴",
-    Yellow,          // "🟠",
-    Green,           // "🟡",
-    Cyan,            // "🟢",
-    Blue,            // "🔵",
-    Magenta,         // "🟣",
-    StrongRed,       // "🟥",
-    StrongYellow,    // "🟧",
-    StrongGreen,     // "🟨",
-    StrongCyan,      // "🟩",
-    StrongBlue,      // "🟦",
-    StrongMagenta,   // "🟪",
-}
-const ALL_COLORS: [ValidColor; 20] = [
-    White,
-    Black,
-    VeryPaleRed,
-    VeryPaleYellow,
-    VeryPaleGreen,
-    VeryPaleCyan,
-    VeryPaleBlue,
-    VeryPaleMagenta,
-    Red,
-    Yellow,
-    Green,
-    Cyan,
-    Blue,
-    Magenta,
-    StrongRed,
-    StrongYellow,
-    StrongGreen,
-    StrongCyan,
-    StrongBlue,
-    StrongMagenta,
-];
-
-use ValidColor::*;
-
-impl<'a> Into<&'a str> for ValidColor {
-    fn into(self) -> &'a str {
-        match self {
-            Black => "⚫",
-            VeryPaleRed => "❤",
-            VeryPaleYellow => "🧡",
-            VeryPaleGreen => "💛",
-            VeryPaleCyan => "💚",
-            VeryPaleBlue => "💙",
-            VeryPaleMagenta => "💜",
-            Red => "🔴",
-            Yellow => "🟠",
-            Green => "🟡",
-            Cyan => "🟢",
-            Blue => "🔵",
-            Magenta => "🟣",
-            StrongRed => "🟥",
-            StrongYellow => "🟧",
-            StrongGreen => "🟨",
-            StrongCyan => "🟩",
-            StrongBlue => "🟦",
-            StrongMagenta => "🟪",
-            White => "⚪",
-        }
-    }
-}
-
-impl From<&str> for ValidColor {
-    fn from(s: &str) -> Self {
-        match s {
-            "⚫" => Black,
-            "❤" => VeryPaleRed,
-            "🧡" => VeryPaleYellow,
-            "💛" => VeryPaleGreen,
-            "💚" => VeryPaleCyan,
-            "💙" => VeryPaleBlue,
-            "💜" => VeryPaleMagenta,
-            "🔴" => Red,
-            "🟠" => Yellow,
-            "🟡" => Green,
-            "🟢" => Cyan,
-            "🔵" => Blue,
-            "🟣" => Magenta,
-            "🟥" => StrongRed,
-            "🟧" => StrongYellow,
-            "🟨" => StrongGreen,
-            "🟩" => StrongCyan,
-            "🟦" => StrongBlue,
-            "🟪" => StrongMagenta,
-            "⚪" | _ => White,
-        }
-    }
-}
-
-impl fmt::Debug for ValidColor {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <ValidColor as Into<&str>>::into(*self))
-    }
-}
-
-// const COLORS: [[&str; 6]; 3] = [
-//     ["❤", "🧡", "💛", "💚", "💙", "💜"],
-//     ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"],
-//     ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪"],
-// ];
-
-const REV_MAP: phf::Map<&str, (u8, u8)> = phf_map! {
-    "❤" => (0,0),
-    "🔴" => (0,1),
-    "🟥" => (0,2),
-    "🧡" => (1,0),
-    "🟠" => (1,1),
-    "🟧" => (1,2),
-    "💛" => (2,0),
-    "🟡" => (2,1),
-    "🟨" => (2,2),
-    "💚" => (3,0),
-    "🟢" => (3,1),
-    "🟩" => (3,2),
-    "💙" => (4,0),
-    "🔵" => (4,1),
-    "🟦" => (4,2),
-    "💜" => (5,0),
-    "🟣" => (5,1),
-    "🟪" => (5,2)
-};
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {
@@ -173,27 +35,6 @@ struct ABI {
     bs: usize,
 
     c: ValidColor,
-}
-
-#[derive(Debug)]
-enum CMD {
-    Push(isize),
-    Pop,
-    Add,
-    Sub,
-    Mul,
-    Div,
-    Mod,
-    Not,
-    Greater,
-    Pointer,
-    Switch,
-    Dup,
-    Roll,
-    InN,
-    InC,
-    OutN,
-    OutC,
 }
 
 struct PietImageData {
@@ -324,7 +165,7 @@ impl<'a> PietExecution<'a> {
                         }
                         let a = self.stack.pop().unwrap();
                         self.cursor.dp = (self.cursor.dp + (a.rem_euclid(4) as usize)) % 4;
-                        Some(CMD::Pointer)
+                        None // Pointer
                     }
                     (3, 2) => {
                         if !(self.stack.len() >= 1) {
@@ -332,7 +173,7 @@ impl<'a> PietExecution<'a> {
                         }
                         let a = self.stack.pop().unwrap();
                         self.cursor.cc = (self.cursor.cc + (a.abs() as usize)) % 2;
-                        Some(CMD::Switch)
+                        None // Switch
                     }
                     (4, 0) => Some(CMD::Dup),
                     (4, 1) => Some(CMD::Roll),
@@ -342,7 +183,7 @@ impl<'a> PietExecution<'a> {
                     (5, 2) => Some(CMD::OutC),
                     _ => None,
                 } {
-                    self.interpret(cmd, input);
+                    cmd.interpret(&mut self.stack, input);
                 }
             }
 
@@ -361,119 +202,6 @@ impl<'a> PietExecution<'a> {
                 _ => panic!(),
             };
             return false;
-        }
-    }
-
-    fn interpret(
-        &mut self,
-        cmd: CMD,
-        input: &mut std::iter::Peekable<std::io::Bytes<std::io::Stdin>>,
-    ) {
-        match cmd {
-            CMD::Push(v) => self.stack.push(v),
-            CMD::Pop => {
-                self.stack.pop();
-            }
-            CMD::Add => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(b + a);
-            }
-            CMD::Sub => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(b - a);
-            }
-            CMD::Mul => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(b * a);
-            }
-            CMD::Div => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(b / a);
-            }
-            CMD::Mod => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(b.rem_euclid(a));
-            }
-            CMD::Not => {
-                let a = self.stack.pop().unwrap();
-                self.stack.push(if a == 0 { 1 } else { 0 });
-            }
-            CMD::Greater => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push(if b > a { 1 } else { 0 });
-            }
-            CMD::Pointer => {}
-            CMD::Switch => {}
-            CMD::Dup => {
-                let a = self.stack.pop().unwrap();
-                self.stack.push(a);
-                self.stack.push(a);
-            }
-            CMD::Roll => {
-                let mut a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                a = a.rem_euclid(b);
-
-                let a = a as usize;
-                let b = b as usize;
-
-                if a != 0 {
-                    let s = self.stack.len();
-                    self.stack[s - b..].rotate_right(a);
-                }
-            }
-            CMD::InN => {
-                let mut char_vec: Vec<char> = Vec::new();
-
-                while let Some(Ok(c)) = input.peek() {
-                    if let Some(a) = char::from_u32(*c as u32) {
-                        if a.is_digit(10) {
-                            char_vec.push(a);
-                            input.next();
-                            continue;
-                        }
-                    }
-
-                    break;
-                }
-
-                if input.size_hint().0 == 0 {
-                    self.stack.push(-1isize);
-                } else if char_vec.len() == 0 {
-                    // self.stack.push(-1isize);
-                } else {
-                    self.stack.push(
-                        char_vec
-                            .iter()
-                            .cloned()
-                            .collect::<String>()
-                            .parse::<isize>()
-                            .unwrap(),
-                    );
-                }
-            }
-            CMD::InC => {
-                if let Some(Ok(c)) = input.next() {
-                    self.stack.push(c as isize)
-                } else {
-                    self.stack.push(-1isize)
-                }
-            }
-            CMD::OutN => {
-                let a = self.stack.pop().unwrap();
-                print!("{}", a);
-            }
-            CMD::OutC => {
-                let a = self.stack.pop().unwrap();
-                let c = char::from_u32(a as u32).unwrap();
-                print!("{}", c);
-            }
         }
     }
 }
@@ -660,10 +388,6 @@ fn interpret(filepath: String) {
             // total_steps += 1;
         }
     }
-    // println!(
-    //     "{}: ({}, {}), {:?}",
-    //     total_steps, runner.cursor.cx, runner.cursor.cy, runner.stack
-    // );
 }
 
 #[derive(Parser, Debug)]

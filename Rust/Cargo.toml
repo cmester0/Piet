@@ -1,10 +1,17 @@
 [package]
-name = "Piet"
+name = "piet"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+# name = "mylib"
+path = "src/lib.rs"
+
 [[bin]]
 name = "piet"
+
+[[bin]]
+name = "piet_stack"
 
 [[bin]]
 name = "smpl"
@@ -15,3 +22,6 @@ clap = { version = "*", features = ["derive"] }
 phf = { version = "0.11", features = ["macros"] }
 itertools = "*"
 ndarray = "*"
+
+pest = "*"
+pest_derive = "*"
