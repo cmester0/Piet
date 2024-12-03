@@ -1,4 +1,5 @@
 mod expr;
+pub mod smpl_to_stk;
 
 use expr::*;
 use pest::*;
@@ -21,8 +22,8 @@ impl Variable {
 }
 
 pub struct SmplExecutor<'a> {
-    pub blocks: &'a HashMap<&'a str, Vec<Expr<'a>>>,
-    pub variables: &'a mut HashMap<&'a str, Variable>,
+    pub blocks: HashMap<&'a str, Vec<Expr<'a>>>,
+    pub variables: HashMap<&'a str, Variable>,
     pub stack: Vec<isize>,
     pub label: &'a str,
 }
@@ -115,9 +116,9 @@ pub fn parse_string<'a>(
 }
 
 impl<'a> SmplExecutor<'a> {
-    fn interpret_expr<I:std::io::Read,O:std::io::Write>(
+    fn interpret_expr<I: std::io::Read, O: std::io::Write>(
         &mut self,
-        e: &Expr<'a>,
+        e: Expr<'a>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> bool {
@@ -161,13 +162,13 @@ impl<'a> SmplExecutor<'a> {
         }
     }
 
-    pub fn interpret<I:std::io::Read,O:std::io::Write>(
+    pub fn interpret<I: std::io::Read, O: std::io::Write>(
         &mut self,
         input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &'a mut Option<O>,
     ) {
         while self.label != "term" {
-            for expr in &self.blocks[self.label] {
+            for expr in self.blocks[self.label].clone() {
                 if self.interpret_expr(expr, input, output) {
                     break;
                 }
@@ -175,18 +176,23 @@ impl<'a> SmplExecutor<'a> {
         }
     }
 
-    pub fn interpret_from_string<I:std::io::Read,O:std::io::Write>(
+    pub fn new(
+        unparsed: &'a str,
+    ) -> Self {
+        let (blocks, variables) = parse_string(unparsed);
+        SmplExecutor {
+            blocks,
+            variables,
+            stack: Vec::new(),
+            label: "main",
+        }
+    }
+
+    pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
         unparsed: &'a str,
         input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &'a mut Option<O>,
     ) {
-        let (blocks, mut variables) = parse_string(unparsed);
-        let mut executor: SmplExecutor = SmplExecutor {
-            blocks: &blocks,
-            variables: &mut variables,
-            stack: Vec::new(),
-            label: "main",
-        };
-        executor.interpret(input, output);
+        SmplExecutor::new(unparsed).interpret(input, output);
     }
 }

@@ -1,5 +1,6 @@
 use clap::Parser as CliParser;
 use piet::smpl::SmplExecutor;
+use piet::smpl::smpl_to_stk::SmplToStk;
 use std::fs;
 use std::io::Read;
 
@@ -8,6 +9,8 @@ use std::io::Read;
 struct Args {
     #[arg(short, long)]
     filepath: String,
+    #[arg(short, long)]
+    run: bool,
     #[arg(short, long)]
     output: Option<String>,
 }
@@ -19,5 +22,23 @@ fn main() {
 
     let input = std::io::stdin().bytes().peekable();
     let output = std::io::stdout();
-    SmplExecutor::interpret_from_string(unparsed_file.as_str(), &mut Some(input), &mut Some(output));
+
+    if args.run {
+        SmplExecutor::interpret_from_string(
+            unparsed_file.as_str(),
+            &mut Some(input),
+            &mut Some(output),
+        );
+    }
+
+    if args.output.is_some() {
+        SmplToStk::to_stk(SmplExecutor::new(unparsed_file.as_str()));
+        // let img: String =
+        //     SmplExecutor::to_stk(
+        //         unparsed_file.as_str());
+
+        // let mut file = File::create(args.output.unwrap());
+        // file.write_all();
+    }
+
 }
