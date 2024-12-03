@@ -1,4 +1,4 @@
-Document = { SOI ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Block* ~ NEWLINE* ~ EOI }
+Document = { SOI ~ NEWLINE* ~ Block* ~ NEWLINE* ~ EOI }
 
 // WHITESPACE = _{ " " }
 COMMENT = _{
@@ -14,7 +14,7 @@ Block = {
     "label" ~ SEPARATOR ~ Name ~ NEWLINE+ ~ SubBlock
 }
 
-SubBlock = { COMMENT | (Expr ~ NEWLINE+)* }
+SubBlock = { COMMENT | (Expr ~ NEWLINE*)* } // + ~ Expr | Expr
 
 Push = { "push" }
 Pop = { "pop" }

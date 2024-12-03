@@ -1,5 +1,7 @@
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum CMD {
+    Nop,
+
     Push(isize),
     Pop,
     Add,
@@ -15,74 +17,80 @@ pub enum CMD {
     InC,
     OutN,
     OutC,
+
+    Pointer,
+    Switch,
 }
 
 impl CMD {
-    pub fn interpret(
+    pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
         stack: &mut Vec<isize>,
-        input: &mut std::iter::Peekable<std::io::Bytes<std::io::Stdin>>,
-    ) {
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
+    ) -> Option<()> {
         match self {
+            CMD::Nop => (),
             CMD::Push(v) => stack.push(v),
             CMD::Pop => {
                 stack.pop();
             }
             CMD::Add => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(b + a);
             }
             CMD::Sub => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(b - a);
             }
             CMD::Mul => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(b * a);
             }
             CMD::Div => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(b / a);
             }
             CMD::Mod => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(b.rem_euclid(a));
             }
             CMD::Not => {
-                let a = stack.pop().unwrap();
+                let a = stack.pop()?;
                 stack.push(if a == 0 { 1 } else { 0 });
             }
             CMD::Greater => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = stack.pop()?;
+                let b = stack.pop()?;
                 stack.push(if b > a { 1 } else { 0 });
             }
             CMD::Dup => {
-                let a = stack.pop().unwrap();
+                let a = stack.pop()?;
                 stack.push(a);
                 stack.push(a);
             }
             CMD::Roll => {
-                let mut a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let mut a = stack.pop()?;
+                let b = stack.pop()?;
                 a = a.rem_euclid(b);
 
                 let a = a as usize;
                 let b = b as usize;
 
                 if a != 0 {
-                    let s = stack.len();
-                    stack[s - b..].rotate_right(a);
+                    let s = stack.len().clone();
+                    stack[s - b..s].rotate_right(a);
                 }
             }
             CMD::InN => {
                 let mut char_vec: Vec<char> = Vec::new();
 
+                let input = input.as_mut().unwrap();
                 while let Some(Ok(c)) = input.peek() {
                     if let Some(a) = char::from_u32(*c as u32) {
                         if a.is_digit(10) {
@@ -111,6 +119,7 @@ impl CMD {
                 }
             }
             CMD::InC => {
+                let input = input.as_mut().unwrap();
                 if let Some(Ok(c)) = input.next() {
                     stack.push(c as isize)
                 } else {
@@ -118,14 +127,35 @@ impl CMD {
                 }
             }
             CMD::OutN => {
-                let a = stack.pop().unwrap();
-                print!("{}", a);
+                let a = stack.pop()?;
+                let output = output.as_mut().unwrap();
+                write!(output,"'{}'", a).unwrap();
+                output.flush().unwrap();
             }
             CMD::OutC => {
-                let a = stack.pop().unwrap();
+                let a = stack.pop()?;
                 let c = char::from_u32(a as u32).unwrap();
-                print!("{}", c);
+                let output = output.as_mut().unwrap();
+                write!(output,"'{}'", c).unwrap();
+                output.flush().unwrap();
+            }
+            CMD::Pointer => {
+                panic!("Cannot interpret pointer!")
+            }
+            CMD::Switch => {
+                panic!("Cannot interpret switch!")
             }
         }
+
+        Some(())
+    }
+
+    pub fn interpret<I: std::io::Read, O: std::io::Write>(
+        self,
+        stack: &mut Vec<isize>,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
+    ) {
+        self.interpret_result(stack, input, output);
     }
 }

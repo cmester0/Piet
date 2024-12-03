@@ -9,17 +9,18 @@ COMMENT = _{
 
 Name = @{ (ASCII_ALPHANUMERIC | "_")+ }
 Number = @{ "-"? ~ ASCII_DIGIT+ }
+Char = @{ ASCII }
 Filepath = @{ ("." | "/" | Name)+ }
 
-Imports = { (Import ~ NEWLINE+)* }
+Imports = { (Import ~ NEWLINE*)* } // imports +
 Import = { "use" ~ SEPARATOR ~ Name ~ SEPARATOR ~ Filepath }
 
-Variables = { (Variable ~ NEWLINE+)* }
-Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType ~ NEWLINE }
+Variables = { (Variable ~ NEWLINE*)* } // variables +
+Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }
 VarType = { "list" | "num" }
 
-Block = { "label" ~ SEPARATOR ~ Name ~ NEWLINE+ ~ SubBlock }
-SubBlock = { COMMENT | (Expr ~ NEWLINE+)* }
+Block = { "label" ~ SEPARATOR ~ Name ~ NEWLINE* ~ SubBlock } // +
+SubBlock = { COMMENT | (Expr ~ NEWLINE*)* }  // ~ Expr | Expr
 
 Push = { "push" }
 Pop = { "pop" }
@@ -43,10 +44,14 @@ Roll = { "roll" }
 Get = { "get" }
 Set = { "set" }
 
+Eq = { "eq" }
+
 LibFun = @{"lib_" ~ Name }
 
 Expr = {
   | Push ~ SEPARATOR ~ Number
+  | Push ~ SEPARATOR ~ Char
+
   | Pop
   | Not
   | Add
@@ -63,6 +68,8 @@ Expr = {
 
   | Set ~ SEPARATOR ~ Name
   | Get ~ SEPARATOR ~ Name
+
+  | Eq
 
   | LibFun
 }

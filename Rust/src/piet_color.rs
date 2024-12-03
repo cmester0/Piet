@@ -1,14 +1,14 @@
 use phf::phf_map;
-
 use std::fmt;
+use image::Rgb;
 
-// const COLORS: [[&str; 6]; 3] = [
-//     ["❤", "🧡", "💛", "💚", "💙", "💜"],
-//     ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"],
-//     ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪"],
-// ];
+pub const COLORS: [[&str; 6]; 3] = [
+    ["❤", "🧡", "💛", "💚", "💙", "💜"],
+    ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"],
+    ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪"],
+];
 
-pub const REV_MAP: phf::Map<&str, (u8, u8)> = phf_map! {
+pub const REV_MAP: phf::Map<&str, (usize, usize)> = phf_map! {
     "❤" => (0,0),
     "🔴" => (0,1),
     "🟥" => (0,2),
@@ -131,6 +131,66 @@ impl From<&str> for ValidColor {
             "🟪" => StrongMagenta,
             "⚪" | _ => White,
         }
+    }
+}
+
+impl From<ValidColor> for Rgb<u8> {
+    fn from(rgb: ValidColor) -> Self {
+        match rgb {
+            ValidColor::White => Rgb([255, 255, 255]),
+            ValidColor::Black => Rgb([0, 0, 0]),
+
+            ValidColor::VeryPaleRed => Rgb([255, 192, 192]),
+            ValidColor::VeryPaleYellow => Rgb([255, 255, 192]),
+            ValidColor::VeryPaleGreen => Rgb([192, 255, 192]),
+
+            ValidColor::VeryPaleCyan => Rgb([192, 255, 255]),
+            ValidColor::VeryPaleBlue => Rgb([192, 192, 255]),
+            ValidColor::VeryPaleMagenta => Rgb([255, 192, 255]),
+
+            ValidColor::Red => Rgb([255, 0, 0]),
+            ValidColor::Yellow => Rgb([255, 255, 0]),
+            ValidColor::Green => Rgb([0, 255, 0]),
+
+            ValidColor::Cyan => Rgb([0, 255, 255]),
+            ValidColor::Blue => Rgb([0, 0, 255]),
+            ValidColor::Magenta => Rgb([255, 0, 255]),
+
+            ValidColor::StrongRed => Rgb([192, 0, 0]),
+            ValidColor::StrongYellow => Rgb([192, 192, 0]),
+            ValidColor::StrongGreen => Rgb([0, 192, 0]),
+
+            ValidColor::StrongCyan => Rgb([0, 192, 192]),
+            ValidColor::StrongBlue => Rgb([0, 0, 192]),
+            ValidColor::StrongMagenta => Rgb([192, 0, 192]),
+        }.into()
+    }
+}
+
+impl From<Rgb<u8>> for ValidColor {
+    fn from(rgb: Rgb<u8>) -> Self {
+        match rgb {
+            Rgb([255, 192, 192]) => "❤",
+            Rgb([255, 255, 192]) => "🧡",
+            Rgb([192, 255, 192]) => "💛",
+            Rgb([192, 255, 255]) => "💚",
+            Rgb([192, 192, 255]) => "💙",
+            Rgb([255, 192, 255]) => "💜",
+            Rgb([255, 0, 0]) => "🔴",
+            Rgb([255, 255, 0]) => "🟠",
+            Rgb([0, 255, 0]) => "🟡",
+            Rgb([0, 255, 255]) => "🟢",
+            Rgb([0, 0, 255]) => "🔵",
+            Rgb([255, 0, 255]) => "🟣",
+            Rgb([192, 0, 0]) => "🟥",
+            Rgb([192, 192, 0]) => "🟧",
+            Rgb([0, 192, 0]) => "🟨",
+            Rgb([0, 192, 192]) => "🟩",
+            Rgb([0, 0, 192]) => "🟦",
+            Rgb([192, 0, 192]) => "🟪",
+            Rgb([0, 0, 0]) => "⚫",
+            _ => "⚪", // Whitespace if not exact color
+        }.into()
     }
 }
 
