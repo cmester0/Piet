@@ -1,0 +1,50 @@
+push 84  # 4
+push 33  # 4
+push 145 # 3
+push 132 # 3
+push 631 # 2
+push 664 # 2
+push 123 # 1
+push 132 # 1
+push 52  # 0
+push 12  # 0
+
+push -1
+
+append
+append
+append
+append
+append
+append
+append
+append
+append
+append
+
+dup
+
+push 123 # is (123, 132) in list?
+push 132
+push 2
+
+push 4
+get_at_depth
+
+in
+outN
+
+push 631 # is (631, 321) in list?
+push 321
+push 2
+
+push 4
+get_at_depth
+
+in
+outN
+
+push 10
+outC
+
+goto term

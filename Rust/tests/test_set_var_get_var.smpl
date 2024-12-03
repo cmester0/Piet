@@ -1,0 +1,6 @@
+var x num
+push 42
+set x
+get x
+outN
+goto term

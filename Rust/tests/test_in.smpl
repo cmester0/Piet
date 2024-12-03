@@ -1,0 +1,38 @@
+push 84  # 4
+push 145 # 3
+push 631 # 2
+push 123 # 1
+push 52  # 0
+
+push -1
+
+append
+append
+append
+append
+append
+
+dup
+
+push 123 # is 123 in list?
+push 1
+
+push 3
+get_at_depth
+
+in
+outN
+
+push 321 # is 321 in list?
+push 1
+
+push 3
+get_at_depth
+
+in
+outN
+
+push 10
+outC
+
+goto term

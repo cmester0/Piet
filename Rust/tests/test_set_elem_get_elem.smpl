@@ -1,0 +1,37 @@
+var x list
+
+push 13 # 4
+push 14 # 3
+push 15 # 2
+push 32 # 1
+push 29 # 0
+get x
+append
+append
+append
+append
+append
+set x
+
+push 3
+get x
+get_elem
+
+outN
+push 10
+outC
+
+push 11
+push 3
+get x
+set_elem
+
+push 3
+get x
+get_elem
+
+outN
+push 10
+outC
+
+goto term
