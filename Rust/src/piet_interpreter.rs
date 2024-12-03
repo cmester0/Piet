@@ -129,14 +129,14 @@ impl CMD {
             CMD::OutN => {
                 let a = stack.pop()?;
                 let output = output.as_mut().unwrap();
-                write!(output,"'{}'", a).unwrap();
+                write!(output,"{}", a).unwrap();
                 output.flush().unwrap();
             }
             CMD::OutC => {
                 let a = stack.pop()?;
                 let c = char::from_u32(a as u32).unwrap();
                 let output = output.as_mut().unwrap();
-                write!(output,"'{}'", c).unwrap();
+                write!(output,"{}", c).unwrap();
                 output.flush().unwrap();
             }
             CMD::Pointer => {
