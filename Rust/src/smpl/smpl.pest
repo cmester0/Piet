@@ -19,8 +19,14 @@ Variables = { (Variable ~ NEWLINE*)* } // variables +
 Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }
 VarType = { "list" | "num" }
 
-Block = { "label" ~ SEPARATOR ~ Name ~ NEWLINE* ~ SubBlock } // +
-SubBlock = { COMMENT | (Expr ~ NEWLINE*)* }  // ~ Expr | Expr
+NewLabel = { "!" ~ Name }
+
+LabelName = { Name }
+LabelRef = { "." ~ Name }
+Label = { LabelName | LabelRef }
+
+Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
+SubBlock = { COMMENT | ((Expr | NewLabel) ~ NEWLINE*)* }  // ~ Expr | Expr
 
 Push = { "push" }
 Pop = { "pop" }
@@ -59,8 +65,8 @@ Expr = {
   | Dup
   | InN
   | InC
-  | Goto ~ SEPARATOR ~ Name
-  | Branch ~ SEPARATOR ~ Name ~ SEPARATOR ~ Name
+  | Goto ~ SEPARATOR ~ Label
+  | Branch ~ SEPARATOR ~ Label ~ SEPARATOR ~ Label
   | Debug
   | OutC
   | OutN

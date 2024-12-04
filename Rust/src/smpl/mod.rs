@@ -6,6 +6,8 @@ use pest::*;
 use pest_derive::Parser;
 use std::collections::HashMap;
 
+use crate::piet_interpreter::CMD;
+
 #[derive(Clone)]
 pub enum Variable {
     NUM(isize),
@@ -23,6 +25,7 @@ impl Variable {
 
 pub struct SmplExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
+    pub block_index: HashMap<String, usize>,
     pub variables: HashMap<String, Variable>,
     pub stack: Vec<isize>,
     pub label: String,
@@ -34,13 +37,14 @@ pub struct SmplParser;
 
 pub fn parse_string(
     unparsed: &str,
-) -> (HashMap<String, Vec<Expr>>, HashMap<String, Variable>) {
+) -> (HashMap<String, Vec<Expr>>, HashMap<String, usize>, HashMap<String, Variable>) {
     let document = SmplParser::parse(Rule::Document, unparsed)
         .expect("unsuccessful parse")
         .next()
         .unwrap();
 
     let mut blocks: HashMap<String, Vec<Expr>> = HashMap::new();
+    let mut block_index: HashMap<String, usize> = HashMap::new();
     let mut variables: HashMap<String, Variable> = HashMap::new();
 
     match document.as_rule() {
@@ -85,11 +89,15 @@ pub fn parse_string(
                 pre_main = v.next().unwrap();
             }
 
+            let mut label_map : HashMap<String, String> = HashMap::new();
+            let mut label_count = 0;
+
             let main = pre_main;
 
             match main.as_rule() {
                 Rule::SubBlock => {
-                    blocks.insert(String::from("main"), main.into_inner().map(|x| parse_expr(x)).collect());
+                    blocks.insert(String::from("main"), main.into_inner().map(|x| parse_expr(x, &label_map)).collect());
+                    block_index.insert(String::from("main"), 0);
                 }
                 _ => panic!(),
             }
@@ -99,20 +107,45 @@ pub fn parse_string(
                 if block.size_hint().0 == 0 {
                     continue;
                 }
-                let name = block.next().unwrap().as_str();
+
+                let label = block.next().unwrap();
+                let name = match Label::parse_label(label, &label_map) {
+                    Label::Name(name) => {
+                        blocks.insert(name.clone(), vec![]);
+                        block_index.insert(name.clone(), block_index.len());
+                        name
+                    },
+                    Label::Ref(name) => {
+                        name
+                    },
+                };
+
                 let sub_block = block.next().unwrap();
-                blocks.insert(
-                    String::from(name),
-                    sub_block.into_inner().map(|x| parse_expr(x)).collect(),
-                );
+
+                for x in sub_block.into_inner() {
+                    match x.as_rule() {
+                        Rule::NewLabel => {
+                            let ref_label = String::from(x.into_inner().next().unwrap().as_str());
+                            let actual_label = format!("l_ref_{}", label_count);
+                            label_count += 1;
+                            label_map.insert(ref_label, actual_label.clone());
+                            blocks.insert(actual_label.clone(), vec![Expr::Instr(CMD::Nop)]);
+                            block_index.insert(actual_label.clone(), block_index.len());
+                        },
+                        Rule::Expr =>
+                            blocks.get_mut(&name).unwrap().push(parse_expr(x, &label_map)),
+                        _ => panic!(),
+                    }
+                }
             }
 
             blocks.insert(String::from("term"), vec![]); // TODO
+            block_index.insert(String::from("term"), block_index.len());
         }
         _ => panic!(),
     }
 
-    (blocks, variables)
+    (blocks, block_index, variables)
 }
 
 impl SmplExecutor {
@@ -128,15 +161,15 @@ impl SmplExecutor {
                 false
             }
             Expr::Goto(l) => {
-                self.label = l;
+                self.label = l.get_label_name();
                 true
             }
             Expr::Branch(thn, els) => {
                 let a = self.stack.pop().unwrap();
                 if a == 0 {
-                    self.label = els;
+                    self.label = els.get_label_name();
                 } else {
-                    self.label = thn;
+                    self.label = thn.get_label_name();
                 }
                 true
             }
@@ -182,9 +215,10 @@ impl SmplExecutor {
     pub fn new(
         unparsed: &str,
     ) -> Self {
-        let (blocks, variables) = parse_string(unparsed);
+        let (blocks, block_index, variables) = parse_string(unparsed);
         SmplExecutor {
             blocks,
+            block_index,
             variables,
             stack: Vec::new(),
             label: String::from("main"),

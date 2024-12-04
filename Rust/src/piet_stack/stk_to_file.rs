@@ -59,6 +59,7 @@ impl super::PietStackExecutor {
                         Comment(s) => writeln!(stk_output, "# {}", s).unwrap(),
                     }
                 }
+                writeln!(stk_output,"");
             }
         }
         String::from_utf8(stk_byt_out).unwrap()

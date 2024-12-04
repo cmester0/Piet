@@ -118,8 +118,8 @@ impl PietStackExecutor {
     pub fn new(unparsed: &str) -> Self {
         let (blocks, block_index) = parse_string(unparsed);
         PietStackExecutor {
-            blocks: blocks,
-            block_index: block_index,
+            blocks,
+            block_index,
             stack: Vec::new(),
             label: String::from("main"),
         }

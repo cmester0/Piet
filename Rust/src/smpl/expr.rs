@@ -3,15 +3,50 @@ use pest::iterators::Pair;
 use super::Rule;
 use crate::piet_interpreter::CMD;
 
+use std::collections::HashMap;
+
+#[derive(Debug, Clone)]
+pub enum Label {
+    Name(String),
+    Ref(String),
+}
+
+impl Label {
+    pub fn parse_label(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Label {
+        if e.as_rule() != Rule::Label {
+            panic!()
+        }
+        let n = e.into_inner().next().unwrap();
+        match n.as_rule() {
+            Rule::LabelName => {
+                let name = n.as_str();
+                Label::Name(String::from(name))
+            }
+            Rule::LabelRef => {
+                let label_ref: &str = n.into_inner().next().unwrap().as_str();
+                let name = label_map[&String::from(label_ref)].clone();
+                Label::Ref(String::from(name))
+            }
+            _ => panic!(),
+        }
+    }
+
+    pub fn get_label_name(self) -> String {
+        match self {
+            Label::Name(n) | Label::Ref(n) => n,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Expr {
     Instr(CMD),
-    Goto(String),
-    Branch(String, String),
+    Goto(Label),
+    Branch(Label, Label),
     Debug,
 
+    // Lib(String),
     Eq,
-
     Set(String),
     Get(String),
 
@@ -19,7 +54,7 @@ pub enum Expr {
 }
 use Expr::*;
 
-pub fn parse_expr(e: Pair<Rule>) -> Expr {
+pub fn parse_expr(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Expr {
     if e.as_rule() != Rule::Expr {
         panic!()
     }
@@ -44,10 +79,10 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
         Rule::Dup => Instr(CMD::Dup),
         Rule::InN => Instr(CMD::InN),
         Rule::InC => Instr(CMD::InC),
-        Rule::Goto => Goto(String::from(e.next().unwrap().as_str())),
+        Rule::Goto => Goto(Label::parse_label(e.next().unwrap(), label_map)),
         Rule::Branch => Branch(
-            String::from(e.next().unwrap().as_str()),
-            String::from(e.next().unwrap().as_str()),
+            Label::parse_label(e.next().unwrap(), label_map),
+            Label::parse_label(e.next().unwrap(), label_map),
         ),
         Rule::Debug => Debug,
         Rule::OutC => Instr(CMD::OutC),
