@@ -86,7 +86,6 @@ impl CMD {
             }
             CMD::Roll => {
                 if stack.len() < 2 || stack[stack.len()-2] < 0 { return None }
-                // println!("ROLL");
                 let mut a = stack.pop()?;
                 let b = stack.pop()?;
                 // if b == 0 { return None }
@@ -120,10 +119,11 @@ impl CMD {
                     break;
                 }
 
-                if input.size_hint().0 == 0 {
+                println!("input {:?} {:?}", input.size_hint(), char_vec);
+                if input.size_hint().0 == 0 && char_vec.len() == 0 {
                     stack.push(-1isize);
-                } else if char_vec.len() == 0 {
-                    // stack.push(-1isize);
+                // } else if char_vec.len() == 0 {
+                //     // stack.push(-1isize);
                 } else {
                     stack.push(
                         char_vec
@@ -147,7 +147,6 @@ impl CMD {
                 if stack.len() < 1 { return None }
                 let a = stack.pop()?;
                 let output = output.as_mut().unwrap();
-                print!("{}",a);
                 write!(output,"{}", a).unwrap();
                 output.flush().unwrap();
             }
@@ -156,7 +155,6 @@ impl CMD {
                 let a = stack.pop()?;
                 let c = char::from_u32(a as u32).unwrap();
                 let output = output.as_mut().unwrap();
-                print!("{}",c);
                 write!(output,"{}", c).unwrap();
                 output.flush().unwrap();
             }

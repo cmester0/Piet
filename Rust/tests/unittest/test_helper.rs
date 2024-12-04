@@ -37,7 +37,7 @@ pub fn stk_to_piet(filepath: &str, output: &str) {
 }
 
 pub fn run_piet(img_path: &str, input: &str) -> String {
-    let str_inp: Box<dyn std::io::Read> = Box::new("".as_bytes());
+    let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
     let piet_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
 
     let mut piet_byt_out = vec![];
@@ -51,14 +51,16 @@ pub fn run_piet(img_path: &str, input: &str) -> String {
 
 pub fn test_stk_vs_piet(path: &str, input: &str, output: &str) {
     let stk_str = run_stk(format!("{}.stk", path).as_str(), input);
+    println!("STACK DONE\n");
 
-    assert_eq!(stk_str, output);
+    assert_eq!(stk_str, output, "STACK FAILED");
 
     stk_to_piet(
         format!("{}.stk", path).as_str(),
         format!("{}.png", path).as_str(),
     );
     let piet_str = run_piet(format!("{}.png", path).as_str(), input);
+    println!("PIET DONE\n");
 
-    assert_eq!(piet_str, output);
+    assert_eq!(piet_str, output, "PIET FAILED");
 }

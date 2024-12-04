@@ -169,33 +169,20 @@ impl<'a> super::PietStackExecutor<'a> {
         (b_x, b_y): (usize, usize),
     ) -> Vec<Expr<'a>> {
         let mut goto_exprs: Vec<Expr> = vec![];
-        if b_x == 0 {
-            goto_exprs.push(Instr(CMD::Push(1)));
-            goto_exprs.push(Instr(CMD::Not));
-        } else {
-            goto_exprs.push(Instr(CMD::Push(b_x as isize)));
-        }
-        if b_y == 0 {
-            goto_exprs.push(Instr(CMD::Push(1)));
-            goto_exprs.push(Instr(CMD::Not));
-        } else {
-            goto_exprs.push(Instr(CMD::Push(b_y as isize)));
-        }
-        // goto_exprs.extend(
-        //     optimizer
-        //         .optimize_number(b_x)
-        //         .into_iter()
-        //         .map(Instr)
-        //         .collect::<Vec<Expr>>(),
-        // );
-        // goto_exprs.extend(
-        //     optimizer
-        //         .optimize_number(b_y)
-        //         .into_iter()
-        //         .map(Instr)
-        //         .collect::<Vec<Expr>>(),
-        // );
-        println!("GOTO: {:?}", goto_exprs);
+        goto_exprs.extend(
+            optimizer
+                .optimize_number(b_x)
+                .into_iter()
+                .map(Instr)
+                .collect::<Vec<Expr>>(),
+        );
+        goto_exprs.extend(
+            optimizer
+                .optimize_number(b_y)
+                .into_iter()
+                .map(Instr)
+                .collect::<Vec<Expr>>(),
+        );
         goto_exprs
     }
 
@@ -283,10 +270,6 @@ impl<'a> super::PietStackExecutor<'a> {
                 ));
 
                 let goto_statement_2: Vec<_> = Self::make_block(goto_exprs_2).0;
-
-                println!("GOTO1: {:?}", goto_statement_1);
-                println!("GOTO2: {:?}", goto_statement_2);
-                println!();
 
                 mid_blocks.insert(
                     x,
@@ -460,8 +443,6 @@ impl<'a> super::PietStackExecutor<'a> {
             arr[(xi + 1, yi)] = "⚫";
             arr[(xi, yi + gap + 2)] = "⚫";
         }
-
-        println! ("{:?}", final_blocks);
 
         // Draw all the code blocks
         for (x, (bx, bx_branch)) in final_blocks {

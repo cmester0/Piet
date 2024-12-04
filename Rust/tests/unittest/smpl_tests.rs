@@ -7,10 +7,10 @@ pub fn test_set_var_get_var() {
     test_stk_vs_piet("./tests/test_set_var_get_var", "", "42");
 }
 
-// #[test]
-// pub fn test_length() {
-//     test_stk_vs_piet("./tests/test_length", "", "7\n");
-// }
+#[test]
+pub fn test_length() {
+    test_stk_vs_piet("./tests/test_length", "", "7\n");
+}
 
 #[test]
 pub fn test_eq0() {
@@ -24,14 +24,11 @@ pub fn test_eq1() {
 
 #[test]
 pub fn test_append() {
-    // let stk_str = run_stk(format!("{}.stk", "./tests/test_append_optim").as_str(), "");
-
-    // assert_eq!(stk_str, "[114,119,113,115,110,]\n");
-
-    test_stk_vs_piet("./tests/test_append_optim", "", "[114,119,113,115,110,]\n");
+    test_stk_vs_piet("./tests/test_append", "", "[114,119,113,115,110,]\n");
 }
 
 #[test]
+#[allow(non_snake_case)]
 pub fn test_print_listC() {
     test_stk_vs_piet("./tests/test_print_listC", "", "hello world\n");
 }
@@ -45,7 +42,7 @@ pub fn test_readlines() {
 
 #[test]
 pub fn test_swap() {
-    test_stk_vs_piet("./tests/test_swap", "23 43", "23 43");
+    test_stk_vs_piet("./tests/test_swap", "23 43\n", "23 43");
 }
 
 #[test]
