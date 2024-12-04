@@ -119,7 +119,6 @@ impl CMD {
                     break;
                 }
 
-                println!("input {:?} {:?}", input.size_hint(), char_vec);
                 if input.size_hint().0 == 0 && char_vec.len() == 0 {
                     stack.push(-1isize);
                 // } else if char_vec.len() == 0 {
