@@ -3,11 +3,11 @@ use pest::iterators::Pair;
 use super::Rule;
 use crate::piet_interpreter::CMD;
 
-#[derive(Debug, Copy, Clone)]
-pub enum Expr<'a> {
+#[derive(Debug, Clone)]
+pub enum Expr {
     Instr(CMD),
-    Goto(&'a str),
-    Branch(&'a str, &'a str),
+    Goto(String),
+    Branch(String, String),
     Debug,
 }
 use Expr::*;
@@ -30,8 +30,8 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
         Rule::Dup => Instr(CMD::Dup),
         Rule::InN => Instr(CMD::InN),
         Rule::InC => Instr(CMD::InC),
-        Rule::Goto => Goto(e.next().unwrap().as_str()),
-        Rule::Branch => Branch(e.next().unwrap().as_str(), e.next().unwrap().as_str()),
+        Rule::Goto => Goto(String::from(e.next().unwrap().as_str())),
+        Rule::Branch => Branch(String::from(e.next().unwrap().as_str()), String::from(e.next().unwrap().as_str())),
         Rule::Debug => Debug,
         Rule::OutC => Instr(CMD::OutC),
         Rule::OutN => Instr(CMD::OutN),

@@ -6,16 +6,17 @@ use crate::{
     piet_interpreter::CMD::{self, *},
     piet_stack::PietStackExecutor,
 };
+use std::borrow::Borrow;
 use std::collections::HashMap;
 use crate::smpl::*;
 
-pub struct SmplToStk<'a> {
-    smpl_executor: SmplExecutor<'a>,
-    stk_executor: PietStackExecutor<'a>,
-    var_index: HashMap<&'a str, usize>,
+pub struct SmplToStk {
+    smpl_executor: SmplExecutor,
+    stk_executor: PietStackExecutor,
+    var_index: HashMap<String, usize>,
 }
 
-impl<'a> SmplToStk<'a> {
+impl SmplToStk {
     fn c_add(&mut self, n : isize) {
         self.add_cmd(Push(n));
         self.add_cmd(Add);
@@ -34,13 +35,23 @@ impl<'a> SmplToStk<'a> {
         self.add_cmd(Greater);
         self.add_cmd(Not);
     }
+
+    fn c_binop(&mut self, op : CMD) {
+        self.add_cmd(Push(3));
+        self.add_cmd(Push(1));
+        self.add_cmd(Roll);
+        self.add_cmd(op);
+        self.swap();
+        self.add_cmd(Push(-1));
+        self.add_cmd(Add);
+    }
 }
 
-impl<'a> SmplToStk<'a> {
+impl SmplToStk {
     fn add_cmd(&mut self, c: CMD) {
         self.stk_executor
             .blocks
-            .get_mut(self.stk_executor.label)
+            .get_mut(&self.stk_executor.label)
             .unwrap()
             .push(Instr(c));
     }
@@ -48,7 +59,7 @@ impl<'a> SmplToStk<'a> {
     fn add_cmds(&mut self, c: Vec<CMD>) {
         self.stk_executor
             .blocks
-            .get_mut(self.stk_executor.label)
+            .get_mut(&self.stk_executor.label)
             .unwrap()
             .extend(c.into_iter().map(Instr).collect::<Vec<_>>());
     }
@@ -60,14 +71,14 @@ impl<'a> SmplToStk<'a> {
             Roll]);
     }
 
-    // fn dup_value_x_deep(x: isize) -> Vec<Expr<'a>> {
+    // fn dup_value_x_deep(x: isize) -> Vec<Expr> {
     //     vec![Push(x), Push(-1), Roll, Dup, Push(x + 1), Push(1), Roll]
     //         .into_iter()
     //         .map(Instr)
     //         .collect()
     // }
 
-    pub fn add_var(&mut self, var_name: &'a str, var_type: Variable) {
+    pub fn add_var(&mut self, var_name: String, var_type: Variable) {
         // Set variable index
         // (var_index.len() - var_index[i]) is actual index
         self.var_index.insert(var_name, self.var_index.len());
@@ -127,6 +138,35 @@ impl<'a> SmplToStk<'a> {
                         self.add_cmd(Not);
                         self.swap();
                     },
+                    Add | Greater | Sub | Div | Mod | Mul => {
+                        self.c_binop(c);
+                    }
+                    Dup => {
+                        self.swap();
+                        self.add_cmd(Dup);
+                        self.add_cmd(Push(3));
+                        self.add_cmd(Push(-1));
+                        self.add_cmd(Roll);
+                        self.add_cmd(Push(1));
+                        self.add_cmd(Add);
+                    }
+                    InN => {
+                        let new_index = self.stk_executor.block_index.len().clone();
+                        let new_block_label = format!("l{}", new_index);
+                        // let new_block_label : &'a str = new_block_label.as_str();
+
+                        // self.stk_executor
+                        //     .blocks
+                        //     .get_mut(self.stk_executor.label)
+                        //     .unwrap()
+                        //     .push(Goto(new_block_label));
+
+                        // self.stk_executor
+                        //     .blocks
+                        //     .insert(new_block_label.as_str(), vec![]);
+                        
+                        // self.stk_executor.label = new_block_label.as_str();
+                    }
                     _ => todo!(),
                 }
             },
@@ -137,18 +177,6 @@ impl<'a> SmplToStk<'a> {
     //         index = len(instrs)
     //         next_index = len(instrs)
     //         instrs.append((l[1], []))
-
-    //     case "add" | "greater" | "sub" | "div" | "mod" | "mul":
-    //         binop(instrs, index, l[0])
-
-    //     case "dup":
-    //         swap(instrs, index)
-    //         instrs[index][1].append("dup")
-    //         instrs[index][1].append("push 3")
-    //         instrs[index][1].append("push -1")
-    //         instrs[index][1].append("roll")
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("add")
 
     //     case "inN":
     //         label_index = len(instrs)
@@ -1017,14 +1045,14 @@ impl<'a> SmplToStk<'a> {
 
     }
 
-    pub fn to_stk(executor: SmplExecutor<'a>) -> PietStackExecutor<'a> {
+    pub fn to_stk(executor: SmplExecutor) -> PietStackExecutor {
         let mut smpl_to_stk = SmplToStk {
             smpl_executor: executor,
             stk_executor: PietStackExecutor {
                 blocks: HashMap::new(),
                 block_index: HashMap::new(),
                 stack: vec![],
-                label: "main",
+                label: String::from("main"),
             },
             var_index: HashMap::new(),
         };
@@ -1033,8 +1061,8 @@ impl<'a> SmplToStk<'a> {
         smpl_to_stk
             .stk_executor
             .blocks
-            .insert("main", vec![Instr(Push(0)), Instr(Push(1))]);
-        smpl_to_stk.stk_executor.block_index.insert("main", 0);
+            .insert(String::from("main"), vec![Instr(Push(0)), Instr(Push(1))]);
+        smpl_to_stk.stk_executor.block_index.insert(String::from("main"), 0);
 
         // var_list = add_var(var_list, "__R0__", "num")
         // var_list = add_var(var_list, "__R1__", "num")

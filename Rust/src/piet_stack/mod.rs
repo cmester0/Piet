@@ -18,25 +18,25 @@ use std::collections::HashMap;
 
 mod stk_to_piet;
 
-pub struct PietStackExecutor<'a> {
-    pub blocks: HashMap<&'a str, Vec<Expr<'a>>>,
-    pub block_index: HashMap<&'a str, usize>,
+pub struct PietStackExecutor {
+    pub blocks: HashMap<String, Vec<Expr>>,
+    pub block_index: HashMap<String, usize>,
     pub stack: Vec<isize>,
-    pub label: &'a str,
+    pub label: String,
 }
 
 #[derive(Parser)]
 #[grammar = "piet_stack/piet_stack.pest"] // relative to src
 pub struct PietStackParser;
 
-pub fn parse_string<'a>(unparsed: &'a str) -> (HashMap<&str, Vec<Expr>>, HashMap<&str, usize>) {
+pub fn parse_string(unparsed: &str) -> (HashMap<String, Vec<Expr>>, HashMap<String, usize>) {
     let document = PietStackParser::parse(Rule::Document, unparsed)
         .expect("unsuccessful parse")
         .next()
         .unwrap();
 
-    let mut blocks: HashMap<&str, Vec<Expr>> = HashMap::new();
-    let mut block_index: HashMap<&str, usize> = HashMap::new();
+    let mut blocks: HashMap<String, Vec<Expr>> = HashMap::new();
+    let mut block_index: HashMap<String, usize> = HashMap::new();
 
     match document.as_rule() {
         Rule::Document => {
@@ -52,15 +52,15 @@ pub fn parse_string<'a>(unparsed: &'a str) -> (HashMap<&str, Vec<Expr>>, HashMap
                 let name = block.next().unwrap().as_str();
                 let sub_block = block.next().unwrap();
                 blocks.insert(
-                    name,
+                    String::from(name),
                     sub_block.into_inner().map(|x| parse_expr(x)).collect(),
                 );
-                block_index.insert(name, bi);
+                block_index.insert(String::from(name), bi);
                 bi += 1;
             }
 
-            blocks.insert("term", vec![]); // TODO
-            block_index.insert("term", bi); // TODO
+            blocks.insert(String::from("term"), vec![]); // TODO
+            block_index.insert(String::from("term"), bi); // TODO
         }
         _ => panic!(),
     }
@@ -68,10 +68,10 @@ pub fn parse_string<'a>(unparsed: &'a str) -> (HashMap<&str, Vec<Expr>>, HashMap
     (blocks, block_index)
 }
 
-impl<'a> PietStackExecutor<'a> {
+impl PietStackExecutor {
     fn interpret_expr<I: std::io::Read, O: std::io::Write>(
         &mut self,
-        e: Expr<'a>,
+        e: Expr,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> bool {
@@ -103,11 +103,11 @@ impl<'a> PietStackExecutor<'a> {
 
     pub fn interpret<I: std::io::Read, O: std::io::Write>(
         &mut self,
-        input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &'a mut Option<O>,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
     ) {
         while self.label != "term" {
-            for expr in self.blocks[self.label].clone() {
+            for expr in self.blocks[&self.label].clone() {
                 if self.interpret_expr(expr.clone(), input, output) {
                     break;
                 }
@@ -115,20 +115,20 @@ impl<'a> PietStackExecutor<'a> {
         }
     }
 
-    pub fn new(unparsed: &'a str) -> Self {
+    pub fn new(unparsed: &str) -> Self {
         let (blocks, block_index) = parse_string(unparsed);
         PietStackExecutor {
             blocks: blocks,
             block_index: block_index,
             stack: Vec::new(),
-            label: "main",
+            label: String::from("main"),
         }
     }
 
     pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
-        unparsed: &'a str,
-        input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &'a mut Option<O>,
+        unparsed: &str,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
     ) {
         Self::new(unparsed).interpret(input, output);
     }

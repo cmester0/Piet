@@ -21,27 +21,27 @@ impl Variable {
     }
 }
 
-pub struct SmplExecutor<'a> {
-    pub blocks: HashMap<&'a str, Vec<Expr<'a>>>,
-    pub variables: HashMap<&'a str, Variable>,
+pub struct SmplExecutor {
+    pub blocks: HashMap<String, Vec<Expr>>,
+    pub variables: HashMap<String, Variable>,
     pub stack: Vec<isize>,
-    pub label: &'a str,
+    pub label: String,
 }
 
 #[derive(Parser)]
 #[grammar = "smpl/smpl.pest"] // relative to src
 pub struct SmplParser;
 
-pub fn parse_string<'a>(
-    unparsed: &'a str,
-) -> (HashMap<&str, Vec<Expr>>, HashMap<&'a str, Variable>) {
+pub fn parse_string(
+    unparsed: &str,
+) -> (HashMap<String, Vec<Expr>>, HashMap<String, Variable>) {
     let document = SmplParser::parse(Rule::Document, unparsed)
         .expect("unsuccessful parse")
         .next()
         .unwrap();
 
-    let mut blocks: HashMap<&str, Vec<Expr>> = HashMap::new();
-    let mut variables: HashMap<&str, Variable> = HashMap::new();
+    let mut blocks: HashMap<String, Vec<Expr>> = HashMap::new();
+    let mut variables: HashMap<String, Variable> = HashMap::new();
 
     match document.as_rule() {
         Rule::Document => {
@@ -66,11 +66,11 @@ pub fn parse_string<'a>(
 
                                     match var_type.as_str() {
                                         "num" => {
-                                            variables.insert(name.as_str(), Variable::NUM(0isize));
+                                            variables.insert(String::from(name.as_str()), Variable::NUM(0isize));
                                         }
                                         "list" => {
                                             variables
-                                                .insert(name.as_str(), Variable::LIST(Vec::new()));
+                                                .insert(String::from(name.as_str()), Variable::LIST(Vec::new()));
                                         }
                                         _ => (),
                                     }
@@ -89,7 +89,7 @@ pub fn parse_string<'a>(
 
             match main.as_rule() {
                 Rule::SubBlock => {
-                    blocks.insert("main", main.into_inner().map(|x| parse_expr(x)).collect());
+                    blocks.insert(String::from("main"), main.into_inner().map(|x| parse_expr(x)).collect());
                 }
                 _ => panic!(),
             }
@@ -102,12 +102,12 @@ pub fn parse_string<'a>(
                 let name = block.next().unwrap().as_str();
                 let sub_block = block.next().unwrap();
                 blocks.insert(
-                    name,
+                    String::from(name),
                     sub_block.into_inner().map(|x| parse_expr(x)).collect(),
                 );
             }
 
-            blocks.insert("term", vec![]); // TODO
+            blocks.insert(String::from("term"), vec![]); // TODO
         }
         _ => panic!(),
     }
@@ -115,10 +115,10 @@ pub fn parse_string<'a>(
     (blocks, variables)
 }
 
-impl<'a> SmplExecutor<'a> {
+impl SmplExecutor {
     fn interpret_expr<I: std::io::Read, O: std::io::Write>(
         &mut self,
-        e: Expr<'a>,
+        e: Expr,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> bool {
@@ -151,7 +151,7 @@ impl<'a> SmplExecutor<'a> {
                 false
             }
             Expr::Get(s) => {
-                self.stack.push(self.variables[s].clone().value());
+                self.stack.push(self.variables[&s].clone().value());
                 false
             }
             Expr::Set(s) => {
@@ -164,11 +164,11 @@ impl<'a> SmplExecutor<'a> {
 
     pub fn interpret<I: std::io::Read, O: std::io::Write>(
         &mut self,
-        input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &'a mut Option<O>,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
     ) {
         while self.label != "term" {
-            for expr in self.blocks[self.label].clone() {
+            for expr in self.blocks[&self.label].clone() {
                 if self.interpret_expr(expr, input, output) {
                     break;
                 }
@@ -177,21 +177,21 @@ impl<'a> SmplExecutor<'a> {
     }
 
     pub fn new(
-        unparsed: &'a str,
+        unparsed: &str,
     ) -> Self {
         let (blocks, variables) = parse_string(unparsed);
         SmplExecutor {
             blocks,
             variables,
             stack: Vec::new(),
-            label: "main",
+            label: String::from("main"),
         }
     }
 
     pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
-        unparsed: &'a str,
-        input: &'a mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &'a mut Option<O>,
+        unparsed: &str,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
     ) {
         SmplExecutor::new(unparsed).interpret(input, output);
     }

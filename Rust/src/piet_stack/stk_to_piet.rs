@@ -12,18 +12,18 @@ use ndarray::Ix2;
 use std::cmp;
 use std::collections::HashMap;
 
-impl<'a> super::PietStackExecutor<'a> {
-    fn index_and_command_to_color_and_next_index(cmd: CMD, output: &mut Vec<&str>) {
-        let (mut previous_c, mut previous_r): (usize, usize) = REV_MAP[output[output.len() - 1]];
+impl super::PietStackExecutor {
+    fn index_and_command_to_color_and_next_index(cmd: CMD, output: &mut Vec<String>) {
+        let (mut previous_c, mut previous_r): (usize, usize) = REV_MAP[&output[output.len() - 1]];
         match cmd {
             CMD::Nop => {
-                output.push("⚪");
-                output.push("🔴");
+                output.push(String::from("⚪"));
+                output.push(String::from("🔴"));
                 return
             }
             CMD::Push(i) => {
                 for _ in 0..(i - 1) {
-                    output.push(COLORS[previous_r][previous_c]);
+                    output.push(String::from(COLORS[previous_r][previous_c]));
                 }
                 previous_r = (previous_r + 1) % 3
             }
@@ -86,12 +86,12 @@ impl<'a> super::PietStackExecutor<'a> {
                 previous_r = (previous_r + 2) % 3;
             }
         }
-        output.push(COLORS[previous_r][previous_c])
+        output.push(String::from(COLORS[previous_r][previous_c]))
     }
 
-    fn make_block(block: Vec<Expr<'a>>) -> (Vec<&'a str>, (Option<&'a str>, Option<&'a str>)) {
+    fn make_block(block: Vec<Expr>) -> (Vec<String>, (Option<String>, Option<String>)) {
         let mut output = Vec::new();
-        output.push("🔴");
+        output.push(String::from("🔴"));
         for inp in block {
             match inp {
                 Branch(t, e) => return (output, (Some(t), Some(e))),
@@ -108,10 +108,10 @@ impl<'a> super::PietStackExecutor<'a> {
     }
 
     fn split_in_blocks(
-        to_split: Vec<&str>,
+        to_split: Vec<String>,
         j_width: usize,
         going_right: bool,
-    ) -> (Vec<Vec<&str>>, bool) {
+    ) -> (Vec<Vec<String>>, bool) {
         let mut block_blocks = vec![];
         let mut offset = 0;
         let mut running = true;
@@ -167,7 +167,7 @@ impl<'a> super::PietStackExecutor<'a> {
     fn goto_block_coord(
         optimizer: &mut StackOptimizer,
         (b_x, b_y): (usize, usize),
-    ) -> Vec<Expr<'a>> {
+    ) -> Vec<Expr> {
         let mut goto_exprs: Vec<Expr> = vec![];
         goto_exprs.extend(
             optimizer
@@ -186,14 +186,14 @@ impl<'a> super::PietStackExecutor<'a> {
         goto_exprs
     }
 
-    pub fn to_png(optimizer: &mut StackOptimizer, unparsed: &'a str) -> image::RgbImage {
+    pub fn to_png(optimizer: &mut StackOptimizer, unparsed: &str) -> image::RgbImage {
         let (parsed_blocks, block_index) = super::parse_string(unparsed);
 
         let pbl = parsed_blocks.len();
         let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
-        let mut blocks: HashMap<&str, (Vec<&str>, (Option<&str>, Option<&str>))> = HashMap::new();
+        let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>))> = HashMap::new();
 
         for (k, b) in parsed_blocks {
             let mut nb = vec![];
@@ -229,12 +229,12 @@ impl<'a> super::PietStackExecutor<'a> {
                 }
             }
 
-            blocks.insert(k, Self::make_block(nb));
+            blocks.insert(String::from(k), Self::make_block(nb));
         }
 
         let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
 
-        let mut mid_blocks: HashMap<&str, (Vec<&str>, (Option<Vec<&str>>, Option<Vec<&str>>))> =
+        let mut mid_blocks: HashMap<String, (Vec<String>, (Option<Vec<String>>, Option<Vec<String>>))> =
             HashMap::new();
 
         for (x, (x_vec, (x_t, x_e))) in blocks {
@@ -242,7 +242,7 @@ impl<'a> super::PietStackExecutor<'a> {
                 // is goto
                 let goto_statement = Self::make_block(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[x_t.unwrap()]),
+                    id_to_coord(block_index[&x_t.unwrap()]),
                 ))
                 .0;
 
@@ -254,7 +254,7 @@ impl<'a> super::PietStackExecutor<'a> {
                 goto_exprs_1.push(Instr(CMD::Nop));
                 goto_exprs_1.extend(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[x_t.unwrap()]),
+                    id_to_coord(block_index[&x_t.unwrap()]),
                 ));
 
 
@@ -266,7 +266,7 @@ impl<'a> super::PietStackExecutor<'a> {
                 goto_exprs_2.push(Instr(CMD::Nop));
                 goto_exprs_2.extend(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[x_e.unwrap()]),
+                    id_to_coord(block_index[&x_e.unwrap()]),
                 ));
 
                 let goto_statement_2: Vec<_> = Self::make_block(goto_exprs_2).0;
@@ -286,7 +286,7 @@ impl<'a> super::PietStackExecutor<'a> {
         // // # Split blocks
         let j_width = cmp::max(30, cmp::max(b_width, b_height) / 5);
 
-        let mut final_blocks: HashMap<&str, (Vec<Vec<&str>>, Vec<&str>)> = HashMap::new();
+        let mut final_blocks: HashMap<String, (Vec<Vec<String>>, Vec<String>)> = HashMap::new();
 
         for (x, (bx, (bx_t, bx_e))) in mid_blocks {
             let (mut splits, going_right) = Self::split_in_blocks(bx, j_width, true);
@@ -321,8 +321,8 @@ impl<'a> super::PietStackExecutor<'a> {
         optimizer: &mut StackOptimizer,
         b_width: usize,
         b_height: usize,
-        final_blocks: HashMap<&str, (Vec<Vec<&str>>, Vec<&str>)>,
-        block_index: HashMap<&str, usize>,
+        final_blocks: HashMap<String, (Vec<Vec<String>>, Vec<String>)>,
+        block_index: HashMap<String, usize>,
         j_width: usize,
     ) -> image::RgbImage {
         let pre = ["⚪", "⚪", "⚪"];
@@ -341,10 +341,10 @@ impl<'a> super::PietStackExecutor<'a> {
         let w = pre.len() + total_block_width * b_width + post.len();
         let h = 2 + 1 + total_block_height * b_height + 2;
 
-        let mut arr: Array<&str, Ix2> = Array::default((w, h));
-        fn set_range<'a>(arr: &mut Array<&'a str, Ix2>, h: usize, i: usize, j: usize, c: &'a str) {
+        let mut arr: Array<String, Ix2> = Array::default((w, h));
+        fn set_range(arr: &mut Array<String, Ix2>, h: usize, i: usize, j: usize, c: String) {
             for x in i..(i + j) {
-                arr[(x, h)] = c;
+                arr[(x, h)] = c.clone();
             }
         }
 
@@ -353,7 +353,7 @@ impl<'a> super::PietStackExecutor<'a> {
             1,
             0,
             pre.len() + total_block_width * b_width,
-            "⚫",
+            String::from("⚫"),
         );
 
         for i in 0..b_height {
@@ -362,21 +362,21 @@ impl<'a> super::PietStackExecutor<'a> {
                 1 + (1 + i) * total_block_height,
                 pre.len(),
                 total_block_width * b_width,
-                "⚫",
+                String::from("⚫"),
             );
             set_range(
                 &mut arr,
                 3 + i * total_block_height,
                 pre.len() - 1,
                 1 + total_block_width * b_width,
-                "⚫",
+                String::from("⚫"),
             );
             set_range(
                 &mut arr,
                 2 + (1 + i) * total_block_height,
                 pre.len() - 2,
                 1,
-                "⚫",
+                String::from("⚫"),
             );
         }
 
@@ -424,62 +424,62 @@ impl<'a> super::PietStackExecutor<'a> {
                 arr[(
                     pre.len() + total_block_width * b_width - 1 - j,
                     1 + total_block_height * li + total_block_height + 1,
-                )] = y;
+                )] = String::from(y.clone());
             }
         }
 
-        fn block_line_left<'a>(arr: &mut Array<&'a str, Ix2>, yi: usize, xi: usize, gap: usize) {
+        fn block_line_left(arr: &mut Array<String, Ix2>, yi: usize, xi: usize, gap: usize) {
             // gap = 2
-            arr[(xi - 3, yi)] = "⚫";
-            arr[(xi - 2, yi - 2)] = "⚫";
-            arr[(xi - 1, yi - 1)] = "⚫";
-            arr[(xi - 2, yi + gap + 2)] = "⚫";
-            arr[(xi - 4, yi + gap + 1)] = "⚫";
-            arr[(xi - 3, yi + gap)] = "⚫";
+            arr[(xi - 3, yi)] = String::from("⚫");
+            arr[(xi - 2, yi - 2)] = String::from("⚫");
+            arr[(xi - 1, yi - 1)] = String::from("⚫");
+            arr[(xi - 2, yi + gap + 2)] = String::from("⚫");
+            arr[(xi - 4, yi + gap + 1)] = String::from("⚫");
+            arr[(xi - 3, yi + gap)] = String::from("⚫");
         }
 
-        fn block_line_right<'a>(arr: &mut Array<&'a str, Ix2>, yi: usize, xi: usize, gap: usize) {
+        fn block_line_right(arr: &mut Array<String, Ix2>, yi: usize, xi: usize, gap: usize) {
             // gap = 2
-            arr[(xi + 1, yi)] = "⚫";
-            arr[(xi, yi + gap + 2)] = "⚫";
+            arr[(xi + 1, yi)] = String::from("⚫");
+            arr[(xi, yi + gap + 2)] = String::from("⚫");
         }
 
         // Draw all the code blocks
         for (x, (bx, bx_branch)) in final_blocks {
-            let si = block_index[x];
+            let si = block_index[&x];
 
             let start_index = 7 + pre.len() + total_block_width * (si % b_width);
             let mut li = 7 + total_block_height * (si / b_width); // line index
 
             for (j, y) in prepare_pointer_block.clone().into_iter().enumerate() {
-                arr[(start_index - prepare_pointer_index - 1 + j, li - 3)] = y;
+                arr[(start_index - prepare_pointer_index - 1 + j, li - 3)] = String::from(y.clone());
             }
             for (j, y) in prepare_pointer_pop.into_iter().enumerate() {
-                arr[(start_index - 1, li - 3 + 1 + j)] = y;
+                arr[(start_index - 1, li - 3 + 1 + j)] = String::from(y.clone());
             }
 
             if x == "term" {
                 let (heart_x, heart_y) = (li + 1, start_index - 1);
 
-                arr[(heart_y - 1, heart_x)] = "🔴";
-                arr[(heart_y, heart_x)] = "🔴";
-                arr[(heart_y + 1, heart_x)] = "🔴";
-                arr[(heart_y, heart_x + 1)] = "🔴";
+                arr[(heart_y - 1, heart_x)] = String::from("🔴");
+                arr[(heart_y, heart_x)] = String::from("🔴");
+                arr[(heart_y + 1, heart_x)] = String::from("🔴");
+                arr[(heart_y, heart_x + 1)] = String::from("🔴");
 
-                arr[(heart_y - 1, heart_x - 1)] = "⚫";
-                arr[(heart_y + 1, heart_x - 1)] = "⚫";
-                arr[(heart_y - 2, heart_x)] = "⚫";
-                arr[(heart_y + 2, heart_x)] = "⚫";
-                arr[(heart_y - 1, heart_x + 1)] = "⚫";
-                arr[(heart_y + 1, heart_x + 1)] = "⚫";
-                arr[(heart_y, heart_x + 2)] = "⚫";
+                arr[(heart_y - 1, heart_x - 1)] = String::from("⚫");
+                arr[(heart_y + 1, heart_x - 1)] = String::from("⚫");
+                arr[(heart_y - 2, heart_x)] = String::from("⚫");
+                arr[(heart_y + 2, heart_x)] = String::from("⚫");
+                arr[(heart_y - 1, heart_x + 1)] = String::from("⚫");
+                arr[(heart_y + 1, heart_x + 1)] = String::from("⚫");
+                arr[(heart_y, heart_x + 2)] = String::from("⚫");
 
                 continue;
             }
 
-            arr[(start_index - 1, li + 1)] = "⚫";
-            arr[(start_index - 3, li)] = "⚫";
-            arr[(start_index - 2, li - 1)] = "⚫";
+            arr[(start_index - 1, li + 1)] = String::from("⚫");
+            arr[(start_index - 3, li)] = String::from("⚫");
+            arr[(start_index - 2, li - 1)] = String::from("⚫");
 
             let right_line_gap = 2;
             let left_line_gap = 1;
@@ -488,14 +488,14 @@ impl<'a> super::PietStackExecutor<'a> {
             for block_block in bx {
                 if going_right {
                     for (j, y) in block_block.into_iter().enumerate() {
-                        arr[(start_index + j, li)] = y;
+                        arr[(start_index + j, li)] = String::from(y.clone());
                     }
                     block_line_right(&mut arr, li, start_index + j_width, right_line_gap);
                     li = li + right_line_gap + 1;
                 } else {
                     // going left
                     for (j, y) in block_block.into_iter().enumerate() {
-                        arr[(j_width + start_index - 1 - j, li)] = y;
+                        arr[(j_width + start_index - 1 - j, li)] = String::from(y.clone());
                     }
                     block_line_left(&mut arr, li, start_index, left_line_gap);
                     li = li + left_line_gap + 1;
@@ -505,14 +505,14 @@ impl<'a> super::PietStackExecutor<'a> {
 
             if bx_branch.len() > 0 {
                 for (j, y) in bx_branch[2..].into_iter().enumerate() {
-                    arr[(start_index + 1, li - right_line_gap + j)] = y;
+                    arr[(start_index + 1, li - right_line_gap + j)] = String::from(y.clone());
                 }
             }
 
             if !going_right {
-                arr[(start_index + j_width, li + 1)] = "⚪"; // 🔴
+                arr[(start_index + j_width, li + 1)] = String::from("⚪"); // 🔴
             } else {
-                arr[(start_index - 2, li + 1)] = "⚪"; // 🔴
+                arr[(start_index - 2, li + 1)] = String::from("⚪"); // 🔴
             }
         }
 
@@ -520,7 +520,7 @@ impl<'a> super::PietStackExecutor<'a> {
 
         for y in 0..h {
             for x in 0..w {
-                let c: ValidColor = arr[(x, y)].into();
+                let c: ValidColor = arr[(x, y)].as_str().into();
                 let r: Rgb<u8> = c.into();
                 img[(x as u32, y as u32)] = r;
             }
