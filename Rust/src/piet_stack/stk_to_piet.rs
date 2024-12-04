@@ -19,6 +19,7 @@ impl<'a> super::PietStackExecutor<'a> {
             CMD::Nop => {
                 output.push("⚪");
                 output.push("🔴");
+                return
             }
             CMD::Push(i) => {
                 for _ in 0..(i - 1) {
@@ -168,20 +169,33 @@ impl<'a> super::PietStackExecutor<'a> {
         (b_x, b_y): (usize, usize),
     ) -> Vec<Expr<'a>> {
         let mut goto_exprs: Vec<Expr> = vec![];
-        goto_exprs.extend(
-            optimizer
-                .optimize_number(b_x)
-                .into_iter()
-                .map(Instr)
-                .collect::<Vec<Expr>>(),
-        );
-        goto_exprs.extend(
-            optimizer
-                .optimize_number(b_y)
-                .into_iter()
-                .map(Instr)
-                .collect::<Vec<Expr>>(),
-        );
+        if b_x == 0 {
+            goto_exprs.push(Instr(CMD::Push(1)));
+            goto_exprs.push(Instr(CMD::Not));
+        } else {
+            goto_exprs.push(Instr(CMD::Push(b_x as isize)));
+        }
+        if b_y == 0 {
+            goto_exprs.push(Instr(CMD::Push(1)));
+            goto_exprs.push(Instr(CMD::Not));
+        } else {
+            goto_exprs.push(Instr(CMD::Push(b_y as isize)));
+        }
+        // goto_exprs.extend(
+        //     optimizer
+        //         .optimize_number(b_x)
+        //         .into_iter()
+        //         .map(Instr)
+        //         .collect::<Vec<Expr>>(),
+        // );
+        // goto_exprs.extend(
+        //     optimizer
+        //         .optimize_number(b_y)
+        //         .into_iter()
+        //         .map(Instr)
+        //         .collect::<Vec<Expr>>(),
+        // );
+        println!("GOTO: {:?}", goto_exprs);
         goto_exprs
     }
 
@@ -189,7 +203,7 @@ impl<'a> super::PietStackExecutor<'a> {
         let (parsed_blocks, block_index) = super::parse_string(unparsed);
 
         let pbl = parsed_blocks.len();
-        let b_width = (pbl).isqrt();
+        let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
         let mut blocks: HashMap<&str, (Vec<&str>, (Option<&str>, Option<&str>))> = HashMap::new();
@@ -256,6 +270,7 @@ impl<'a> super::PietStackExecutor<'a> {
                     id_to_coord(block_index[x_t.unwrap()]),
                 ));
 
+
                 // output.push("🔴")
                 let goto_statement_1: Vec<_> = Self::make_block(goto_exprs_1).0;
 
@@ -268,6 +283,11 @@ impl<'a> super::PietStackExecutor<'a> {
                 ));
 
                 let goto_statement_2: Vec<_> = Self::make_block(goto_exprs_2).0;
+
+                println!("GOTO1: {:?}", goto_statement_1);
+                println!("GOTO2: {:?}", goto_statement_2);
+                println!();
+
                 mid_blocks.insert(
                     x,
                     (
@@ -399,7 +419,7 @@ impl<'a> super::PietStackExecutor<'a> {
             Instr(CMD::Push(1)),
             Instr(CMD::Sub),
         ];
-        let prepare_pointer_index = 6; // prepare_pointer.index("pointer")+1
+        let prepare_pointer_index = 5+1; // prepare_pointer.index("pointer")+1
 
         let prepare_pointer_block = Self::make_block(prepare_pointer.clone()).0;
         let mut temp: Vec<_> = prepare_pointer[0..prepare_pointer_index].to_vec();
@@ -440,6 +460,8 @@ impl<'a> super::PietStackExecutor<'a> {
             arr[(xi + 1, yi)] = "⚫";
             arr[(xi, yi + gap + 2)] = "⚫";
         }
+
+        println! ("{:?}", final_blocks);
 
         // Draw all the code blocks
         for (x, (bx, bx_branch)) in final_blocks {

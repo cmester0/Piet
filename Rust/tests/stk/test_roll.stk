@@ -1,0 +1,10 @@
+label main
+push 2
+outN
+push 1
+branch term temp
+
+label temp
+push 3
+outN
+goto term

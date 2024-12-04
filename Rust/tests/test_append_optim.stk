@@ -5990,6 +5990,7 @@ sub
 push 2
 push 1
 roll
+debug
 branch l75 l76
 
 label l75

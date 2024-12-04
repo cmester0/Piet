@@ -16,6 +16,12 @@ name = "piet_stack"
 [[bin]]
 name = "smpl"
 
+[[bin]]
+name = "piet_optimize_stk"
+
+[[test]]
+name = "lib"
+
 [dependencies]
 image = "*"
 clap = { version = "*", features = ["derive"] }

@@ -33,38 +33,48 @@ impl CMD {
             CMD::Nop => (),
             CMD::Push(v) => stack.push(v),
             CMD::Pop => {
+                if stack.len() < 1 { return None }
                 stack.pop();
             }
             CMD::Add => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
                 stack.push(b + a);
             }
             CMD::Sub => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
                 stack.push(b - a);
             }
             CMD::Mul => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
                 stack.push(b * a);
             }
             CMD::Div => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
+                if b == 0 { return None }
                 stack.push(b / a);
             }
             CMD::Mod => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
+                if b == 0 { return None }
                 stack.push(b.rem_euclid(a));
             }
             CMD::Not => {
+                if stack.len() < 1 { return None }
                 let a = stack.pop()?;
                 stack.push(if a == 0 { 1 } else { 0 });
             }
             CMD::Greater => {
+                if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
                 stack.push(if b > a { 1 } else { 0 });
@@ -75,16 +85,23 @@ impl CMD {
                 stack.push(a);
             }
             CMD::Roll => {
+                if stack.len() < 2 || stack[stack.len()-2] < 0 { return None }
+                // println!("ROLL");
                 let mut a = stack.pop()?;
                 let b = stack.pop()?;
+                // if b == 0 { return None }
                 a = a.rem_euclid(b);
 
-                let a = a as usize;
+                // let a = a as usize;
                 let b = b as usize;
 
                 if a != 0 {
                     let s = stack.len().clone();
-                    stack[s - b..s].rotate_right(a);
+                    if a > 0 {
+                        stack[s - b..s].rotate_right(a as usize);
+                    } else {
+                        stack[s - b..s].rotate_left(-a as usize);
+                    }
                 }
             }
             CMD::InN => {
@@ -127,15 +144,19 @@ impl CMD {
                 }
             }
             CMD::OutN => {
+                if stack.len() < 1 { return None }
                 let a = stack.pop()?;
                 let output = output.as_mut().unwrap();
+                print!("{}",a);
                 write!(output,"{}", a).unwrap();
                 output.flush().unwrap();
             }
             CMD::OutC => {
+                if stack.len() < 1 { return None }
                 let a = stack.pop()?;
                 let c = char::from_u32(a as u32).unwrap();
                 let output = output.as_mut().unwrap();
+                print!("{}",c);
                 write!(output,"{}", c).unwrap();
                 output.flush().unwrap();
             }

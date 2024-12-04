@@ -94,7 +94,8 @@ impl<'a> PietStackExecutor<'a> {
                 true
             }
             Debug => {
-                println!("Debug: ");
+                println!("Debug: {:?}", self.stack
+                );
                 false
             }
         }
