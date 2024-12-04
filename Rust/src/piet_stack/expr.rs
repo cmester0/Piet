@@ -9,6 +9,7 @@ pub enum Expr {
     Goto(String),
     Branch(String, String),
     Debug,
+    Comment(String),
 }
 use Expr::*;
 
@@ -31,8 +32,12 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
         Rule::InN => Instr(CMD::InN),
         Rule::InC => Instr(CMD::InC),
         Rule::Goto => Goto(String::from(e.next().unwrap().as_str())),
-        Rule::Branch => Branch(String::from(e.next().unwrap().as_str()), String::from(e.next().unwrap().as_str())),
+        Rule::Branch => Branch(
+            String::from(e.next().unwrap().as_str()),
+            String::from(e.next().unwrap().as_str()),
+        ),
         Rule::Debug => Debug,
+        // TODO: Parse comments and add them into AST?
         Rule::OutC => Instr(CMD::OutC),
         Rule::OutN => Instr(CMD::OutN),
         Rule::Roll => Instr(CMD::Roll),

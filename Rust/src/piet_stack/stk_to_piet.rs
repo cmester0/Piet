@@ -19,7 +19,7 @@ impl super::PietStackExecutor {
             CMD::Nop => {
                 output.push(String::from("⚪"));
                 output.push(String::from("🔴"));
-                return
+                return;
             }
             CMD::Push(i) => {
                 for _ in 0..(i - 1) {
@@ -102,6 +102,7 @@ impl super::PietStackExecutor {
                     Self::index_and_command_to_color_and_next_index(cmd, &mut output);
                 }
                 Debug => {}
+                Comment(_) => {}
             }
         }
         return (output, (None, None));
@@ -164,10 +165,7 @@ impl super::PietStackExecutor {
         return (block_blocks, going_right);
     }
 
-    fn goto_block_coord(
-        optimizer: &mut StackOptimizer,
-        (b_x, b_y): (usize, usize),
-    ) -> Vec<Expr> {
+    fn goto_block_coord(optimizer: &mut StackOptimizer, (b_x, b_y): (usize, usize)) -> Vec<Expr> {
         let mut goto_exprs: Vec<Expr> = vec![];
         goto_exprs.extend(
             optimizer
@@ -186,14 +184,15 @@ impl super::PietStackExecutor {
         goto_exprs
     }
 
-    pub fn to_png(optimizer: &mut StackOptimizer, unparsed: &str) -> image::RgbImage {
-        let (parsed_blocks, block_index) = super::parse_string(unparsed);
+    pub fn to_png(&self, optimizer: &mut StackOptimizer) -> image::RgbImage {
+        let (parsed_blocks, block_index) = (self.blocks.clone(), self.block_index.clone());
 
         let pbl = parsed_blocks.len();
         let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
-        let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>))> = HashMap::new();
+        let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>))> =
+            HashMap::new();
 
         for (k, b) in parsed_blocks {
             let mut nb = vec![];
@@ -234,8 +233,10 @@ impl super::PietStackExecutor {
 
         let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
 
-        let mut mid_blocks: HashMap<String, (Vec<String>, (Option<Vec<String>>, Option<Vec<String>>))> =
-            HashMap::new();
+        let mut mid_blocks: HashMap<
+            String,
+            (Vec<String>, (Option<Vec<String>>, Option<Vec<String>>)),
+        > = HashMap::new();
 
         for (x, (x_vec, (x_t, x_e))) in blocks {
             if x_t.is_some() && x_e.is_none() {
@@ -256,7 +257,6 @@ impl super::PietStackExecutor {
                     optimizer,
                     id_to_coord(block_index[&x_t.unwrap()]),
                 ));
-
 
                 // output.push("🔴")
                 let goto_statement_1: Vec<_> = Self::make_block(goto_exprs_1).0;
@@ -402,7 +402,7 @@ impl super::PietStackExecutor {
             Instr(CMD::Push(1)),
             Instr(CMD::Sub),
         ];
-        let prepare_pointer_index = 5+1; // prepare_pointer.index("pointer")+1
+        let prepare_pointer_index = 5 + 1; // prepare_pointer.index("pointer")+1
 
         let prepare_pointer_block = Self::make_block(prepare_pointer.clone()).0;
         let mut temp: Vec<_> = prepare_pointer[0..prepare_pointer_index].to_vec();
@@ -452,7 +452,8 @@ impl super::PietStackExecutor {
             let mut li = 7 + total_block_height * (si / b_width); // line index
 
             for (j, y) in prepare_pointer_block.clone().into_iter().enumerate() {
-                arr[(start_index - prepare_pointer_index - 1 + j, li - 3)] = String::from(y.clone());
+                arr[(start_index - prepare_pointer_index - 1 + j, li - 3)] =
+                    String::from(y.clone());
             }
             for (j, y) in prepare_pointer_pop.into_iter().enumerate() {
                 arr[(start_index - 1, li - 3 + 1 + j)] = String::from(y.clone());

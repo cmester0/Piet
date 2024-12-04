@@ -141,7 +141,10 @@ impl SmplExecutor {
                 true
             }
             Expr::Debug => {
-                write!(output.as_mut().unwrap(), "Debug: ").unwrap();
+                println!("Debug: {:?}", self.stack);
+                false
+            }
+            Expr::Comment(_) => {
                 false
             }
             Expr::Eq => {

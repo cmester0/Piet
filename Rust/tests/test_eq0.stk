@@ -1,121 +1,25 @@
 label main
 push 0
 push 1
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-push 0
-push 2
-push -1
-roll
-push 1
-add
-dup
-push 3
-push 1
-roll
-push 1
-roll
-#+push 3
+# +Instr(Push(3))
 push 1
 add
 push 3
 push 2
-push -1
+push 1
 roll
-#-push 3
-#+push 4
+# -Instr(Push(3))
+# +Instr(Push(4))
 push 1
 add
 push 4
 push 2
-push -1
+push 1
 roll
-#-push 4
-#+eq
+# -Instr(Push(4))
+# +Eq
 push 2
-push -1
+push 1
 roll
 push 3
 push -1
@@ -127,35 +31,35 @@ push 0
 greater
 not
 push 2
-push -1
+push 1
 roll
 push 1
 sub
-#-eq
-#+outN
+# -Eq
+# +Instr(OutN)
 push 2
-push -1
+push 1
 roll
 outN
 push 1
 sub
-#-outN
-#+push 10
+# -Instr(OutN)
+# +Instr(Push(10))
 push 1
 add
 push 10
 push 2
-push -1
+push 1
 roll
-#-push 10
-#+outC
+# -Instr(Push(10))
+# +Instr(OutC)
 push 2
-push -1
+push 1
 roll
 outC
 push 1
 sub
-#-outC
-#+goto term
+# -Instr(OutC)
+# +Goto("term")
 goto term
-#-goto term
+# -Goto("term")

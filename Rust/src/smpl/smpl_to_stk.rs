@@ -48,12 +48,16 @@ impl SmplToStk {
 }
 
 impl SmplToStk {
-    fn add_cmd(&mut self, c: CMD) {
+    fn add_expr(&mut self, e: Expr) {
         self.stk_executor
             .blocks
             .get_mut(&self.stk_executor.label)
             .unwrap()
-            .push(Instr(c));
+            .push(e);
+    }
+
+    fn add_cmd(&mut self, c: CMD) {
+        self.add_expr(Instr(c));
     }
 
     fn add_cmds(&mut self, c: Vec<CMD>) {
@@ -71,14 +75,59 @@ impl SmplToStk {
             Roll]);
     }
 
-    // fn dup_value_x_deep(x: isize) -> Vec<Expr> {
-    //     vec![Push(x), Push(-1), Roll, Dup, Push(x + 1), Push(1), Roll]
-    //         .into_iter()
-    //         .map(Instr)
-    //         .collect()
-    // }
+    fn new_label(&mut self) -> String {
+        let new_block_label = format!("l{}", self.stk_executor.block_index.len());
+        self.stk_executor
+            .blocks
+            .insert(new_block_label.clone(), vec![]);
+        new_block_label
+    }
 
-    pub fn add_var(&mut self, var_name: String, var_type: Variable) {
+    fn goto_new_label(&mut self) {
+        let new_block_label = self.new_label();
+        self.add_expr(Goto(new_block_label.clone()));
+        self.stk_executor.label = new_block_label;
+    }
+
+    fn branch_new_labels(&mut self) -> (String, String) {
+        let label1 = self.new_label();
+        let label2 = self.new_label();
+
+        self.add_expr(Branch(label1.clone(), label2.clone()));
+
+        (label1, label2)
+    }
+
+    fn c_if(&mut self, success : impl Fn(&mut SmplToStk) -> (), fails : impl Fn(&mut SmplToStk) -> ()) {
+        let (succ_label, fail_label) = self.branch_new_labels();
+        let continue_label = self.new_label();
+
+        self.stk_executor.label = succ_label;
+        success(self);
+        self.add_expr(Goto(continue_label.clone()));
+
+        self.stk_executor.label = fail_label;
+        fails(self);
+        self.add_expr(Goto(continue_label.clone()));
+
+        self.stk_executor.label = continue_label;
+    }
+
+    fn dup_value_x_deep(&mut self, x: isize) {
+        // Get the value to the top
+        self.add_cmd(Push(x));
+        self.add_cmd(Push(-1));
+        self.add_cmd(Roll);
+
+        self.add_cmd(Dup);
+
+        // put it back
+        self.add_cmd(Push(x+1));
+        self.add_cmd(Push(1));
+        self.add_cmd(Roll);
+    }
+
+    fn add_var(&mut self, var_name: String, var_type: Variable) {
         // Set variable index
         // (var_index.len() - var_index[i]) is actual index
         self.var_index.insert(var_name, self.var_index.len());
@@ -109,7 +158,7 @@ impl SmplToStk {
         self.add_cmd(Roll);
     }
 
-    pub fn handle_smpl_instr(&mut self, e: SmplExpr) {
+    fn handle_smpl_instr(&mut self, e: SmplExpr) {
         match e {
             SmplExpr::Eq => {
                 self.swap();
@@ -138,8 +187,8 @@ impl SmplToStk {
                         self.add_cmd(Not);
                         self.swap();
                     },
-                    Add | Greater | Sub | Div | Mod | Mul => {
-                        self.c_binop(c);
+                    op @ (Add | Greater | Sub | Div | Mod | Mul) => {
+                        self.c_binop(op);
                     }
                     Dup => {
                         self.swap();
@@ -150,112 +199,83 @@ impl SmplToStk {
                         self.add_cmd(Push(1));
                         self.add_cmd(Add);
                     }
-                    InN => {
-                        let new_index = self.stk_executor.block_index.len().clone();
-                        let new_block_label = format!("l{}", new_index);
-                        // let new_block_label : &'a str = new_block_label.as_str();
+                    in_cmd @ (InN | InC) => {
+                        self.goto_new_label();
 
-                        // self.stk_executor
-                        //     .blocks
-                        //     .get_mut(self.stk_executor.label)
-                        //     .unwrap()
-                        //     .push(Goto(new_block_label));
+                        self.add_cmd(Push(-2));
+                        self.add_cmd(Push(-3));
+                        self.add_cmd(in_cmd);
+                        self.swap();
 
-                        // self.stk_executor
-                        //     .blocks
-                        //     .insert(new_block_label.as_str(), vec![]);
-                        
-                        // self.stk_executor.label = new_block_label.as_str();
+                        self.add_cmd(Push(-3));
+                        self.c_eq();
+
+                        self.c_if(|x| {
+                            x.add_cmd(Push(3));
+                            x.add_cmd(Push(1));
+                            x.add_cmd(Roll);
+                            x.add_cmd(Pop);
+                            x.add_cmd(Push(1));
+                            x.add_cmd(Add);
+                        },|x|{
+                            x.add_cmd(Pop);
+                        });
                     }
-                    _ => todo!(),
+                    out_cmd @ (OutC | OutN) => {
+                        self.swap();
+                        self.add_cmd(out_cmd);
+                        self.add_cmd(Push(1));
+                        self.add_cmd(Sub);
+                    }
+                    Roll => {
+                        self.dup_value_x_deep(2);
+                        self.dup_value_x_deep(4);
+                        self.add_cmd(Mod);
+
+                        self.add_cmd(Push(3));
+                        self.add_cmd(Add);
+                        self.add_cmd(Push(1));
+                        self.add_cmd(Roll);
+
+                        self.dup_value_x_deep(2);
+                        self.add_cmd(Mod);
+
+                        self.swap();
+                        self.add_cmd(Push(1));
+                        self.add_cmd(Add);
+                        self.swap();
+
+                        self.add_cmd(Roll);
+                        self.add_cmd(Push(2));
+                        self.add_cmd(Sub);
+                    }
+                    Nop => { },
+                    Pointer | Switch => panic!("Unsupported instructions {:?}", c),
                 }
             },
+            SmplExpr::Goto(l) => {
+                self.add_expr(Goto(l));
+            },
+            SmplExpr::Branch(a, b) => {
+                self.add_cmd(Push(1));
+                self.add_cmd(Sub);
+                self.swap();
+                self.add_expr(Branch(a, b));
+            }
+            SmplExpr::Debug => {
+                self.add_expr(Debug);
+            }
+            SmplExpr::Comment(s) => {
+                self.add_expr(Comment(s));
+            }
             _ => todo!(),
         }
-    // match l[0]:
+
+        // match l[0]:
     //     case "label":
     //         index = len(instrs)
     //         next_index = len(instrs)
     //         instrs.append((l[1], []))
-
-    //     case "inN":
-    //         label_index = len(instrs)
-    //         new_label = "l" + str(label_index)
-    //         instrs[index][1].append("goto " + new_label)
-
-    //         instrs.append((new_label, []))
-    //         instrs[label_index][1].append("push -2")
-    //         instrs[label_index][1].append("push -3")
-    //         instrs[label_index][1].append("inN")
-    //         swap(instrs, label_index)
-
-    //         # Is it -3 ?
-    //         instrs[label_index][1].append("push -3")
-    //         eq(instrs, label_index)
-
-    //         succ_label_index, fail_label_index = branch_new_labels(instrs, label_index)
-
-    //         continue_label_index = len(instrs)
-    //         continue_new_label = "l" + str(continue_label_index)
-    //         instrs.append((continue_new_label, []))
-
-    //         instrs[succ_label_index][1].append("push 3")
-    //         instrs[succ_label_index][1].append("push 1")
-    //         instrs[succ_label_index][1].append("roll")
-    //         instrs[succ_label_index][1].append("pop")
-    //         instrs[succ_label_index][1].append("push 1")
-    //         instrs[succ_label_index][1].append("add")
-    //         instrs[succ_label_index][1].append("goto " + continue_new_label)
-
-    //         instrs[fail_label_index][1].append("pop")
-    //         instrs[fail_label_index][1].append("goto " + continue_new_label)
-
-    //         index = fail_label_index
-    //         next_index = continue_label_index
-
-    //     case "inC":
-    //         label_index = len(instrs)
-    //         new_label = "l" + str(label_index)
-    //         instrs[index][1].append("goto " + new_label)
-
-    //         instrs.append((new_label, []))
-    //         instrs[label_index][1].append("push -2")
-    //         instrs[label_index][1].append("push -3")
-    //         instrs[label_index][1].append("inC")
-    //         swap(instrs, label_index)
-
-    //         # Is it -3 ?
-    //         instrs[label_index][1].append("push -3")
-    //         eq(instrs, label_index)
-
-    //         succ_label_index, fail_label_index = branch_new_labels(instrs, label_index)
-
-    //         continue_label_index = len(instrs)
-    //         continue_new_label = "l" + str(continue_label_index)
-    //         instrs.append((continue_new_label, []))
-
-    //         instrs[succ_label_index][1].append("push 3")
-    //         instrs[succ_label_index][1].append("push 1")
-    //         instrs[succ_label_index][1].append("roll")
-    //         instrs[succ_label_index][1].append("pop")
-    //         instrs[succ_label_index][1].append("push 1")
-    //         instrs[succ_label_index][1].append("add")
-    //         instrs[succ_label_index][1].append("goto " + continue_new_label)
-
-    //         instrs[fail_label_index][1].append("pop")
-    //         instrs[fail_label_index][1].append("goto " + continue_new_label)
-
-    //         index = fail_label_index
-    //         next_index = continue_label_index
-
-    //     case "goto":
-    //         instrs[index][1].append("goto " + l[1])
-
-    //     case "branch":
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("sub")
-    //         swap(instrs, index)
-    //         instrs[index][1].append("branch " + l[1] + " " + l[2])
 
     //     case "set":
     //         assert (len(l) == 2) # set
@@ -887,41 +907,6 @@ impl SmplToStk {
     //         index = next_index
     //         next_index = next_index
 
-    //     case "outC":
-    //         swap(instrs, index)
-    //         instrs[index][1].append("outC")
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("sub")
-
-    //     case "outN":
-    //         swap(instrs, index)
-    //         instrs[index][1].append("outN")
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("sub")
-
-
-    //     case "roll":
-    //         dup_value_x_deep(instrs, index, 2)
-    //         dup_value_x_deep(instrs, index, 4)
-    //         instrs[index][1].append("mod")
-
-    //         instrs[index][1].append("push 3")
-    //         instrs[index][1].append("add")
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("roll")
-
-    //         dup_value_x_deep(instrs, index, 2)
-    //         instrs[index][1].append("mod")
-
-    //         swap(instrs, index)
-    //         instrs[index][1].append("push 1")
-    //         instrs[index][1].append("add")
-    //         swap(instrs, index)
-
-    //         instrs[index][1].append("roll")
-    //         instrs[index][1].append("push 2")
-    //         instrs[index][1].append("sub")
-
     //     case "malloc":
     //         instrs[index][1].append("dup")
 
@@ -1037,9 +1022,6 @@ impl SmplToStk {
     //         index = next_index
     //         next_index = done_index
 
-    //     case "debug":
-    //         instrs[index][1].append("debug")
-
     //     case default:
     //         print ("Did not find", l)
 
@@ -1079,17 +1061,15 @@ impl SmplToStk {
         }
 
         for (x, v) in smpl_to_stk.smpl_executor.blocks.clone() {
+            smpl_to_stk.stk_executor.label = x;
             for e in v.clone() {
-                smpl_to_stk.handle_smpl_instr(e);
+                smpl_to_stk.add_expr(Comment(format!("+{:?}", e.clone())));
+                smpl_to_stk.handle_smpl_instr(e.clone());
+                smpl_to_stk.add_expr(Comment(format!("-{:?}", e)));
             }
         }
-    // for l in inp_lines[inp_line_index:]:
-    //     if len(l) == 0 or l[0] == "#":
-    //         continue
-    //     instrs[index][1].append("#+" + " ".join(l))
-    //     last_index, index = handle_smpl_instr(var_list, instrs, index, l)
-    //     instrs[last_index][1].append("#-" + " ".join(l))
 
+        smpl_to_stk.stk_executor.label = String::from("main");
 
         smpl_to_stk.stk_executor
     }

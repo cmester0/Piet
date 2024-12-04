@@ -14,6 +14,8 @@ pub enum Expr {
 
     Set(String),
     Get(String),
+
+    Comment(String),
 }
 use Expr::*;
 
@@ -26,12 +28,8 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
         Rule::Push => {
             let n = e.next().unwrap();
             match n.as_rule() {
-                Rule::Number => {
-                    Instr(CMD::Push(n.as_str().parse().unwrap()))
-                }
-                Rule::Char => {
-                    Instr(CMD::Push(n.as_str().chars().next().unwrap() as isize))
-                }
+                Rule::Number => Instr(CMD::Push(n.as_str().parse().unwrap())),
+                Rule::Char => Instr(CMD::Push(n.as_str().chars().next().unwrap() as isize)),
                 _ => panic!("Trying to push non-number"),
             }
         }
@@ -47,7 +45,10 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
         Rule::InN => Instr(CMD::InN),
         Rule::InC => Instr(CMD::InC),
         Rule::Goto => Goto(String::from(e.next().unwrap().as_str())),
-        Rule::Branch => Branch(String::from(e.next().unwrap().as_str()), String::from(e.next().unwrap().as_str())),
+        Rule::Branch => Branch(
+            String::from(e.next().unwrap().as_str()),
+            String::from(e.next().unwrap().as_str()),
+        ),
         Rule::Debug => Debug,
         Rule::OutC => Instr(CMD::OutC),
         Rule::OutN => Instr(CMD::OutN),

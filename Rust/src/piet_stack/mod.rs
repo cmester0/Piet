@@ -1,4 +1,6 @@
 pub mod expr;
+mod stk_to_file;
+mod stk_to_piet;
 
 use crate::optimize_stk::StackOptimizer;
 use crate::piet_color::*;
@@ -15,8 +17,6 @@ use pest::*;
 use pest_derive::Parser;
 use std::cmp;
 use std::collections::HashMap;
-
-mod stk_to_piet;
 
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
@@ -94,10 +94,10 @@ impl PietStackExecutor {
                 true
             }
             Debug => {
-                println!("Debug: {:?}", self.stack
-                );
+                println!("Debug: {:?}", self.stack);
                 false
             }
+            Comment(_) => false,
         }
     }
 

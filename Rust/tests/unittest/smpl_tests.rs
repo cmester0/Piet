@@ -1,8 +1,5 @@
 
-use super::test_helper::test_stk_vs_piet;
-use super::test_helper::run_stk;
-use super::test_helper::run_piet;
-use super::test_helper::stk_to_piet;
+use super::test_helper::*;
 
 #[test]
 pub fn test_set_var_get_var() {
@@ -16,7 +13,7 @@ pub fn test_length() {
 
 #[test]
 pub fn test_eq0() {
-    test_stk_vs_piet("./tests/test_eq0", "", "0\n");
+    test_simpl_vs_stk_vs_piet("./tests/test_eq0", "", "0\n");
 }
 
 #[test]
