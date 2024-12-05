@@ -1,4 +1,6 @@
 label main
+push 0
+push 1
 # +Instr(Push(3))
 push 1
 add
@@ -61,6 +63,4 @@ sub
 # +Goto(Name("term"))
 goto term
 # -Goto(Name("term"))
-
-label term
 

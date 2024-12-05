@@ -1,4 +1,5 @@
 use clap::Parser;
+
 use piet::optimize_stk::StackOptimizer;
 
 #[derive(Parser, Debug)]

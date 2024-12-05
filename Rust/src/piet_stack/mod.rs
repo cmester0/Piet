@@ -11,6 +11,9 @@ use pest_derive::Parser;
 use std::collections::HashMap;
 use std::fs;
 
+use std::io::{Read, Write};
+
+
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
@@ -125,5 +128,21 @@ impl PietStackExecutor {
         output: &mut Option<O>,
     ) {
         Self::new(unparsed).interpret(input, output);
+    }
+
+    pub fn run_on_string(mut self, input: &str) -> String {
+        let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
+        let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
+
+        let mut stk_byt_out = vec![];
+        {
+            let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
+            self.interpret(
+                &mut Some(stk_input),
+                &mut Some(stk_output),
+            );
+        }
+
+        String::from_utf8(stk_byt_out).unwrap()
     }
 }

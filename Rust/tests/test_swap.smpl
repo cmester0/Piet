@@ -1,8 +1,10 @@
+use swap ./lib/swap.lib
+
 inN
 inC
 pop
 inN
-swap
+lib_swap
 outN
 push 32
 outC

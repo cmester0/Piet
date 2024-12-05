@@ -366,8 +366,6 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
     // runner
     if !runner.continue_step((0, 0), (0, 0), runner.check_valid_pixel((0, 0)), input, output) {
         while !runner.step(input, output) {
-            // println!("{} {} {:?}", runner.cursor.cx, runner.cursor.cy, runner.cursor.last_color);
-            
             // total_steps += 1;
         }
     }

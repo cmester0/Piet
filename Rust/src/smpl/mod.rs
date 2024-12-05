@@ -12,6 +12,7 @@ use pest::iterators::Pair;
 use std::fs;
 
 use std::path::*;
+use std::io::Read;
 
 #[derive(Clone)]
 pub enum Variable {
@@ -28,6 +29,7 @@ impl Variable {
     }
 }
 
+#[derive(Clone)]
 pub struct SmplExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
@@ -268,11 +270,20 @@ pub fn parse_string(
                 Rule::SubBlock => {
                     blocks.insert(
                         String::from("main"),
-                        main.into_inner()
-                            .map(|x| parse_expr(x, &label_map))
-                            .collect(),
-                    );
+                        vec![]);
                     block_index.insert(String::from("main"), 0);
+
+                    parse_subblocks(
+                        filepath,
+                        String::from("main"),
+                        main,
+                        blocks,
+                        block_index,
+                        variables,
+                        &mut label_map,
+                        &mut label_count,
+                        &imports,
+                    );
                 }
                 _ => panic!("MAIN not subblock?"),
             }
@@ -392,5 +403,21 @@ impl SmplExecutor {
         output: &mut Option<O>,
     ) {
         SmplExecutor::new(unparsed).interpret(input, output);
+    }
+
+    pub fn run_on_string(mut self, input: &str) -> String{
+        let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
+        let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
+
+        let mut stk_byt_out = vec![];
+        {
+            let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
+            self.interpret(
+                &mut Some(stk_input),
+                &mut Some(stk_output),
+            );
+        }
+
+        String::from_utf8(stk_byt_out).unwrap()
     }
 }

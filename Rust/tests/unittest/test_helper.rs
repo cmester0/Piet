@@ -19,23 +19,6 @@ pub fn run_piet(img_path: &str, input: &str) -> String {
     String::from_utf8(piet_byt_out).unwrap()
 }
 
-pub fn run_stk(filepath: &str, input: &str) -> String {
-    let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
-    let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
-
-    let mut stk_byt_out = vec![];
-    {
-        let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-        PietStackExecutor::interpret_from_string(
-            filepath,
-            &mut Some(stk_input),
-            &mut Some(stk_output),
-        );
-    }
-
-    String::from_utf8(stk_byt_out).unwrap()
-}
-
 pub fn stk_to_piet(filepath: &str, output: &str) {
     // TODO: StackOptimizer should not need input / output !
     let mut optimizer = StackOptimizer::new();
@@ -44,23 +27,6 @@ pub fn stk_to_piet(filepath: &str, output: &str) {
     let dyn_img = DynamicImage::ImageRgb8(img);
 
     let _ = dyn_img.save_with_format(output, image::ImageFormat::Png);
-}
-
-pub fn run_smpl(filepath: &str, input: &str) -> String {
-    let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
-    let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
-
-    let mut stk_byt_out = vec![];
-    {
-        let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-        SmplExecutor::interpret_from_string(
-            filepath,
-            &mut Some(stk_input),
-            &mut Some(stk_output),
-        );
-    }
-
-    String::from_utf8(stk_byt_out).unwrap()
 }
 
 pub fn smpl_to_stk(filepath: &str, output: &str) {
@@ -73,7 +39,7 @@ pub fn smpl_to_stk(filepath: &str, output: &str) {
 }
 
 pub fn test_stk_vs_piet(path: &str, input: &str, output: &str) {
-    let stk_str = run_stk(format!("{}.stk", path).as_str(), input);
+    let stk_str = PietStackExecutor::new(format!("{}.stk", path).as_str()).run_on_string(input);
     println!("STACK DONE\n");
 
     assert_eq!(stk_str, output, "STACK FAILED");
@@ -89,7 +55,9 @@ pub fn test_stk_vs_piet(path: &str, input: &str, output: &str) {
 }
 
 pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str) {
-    let smpl_str = run_smpl(format!("{}.smpl", path).as_str(), input);
+    let smpl_str =
+        SmplExecutor::new(format!("{}.smpl", path).as_str())
+        .run_on_string(input);
     println!("STACK DONE\n");
 
     assert_eq!(smpl_str, output, "SMPL FAILED");
@@ -99,7 +67,9 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str) {
         format!("{}.stk", path).as_str(),
     );
 
-    let stk_str = run_stk(format!("{}.stk", path).as_str(), input);
+    let stk_str =
+        PietStackExecutor::new(format!("{}.stk", path).as_str())
+        .run_on_string(input);
     println!("STACK DONE\n");
 
     assert_eq!(stk_str, output, "STACK FAILED");
@@ -113,3 +83,27 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str) {
 
     assert_eq!(piet_str, output, "PIET FAILED");
 }
+
+// pub fn test_simpl_vs_stk_no_file(path: &str, input: &str, output: &str) {
+//     let smpl_str = run_smpl(format!("{}.smpl", path).as_str(), input);
+//     println!("STACK DONE\n");
+
+//     assert_eq!(smpl_str, output, "SMPL FAILED");
+
+//     let smpl_executor = SmplExecutor::new(format!("{}.smpl", path));
+//     let stk_executor = SmplToStk::to_stk(smpl_executor);
+
+//     let stk_str = run_stk(format!("{}.stk", path).as_str(), input);
+//     println!("STACK DONE\n");
+
+//     assert_eq!(stk_str, output, "STACK FAILED");
+
+//     stk_to_piet(
+//         format!("{}.stk", path).as_str(),
+//         format!("{}.png", path).as_str(),
+//     );
+//     let piet_str = run_piet(format!("{}.png", path).as_str(), input);
+//     println!("PIET DONE\n");
+
+//     assert_eq!(piet_str, output, "PIET FAILED");
+// }

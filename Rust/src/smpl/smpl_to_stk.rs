@@ -73,10 +73,15 @@ impl SmplToStk {
     }
 
     fn new_label(&mut self) -> String {
-        let new_block_label = format!("l{}", self.stk_executor.block_index.len());
+        let ni = self.stk_executor.block_index.len();
+        let new_block_label = format!("l{}", ni);
         self.stk_executor
             .blocks
             .insert(new_block_label.clone(), vec![]);
+        self.stk_executor
+            .block_index
+            .insert(new_block_label.clone(), ni);
+
         new_block_label
     }
 
@@ -361,305 +366,6 @@ impl SmplToStk {
 
 
         // match l[0]:
-        //     case "append":
-        //         assert (len(l) == 1) # append
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("dup")
-
-        //         # Is it -1?
-        //         instrs[next_index][1].append("push -1")
-        //         eq(instrs, next_index)
-
-        //         suc_label_index, fail_label_index = branch_new_labels(instrs, next_index)
-
-        //         ####################################
-        //         # Success block = Initialize alloc #
-        //         ####################################
-
-        //         instrs[suc_label_index][1].append("pop")
-        //         instrs[suc_label_index][1].append("push 3")
-        //         swap(instrs, suc_label_index)
-        //         _, next_index = handle_smpl_instr(var_list, instrs, suc_label_index, ["malloc"])
-
-        //         instrs[next_index][1].append("dup")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         dup_at_depth(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("sub")
-
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("dup")
-
-        //         instrs[next_index][1].append("push 4")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("roll")
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         instrs[next_index][1].append("push 0")
-
-        //         dup_value_x_deep(instrs, next_index, 3)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         instrs[next_index][1].append("push 1")
-
-        //         instrs[next_index][1].append("push 5")
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("push -1")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("goto l" + str(fail_label_index))
-
-        //         ###########################################
-        //         # End of Success block = Initialize alloc #
-        //         ###########################################
-
-        //         instrs[fail_label_index][1].append("push 3")
-        //         instrs[fail_label_index][1].append("push 1")
-        //         instrs[fail_label_index][1].append("roll")
-
-        //         dup_value_x_deep(instrs, fail_label_index, 3)
-        //         swap(instrs, fail_label_index)
-        //         instrs[fail_label_index][1].append("push 1")
-        //         instrs[fail_label_index][1].append("add")
-
-        //         dup_value_x_deep(instrs, fail_label_index, 2)
-        //         swap(instrs, fail_label_index)
-
-        //         instrs[fail_label_index][1].append("push 1")
-        //         instrs[fail_label_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, fail_label_index, ["get_heap"])
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("push -1")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
-
-        //         dup_value_x_deep(instrs, next_index, 3)
-        //         dup_value_x_deep(instrs, next_index, 3)
-        //         instrs[next_index][1].append("greater")
-
-        //         in_bounds_index, realloc_index = branch_new_labels(instrs, next_index)
-
-        //         continue_label_index = len(instrs)
-        //         continue_new_label = "l" + str(continue_label_index)
-        //         instrs.append((continue_new_label, []))
-
-        //         ###################
-        //         # in bounds block #
-        //         ###################
-
-        //         instrs[in_bounds_index][1].append("push 3")
-        //         instrs[in_bounds_index][1].append("push 1")
-        //         instrs[in_bounds_index][1].append("roll")
-        //         swap(instrs, in_bounds_index)
-
-        //         instrs[in_bounds_index][1].append("pop")
-        //         instrs[in_bounds_index][1].append("push 1")
-        //         instrs[in_bounds_index][1].append("add")
-        //         instrs[in_bounds_index][1].append("dup")
-
-        //         instrs[in_bounds_index][1].append("push 3")
-        //         instrs[in_bounds_index][1].append("push 2")
-        //         instrs[in_bounds_index][1].append("roll")
-
-        //         next_index = in_bounds_index
-        //         dup_value_x_deep(instrs, next_index, 5)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-        //         dup_value_x_deep(instrs, next_index, 4)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("roll")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("sub")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-        //         instrs[next_index][1].append("goto " + continue_new_label)
-
-        //         ##########################
-        //         # END of in bounds block #
-        //         ##########################
-
-        //         #################
-        //         # realloc block #
-        //         #################
-
-        //         # instrs[realloc_index][1].append("push 3")
-        //         swap(instrs, realloc_index)
-        //         instrs[realloc_index][1].append("pop")
-        //         swap(instrs, realloc_index)
-        //         instrs[realloc_index][1].append("push 2")
-        //         instrs[realloc_index][1].append("mul")
-        //         instrs[realloc_index][1].append("dup")
-        //         instrs[realloc_index][1].append("push 2")
-        //         instrs[realloc_index][1].append("add")
-
-        //         instrs[realloc_index][1].append("push 3")
-        //         instrs[realloc_index][1].append("push 2")
-        //         instrs[realloc_index][1].append("roll")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, realloc_index, ["malloc"])
-
-        //         # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
-
-        //         dup_value_x_deep(instrs, next_index, 4)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         instrs[next_index][1].append("dup")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         dup_at_depth(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 2")
-        //         instrs[next_index][1].append("sub")
-        //         dup_value_x_deep(instrs, next_index, 4)
-        //         instrs[next_index][1].append("sub")
-
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set", l[1]])
-
-        //         instrs[next_index][1].append("push 6")
-        //         instrs[next_index][1].append("push -1")
-        //         instrs[next_index][1].append("roll")
-        //         instrs[next_index][1].append("pop")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("sub")
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 5")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("roll")
-
-        //         dup_value_x_deep(instrs, next_index, 2)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 2")
-        //         instrs[next_index][1].append("mul")
-        //         swap(instrs, next_index)
-
-        //         # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
-
-        //         dup_value_x_deep(instrs, next_index, 6)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("dup")
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("push 2")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
-
-        //         instrs[next_index][1].append("push 0")
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         dup_value_x_deep(instrs, next_index, 7)
-        //         instrs[next_index][1].append("push 5")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         _, done_index = handle_smpl_instr(var_list, instrs, next_index, ["copy_memory"])
-
-        //         instrs[done_index][1].append("push 5")
-        //         instrs[done_index][1].append("push -1")
-        //         instrs[done_index][1].append("roll")
-
-        //         # Done index
-        //         # _, next_index = handle_smpl_instr(var_list, instrs, done_index, ["get", l[1]])
-        //         next_index = done_index
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-        //         instrs[next_index][1].append("push 3")
-        //         instrs[next_index][1].append("push -1")
-        //         instrs[next_index][1].append("roll")
-        //         instrs[next_index][1].append("pop")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("sub")
-
-        //         instrs[next_index][1].append("goto l" + str(in_bounds_index))
-
-        //         ########################
-        //         # end of realloc block #
-        //         ########################
-
-        //         index = next_index
-        //         next_index = continue_label_index
 
         //     case "get_heap":
         //         assert (len(l) == 1) # get_heap
@@ -1080,11 +786,18 @@ impl SmplToStk {
             .into_iter()
             .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
         {
+            if x.clone() == "term" {
+                continue;
+            }
+
             let v = smpl_to_stk.smpl_executor.blocks[&x.clone()].clone();
-            smpl_to_stk.stk_executor.label = x.clone();
-            smpl_to_stk.stk_executor.blocks.insert(x.clone(), vec![]);
-            smpl_to_stk.stk_executor.block_index.insert(x.clone(), bi);
-            bi += 1;
+
+            if x.clone() != "main" {
+                smpl_to_stk.stk_executor.label = x.clone();
+                smpl_to_stk.stk_executor.blocks.insert(x.clone(), vec![]);
+                smpl_to_stk.stk_executor.block_index.insert(x.clone(), bi);
+                bi += 1;
+            }
 
             for e in v.clone() {
                 smpl_to_stk.add_expr(Comment(format!("+{:?}", e.clone())));
