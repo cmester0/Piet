@@ -1,5 +1,4 @@
-use super::test_helper::test_stk_vs_piet;
-use super::test_helper::run_stk;
+use super::test_helper::*; // test_stk_vs_piet;
 
 #[test]
 pub fn test_roll() {

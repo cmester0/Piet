@@ -1,6 +1,5 @@
 use clap::Parser;
 use piet::optimize_stk::StackOptimizer;
-use std::io::Read;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

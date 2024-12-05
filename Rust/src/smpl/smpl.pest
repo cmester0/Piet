@@ -1,4 +1,4 @@
-Document = { SOI ~ NEWLINE* ~ Imports ~ Variables ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Block* ~ NEWLINE* ~ EOI }
+Document = { SOI ~ NEWLINE* ~ Imports ~ Variables ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks ~ NEWLINE* ~ EOI }
 
 // WHITESPACE = _{ " " }
 COMMENT = _{
@@ -25,8 +25,12 @@ LabelName = { Name }
 LabelRef = { "." ~ Name }
 Label = { LabelName | LabelRef }
 
+LibFun = {"lib_" ~ Name }
+
+LibBlocks = { SOI ~ SubBlock ~ NEWLINE* ~ Blocks ~ NEWLINE* ~ EOI } //  ~ NEWLINE* ~ SubBlock
+Blocks = { Block* }
 Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
-SubBlock = { COMMENT | ((Expr | NewLabel) ~ NEWLINE*)* }  // ~ Expr | Expr
+SubBlock = { COMMENT | ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }  // ~ Expr | Expr
 
 Push = { "push" }
 Pop = { "pop" }
@@ -52,8 +56,6 @@ Set = { "set" }
 
 Eq = { "eq" }
 
-LibFun = @{"lib_" ~ Name }
-
 Expr = {
   | Push ~ SEPARATOR ~ Number
   | Push ~ SEPARATOR ~ Char
@@ -76,8 +78,6 @@ Expr = {
   | Get ~ SEPARATOR ~ Name
 
   | Eq
-
-  | LibFun
 }
 
 // "append"

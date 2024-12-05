@@ -14,7 +14,7 @@ pub enum Label {
 impl Label {
     pub fn parse_label(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Label {
         if e.as_rule() != Rule::Label {
-            panic!()
+            panic!("NOT LABEL {:?}\n{:?}", e.as_rule(), e)
         }
         let n = e.into_inner().next().unwrap();
         match n.as_rule() {

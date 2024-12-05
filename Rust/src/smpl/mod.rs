@@ -8,6 +8,11 @@ use std::collections::HashMap;
 
 use crate::piet_interpreter::CMD;
 
+use pest::iterators::Pair;
+use std::fs;
+
+use std::path::*;
+
 #[derive(Clone)]
 pub enum Variable {
     NUM(isize),
@@ -35,17 +40,164 @@ pub struct SmplExecutor {
 #[grammar = "smpl/smpl.pest"] // relative to src
 pub struct SmplParser;
 
+pub fn parse_subblocks(
+    filepath: &str,
+    mut block_name : String,
+    sub_block: Pair<Rule>,
+    blocks: &mut HashMap<String, Vec<Expr>>,
+    block_index: &mut HashMap<String, usize>,
+    variables: &mut HashMap<String, Variable>,
+
+    label_map: &mut HashMap<String, String>,
+    label_count: &mut usize,
+    imports: &HashMap<String, String>,
+) -> String {
+    if sub_block.as_rule() != Rule::SubBlock {
+        panic!()
+    }
+
+    for x in sub_block.into_inner() {
+        match x.as_rule() {
+            Rule::NewLabel => {
+                let ref_label = String::from(x.into_inner().next().unwrap().as_str());
+                let actual_label = format!("l_ref_{}", label_count);
+                *label_count += 1;
+                label_map.insert(ref_label, actual_label.clone());
+                blocks.insert(actual_label.clone(), vec![Expr::Instr(CMD::Nop)]);
+                block_index.insert(actual_label.clone(), block_index.len());
+            }
+            Rule::LibFun => {
+                let lib_name = String::from(x.into_inner().next().unwrap().as_str());
+
+                let s = imports[&lib_name].clone();
+                let actual_filepath = String::from(
+                    Path::new(filepath)
+                        .parent()
+                        .unwrap()
+                        .join(s.clone())
+                        .to_str()
+                        .unwrap(),
+                );
+
+                let unparsed_file =
+                    fs::read_to_string(actual_filepath.clone()).expect("cannot read file");
+                // parse
+
+                let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
+                    .expect("unsuccessful parse")
+                    .next()
+                    .unwrap()
+                    .into_inner();
+
+                let initial_sub_block = v.next().unwrap();
+
+                match initial_sub_block.as_rule() {
+                    Rule::SubBlock => {
+                        block_name = parse_subblocks(
+                            actual_filepath.as_str(),
+                            block_name.clone(),
+                            initial_sub_block,
+                            blocks,
+                            block_index,
+                            variables,
+                            label_map,
+                            label_count,
+                            imports,
+                        );
+                    }
+                    _ => panic!("INITIAL not subblock?"),
+                }
+
+                let rule_blocks = v.next().unwrap();
+                if rule_blocks.as_rule() != Rule::Blocks {
+                    panic!("NOT BLOCKS {:?}", v)
+                }
+
+                for b in rule_blocks.into_inner() {
+                    if let Rule::EOI = b.as_rule() {
+                        break;
+                    }
+
+                    if b.as_rule() != Rule::Block {
+                        panic!()
+                    }
+
+                    parse_block(
+                        actual_filepath.as_str(),
+                        b,
+                        blocks,
+                        block_index,
+                        variables,
+                        label_map,
+                        label_count,
+                        imports,
+                    );
+                }
+
+                // HashMap<String, Vec<Expr>>, HashMap<String, usize>
+                // parse_string(s);
+            }
+            Rule::Expr => blocks
+                .get_mut(&block_name)
+                .unwrap()
+                .push(parse_expr(x, &label_map)),
+            _ => panic!(),
+        }
+    }
+
+    block_name
+}
+
+pub fn parse_block(
+    filepath: &str,
+    b: Pair<Rule>,
+    blocks: &mut HashMap<String, Vec<Expr>>,
+    block_index: &mut HashMap<String, usize>,
+    variables: &mut HashMap<String, Variable>,
+
+    label_map: &mut HashMap<String, String>,
+    label_count: &mut usize,
+    imports: &HashMap<String, String>,
+) {
+    if b.as_rule() != Rule::Block {
+        panic!();
+    }
+
+    let mut block = b.into_inner();
+    if block.size_hint().0 == 0 {
+        return;
+    }
+
+    let label = block.next().unwrap();
+    let name = match Label::parse_label(label, &label_map) {
+        Label::Name(name) => {
+            blocks.insert(name.clone(), vec![]);
+            block_index.insert(name.clone(), block_index.len());
+            name
+        }
+        Label::Ref(name) => name,
+    };
+
+    let sub_block = block.next().unwrap();
+    parse_subblocks(
+        filepath, name, sub_block,
+        blocks, block_index, variables, label_map, label_count, imports
+    );
+}
+
 pub fn parse_string(
-    unparsed: &str,
-) -> (HashMap<String, Vec<Expr>>, HashMap<String, usize>, HashMap<String, Variable>) {
-    let document = SmplParser::parse(Rule::Document, unparsed)
+    filepath: &str,
+    blocks: &mut HashMap<String, Vec<Expr>>,
+    block_index: &mut HashMap<String, usize>,
+    variables: &mut HashMap<String, Variable>,
+) {
+    let unparsed = fs::read_to_string(filepath).expect("cannot read file");
+    let document = SmplParser::parse(Rule::Document, unparsed.as_str())
         .expect("unsuccessful parse")
         .next()
         .unwrap();
 
-    let mut blocks: HashMap<String, Vec<Expr>> = HashMap::new();
-    let mut block_index: HashMap<String, usize> = HashMap::new();
-    let mut variables: HashMap<String, Variable> = HashMap::new();
+    let mut imports: HashMap<String, String> = HashMap::new();
 
     match document.as_rule() {
         Rule::Document => {
@@ -56,7 +208,20 @@ pub fn parse_string(
                 match pre_main.as_rule() {
                     Rule::Imports => {
                         // TODO: handle import
-                        // println!("{}", "Imports");
+                        let a = pre_main.into_inner();
+                        for import in a {
+                            match import.as_rule() {
+                                Rule::Import => {
+                                    let mut imp = import.into_inner();
+                                    let name = imp.next().unwrap().as_str();
+                                    let filepath = imp.next().unwrap().as_str();
+
+                                    imports.insert(String::from(name), String::from(filepath));
+                                }
+                                _ => todo!("Not variable!"),
+                            }
+                        }
+
                         // variables.insert(_ , _)
                     }
                     Rule::Variables => {
@@ -70,11 +235,16 @@ pub fn parse_string(
 
                                     match var_type.as_str() {
                                         "num" => {
-                                            variables.insert(String::from(name.as_str()), Variable::NUM(0isize));
+                                            variables.insert(
+                                                String::from(name.as_str()),
+                                                Variable::NUM(0isize),
+                                            );
                                         }
                                         "list" => {
-                                            variables
-                                                .insert(String::from(name.as_str()), Variable::LIST(Vec::new()));
+                                            variables.insert(
+                                                String::from(name.as_str()),
+                                                Variable::LIST(Vec::new()),
+                                            );
                                         }
                                         _ => (),
                                     }
@@ -89,54 +259,48 @@ pub fn parse_string(
                 pre_main = v.next().unwrap();
             }
 
-            let mut label_map : HashMap<String, String> = HashMap::new();
+            let mut label_map: HashMap<String, String> = HashMap::new();
             let mut label_count = 0;
 
             let main = pre_main;
 
             match main.as_rule() {
                 Rule::SubBlock => {
-                    blocks.insert(String::from("main"), main.into_inner().map(|x| parse_expr(x, &label_map)).collect());
+                    blocks.insert(
+                        String::from("main"),
+                        main.into_inner()
+                            .map(|x| parse_expr(x, &label_map))
+                            .collect(),
+                    );
                     block_index.insert(String::from("main"), 0);
                 }
-                _ => panic!(),
+                _ => panic!("MAIN not subblock?"),
             }
 
-            for b in v {
-                let mut block = b.into_inner();
-                if block.size_hint().0 == 0 {
-                    continue;
+            let rule_blocks = v.next().unwrap();
+            if rule_blocks.as_rule() != Rule::Blocks {
+                panic!("NOT BLOCKS {:?}", v)
+            }
+
+            for b in rule_blocks.into_inner() {
+                if b.as_rule() == Rule::EOI {
+                    break;
                 }
 
-                let label = block.next().unwrap();
-                let name = match Label::parse_label(label, &label_map) {
-                    Label::Name(name) => {
-                        blocks.insert(name.clone(), vec![]);
-                        block_index.insert(name.clone(), block_index.len());
-                        name
-                    },
-                    Label::Ref(name) => {
-                        name
-                    },
-                };
-
-                let sub_block = block.next().unwrap();
-
-                for x in sub_block.into_inner() {
-                    match x.as_rule() {
-                        Rule::NewLabel => {
-                            let ref_label = String::from(x.into_inner().next().unwrap().as_str());
-                            let actual_label = format!("l_ref_{}", label_count);
-                            label_count += 1;
-                            label_map.insert(ref_label, actual_label.clone());
-                            blocks.insert(actual_label.clone(), vec![Expr::Instr(CMD::Nop)]);
-                            block_index.insert(actual_label.clone(), block_index.len());
-                        },
-                        Rule::Expr =>
-                            blocks.get_mut(&name).unwrap().push(parse_expr(x, &label_map)),
-                        _ => panic!(),
-                    }
+                if b.as_rule() != Rule::Block {
+                    panic!("NOT BLOCKS {:?}", b)
                 }
+
+                parse_block(
+                    filepath,
+                    b,
+                    blocks,
+                    block_index,
+                    variables,
+                    &mut label_map,
+                    &mut label_count,
+                    &imports,
+                );
             }
 
             blocks.insert(String::from("term"), vec![]); // TODO
@@ -144,8 +308,6 @@ pub fn parse_string(
         }
         _ => panic!(),
     }
-
-    (blocks, block_index, variables)
 }
 
 impl SmplExecutor {
@@ -177,9 +339,7 @@ impl SmplExecutor {
                 println!("Debug: {:?}", self.stack);
                 false
             }
-            Expr::Comment(_) => {
-                false
-            }
+            Expr::Comment(_) => false,
             Expr::Eq => {
                 let a = self.stack.pop().unwrap();
                 let b = self.stack.pop().unwrap();
@@ -212,10 +372,11 @@ impl SmplExecutor {
         }
     }
 
-    pub fn new(
-        unparsed: &str,
-    ) -> Self {
-        let (blocks, block_index, variables) = parse_string(unparsed);
+    pub fn new(filepath: &str) -> Self {
+        let mut blocks = HashMap::new();
+        let mut block_index = HashMap::new();
+        let mut variables = HashMap::new();
+        parse_string(filepath, &mut blocks, &mut block_index, &mut variables);
         SmplExecutor {
             blocks,
             block_index,

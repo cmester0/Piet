@@ -3,13 +3,11 @@ use itertools::Itertools;
 use super::Expr::{self as SmplExpr};
 use super::SmplExecutor;
 use crate::piet_stack::expr::Expr::{self, *};
-use crate::piet_stack::*;
 use crate::smpl::*;
 use crate::{
     piet_interpreter::CMD::{self, *},
     piet_stack::PietStackExecutor,
 };
-use std::borrow::Borrow;
 use std::collections::HashMap;
 
 pub struct SmplToStk {
@@ -275,15 +273,8 @@ impl SmplToStk {
             SmplExpr::Comment(s) => {
                 self.add_expr(Comment(s));
             }
-            _ => todo!(),
-        }
-
-        // match l[0]:
-        //     case "label":
-        //         index = len(instrs)
-        //         next_index = len(instrs)
-        //         instrs.append((l[1], []))
-
+            SmplExpr::Set(var) => {
+                todo!()
         //     case "set":
         //         assert (len(l) == 2) # set
 
@@ -327,6 +318,10 @@ impl SmplToStk {
         //         index = new_index
         //         next_index = new_index
 
+            }
+            SmplExpr::Get(var) => {
+                todo!()
+
         //     case "get":
         //         assert (len(l) == 2) # get
 
@@ -361,7 +356,11 @@ impl SmplToStk {
 
         //         index = new_index
         //         next_index = new_index
+            }
+        }
 
+
+        // match l[0]:
         //     case "append":
         //         assert (len(l) == 1) # append
 

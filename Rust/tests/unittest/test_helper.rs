@@ -20,8 +20,6 @@ pub fn run_piet(img_path: &str, input: &str) -> String {
 }
 
 pub fn run_stk(filepath: &str, input: &str) -> String {
-    let unparsed_file = fs::read_to_string(filepath).expect("cannot read file");
-
     let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
     let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
 
@@ -29,7 +27,7 @@ pub fn run_stk(filepath: &str, input: &str) -> String {
     {
         let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
         PietStackExecutor::interpret_from_string(
-            unparsed_file.as_str(),
+            filepath,
             &mut Some(stk_input),
             &mut Some(stk_output),
         );
@@ -39,11 +37,9 @@ pub fn run_stk(filepath: &str, input: &str) -> String {
 }
 
 pub fn stk_to_piet(filepath: &str, output: &str) {
-    let unparsed_file = fs::read_to_string(filepath).expect("cannot read file");
-
     // TODO: StackOptimizer should not need input / output !
     let mut optimizer = StackOptimizer::new();
-    let img: image::RgbImage = PietStackExecutor::new(unparsed_file.as_str()).to_png(&mut optimizer);
+    let img: image::RgbImage = PietStackExecutor::new(filepath).to_png(&mut optimizer);
 
     let dyn_img = DynamicImage::ImageRgb8(img);
 
@@ -51,8 +47,6 @@ pub fn stk_to_piet(filepath: &str, output: &str) {
 }
 
 pub fn run_smpl(filepath: &str, input: &str) -> String {
-    let unparsed_file = fs::read_to_string(filepath).expect("cannot read file");
-
     let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
     let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
 
@@ -60,7 +54,7 @@ pub fn run_smpl(filepath: &str, input: &str) -> String {
     {
         let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
         SmplExecutor::interpret_from_string(
-            unparsed_file.as_str(),
+            filepath,
             &mut Some(stk_input),
             &mut Some(stk_output),
         );
@@ -70,9 +64,7 @@ pub fn run_smpl(filepath: &str, input: &str) -> String {
 }
 
 pub fn smpl_to_stk(filepath: &str, output: &str) {
-    let unparsed_file = fs::read_to_string(filepath).expect("cannot read file");
-
-    let smpl_executor = SmplExecutor::new(unparsed_file.as_str());
+    let smpl_executor = SmplExecutor::new(filepath);
     let stk_executor = SmplToStk::to_stk(smpl_executor);
     let file_str = stk_executor.to_file_string();
 

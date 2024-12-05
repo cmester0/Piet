@@ -1,9 +1,10 @@
+
 use clap::Parser as CliParser;
 use image::DynamicImage;
 use piet::optimize_stk::StackOptimizer;
 use piet::smpl::SmplExecutor;
 use piet::smpl::smpl_to_stk::SmplToStk;
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::{Read, Write};
 
 #[derive(CliParser, Debug)]
@@ -22,12 +23,10 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let unparsed_file = fs::read_to_string(args.filepath).expect("cannot read file");
-
     let input = std::io::stdin().bytes().peekable();
     let output = std::io::stdout();
 
-    let mut smpl_executor = SmplExecutor::new(unparsed_file.as_str());
+    let mut smpl_executor = SmplExecutor::new(args.filepath.as_str());
 
     if args.run {
         smpl_executor.interpret(

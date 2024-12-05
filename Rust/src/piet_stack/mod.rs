@@ -2,21 +2,14 @@ pub mod expr;
 mod stk_to_file;
 mod stk_to_piet;
 
-use crate::optimize_stk::StackOptimizer;
-use crate::piet_color::*;
-use crate::piet_interpreter::*;
 use expr::{
     parse_expr,
     Expr::{self, *},
 };
-use image::Rgb;
-use image::RgbImage;
-use ndarray::Array;
-use ndarray::Ix2;
 use pest::*;
 use pest_derive::Parser;
-use std::cmp;
 use std::collections::HashMap;
+use std::fs;
 
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
@@ -115,8 +108,9 @@ impl PietStackExecutor {
         }
     }
 
-    pub fn new(unparsed: &str) -> Self {
-        let (blocks, block_index) = parse_string(unparsed);
+    pub fn new(filepath: &str) -> Self {
+        let unparsed = fs::read_to_string(filepath).expect("cannot read file");
+        let (blocks, block_index) = parse_string(unparsed.as_str());
         PietStackExecutor {
             blocks,
             block_index,

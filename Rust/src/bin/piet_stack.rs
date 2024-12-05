@@ -19,12 +19,10 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let unparsed_file = fs::read_to_string(args.filepath).expect("cannot read file");
-
     let input = std::io::stdin().bytes().peekable();
     let output = std::io::stdout();
 
-    let mut stk_executor = PietStackExecutor::new(unparsed_file.as_str());
+    let mut stk_executor = PietStackExecutor::new(args.filepath.as_str());
 
     if args.run {
         stk_executor.interpret::<std::io::Stdin, std::io::Stdout>(

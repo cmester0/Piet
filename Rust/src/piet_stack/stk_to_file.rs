@@ -1,19 +1,7 @@
-use super::{
-    parse_expr,
-    Expr::{self, *},
-};
-use crate::optimize_stk::StackOptimizer;
-use crate::piet_color::*;
-use crate::piet_interpreter::CMD::{self, *};
-use crate::piet_interpreter::*;
-use image::Rgb;
-use image::RgbImage;
+use super::Expr::*;
+use crate::piet_interpreter::CMD::*;
 use itertools::Itertools;
-use ndarray::Array;
-use ndarray::Ix2;
-use std::cmp;
-use std::collections::HashMap;
-use std::io::{Read, Write};
+use std::io::Write;
 
 // pub struct PietStackExecutor {
 //     pub blocks: HashMap<String, Vec<Expr>>,
@@ -28,7 +16,12 @@ impl super::PietStackExecutor {
         {
             let mut stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
 
-            for (k, _) in self.block_index.clone().into_iter().sorted_by(|(_, v1), (_, v2)| v1.cmp(v2)) {
+            for (k, _) in self
+                .block_index
+                .clone()
+                .into_iter()
+                .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
+            {
                 writeln!(stk_output, "label {}", k.clone()).unwrap();
                 for e in self.blocks[&k].clone() {
                     match e {
@@ -59,7 +52,7 @@ impl super::PietStackExecutor {
                         Comment(s) => writeln!(stk_output, "# {}", s).unwrap(),
                     }
                 }
-                writeln!(stk_output,"");
+                writeln!(stk_output, "").unwrap();
             }
         }
         String::from_utf8(stk_byt_out).unwrap()

@@ -1,7 +1,4 @@
-use super::{
-    parse_expr,
-    Expr::{self, *},
-};
+use super::Expr::{self, *};
 use crate::optimize_stk::StackOptimizer;
 use crate::piet_color::*;
 use crate::piet_interpreter::*;
@@ -187,7 +184,7 @@ impl super::PietStackExecutor {
     pub fn to_png(&self, optimizer: &mut StackOptimizer) -> image::RgbImage {
         let (parsed_blocks, block_index) = (self.blocks.clone(), self.block_index.clone());
 
-        let pbl : usize = parsed_blocks.len() + 1;
+        let pbl: usize = parsed_blocks.len() + 1;
         let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
