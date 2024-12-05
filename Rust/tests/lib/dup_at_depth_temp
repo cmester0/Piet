@@ -1,0 +1,20 @@
+# Save / update depth
+dup
+push 1
+add
+
+# Fetch the element
+push -1
+roll
+
+# dup and save element
+dup
+push 3
+push -1
+roll
+
+# Put back the new element
+push 1
+add
+push 1
+roll

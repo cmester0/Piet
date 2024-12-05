@@ -49,24 +49,6 @@ pub fn test_readlines() {
 
 #[test]
 pub fn test_swap() {
-    // let smpl_executor = SmplExecutor::new(format!("{}.smpl", "./tests/test_swap").as_str());
-    // let stk_executor = SmplToStk::to_stk(smpl_executor.clone());
-
-    // for (a, b) in stk_executor.blocks.clone() {
-    //     println!("{}", a);
-    //     for c in b {
-    //         println!("{:?}", c);
-    //     }
-    // }
-
-    // let smpl_str = smpl_executor.run_on_string("23 43\n");
-    // println!("STACK DONE\n");
-    // assert_eq!(smpl_str, "23 43", "SMPL FAILED");
-
-    // let stk_str = stk_executor.run_on_string("23 43\n");
-    // println!("STACK DONE\n");
-    // assert_eq!(stk_str, "23 43", "STACK FAILED");
-
     test_simpl_vs_stk_vs_piet("./tests/test_swap", "23 43\n", "23 43");
 }
 
@@ -77,7 +59,7 @@ pub fn test_set_elem_get_elem() {
 
 #[test]
 pub fn test_dup_at_depth() {
-    test_stk_vs_piet("./tests/test_dup_at_depth", "", "43\n");
+    test_simpl_vs_stk_vs_piet("./tests/test_dup_at_depth", "", "43\n");
 }
 
 /////////////////////

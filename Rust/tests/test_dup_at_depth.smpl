@@ -1,3 +1,5 @@
+use dup_at_depth ./lib/dup_at_depth.lib
+
 push 4
 push 18
 push 32
@@ -6,7 +8,7 @@ push 75
 push 183
 
 push 3
-dup_at_depth
+lib_dup_at_depth
 
 outN
 push 10

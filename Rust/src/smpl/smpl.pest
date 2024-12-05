@@ -27,10 +27,12 @@ Label = { LabelName | LabelRef }
 
 LibFun = {"lib_" ~ Name }
 
-LibBlocks = { SOI ~ SubBlock ~ NEWLINE* ~ Blocks ~ NEWLINE* ~ EOI } //  ~ NEWLINE* ~ SubBlock
+LibBlocks = {
+    SOI ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks? ~ NEWLINE* ~ EOI
+}
 Blocks = { Block* }
 Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
-SubBlock = { COMMENT | ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }  // ~ Expr | Expr
+SubBlock = { ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }
 
 Push = { "push" }
 Pop = { "pop" }
