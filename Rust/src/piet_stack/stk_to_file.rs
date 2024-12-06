@@ -22,6 +22,11 @@ impl super::PietStackExecutor {
                 .into_iter()
                 .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
             {
+                // Skip term block
+                if k.clone() == "term" {
+                    continue;
+                }
+
                 writeln!(stk_output, "label {}", k.clone()).unwrap();
                 for e in self.blocks[&k].clone() {
                     match e {

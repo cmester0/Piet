@@ -1,0 +1,12 @@
+lib_swap
+
+push 3
+push -1
+roll
+
+lib_stk_eq
+
+lib_swap
+
+push 1
+sub

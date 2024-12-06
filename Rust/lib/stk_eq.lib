@@ -1,0 +1,6 @@
+sub
+dup
+mul
+push 0
+greater
+not

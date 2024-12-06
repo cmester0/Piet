@@ -1,0 +1,6 @@
+# Update stack
+push 1
+sub
+
+# Prepare branching condition
+lib_swap

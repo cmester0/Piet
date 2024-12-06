@@ -1,0 +1,33 @@
+!inN_label
+goto .inN_label
+
+push -2
+push -3
+inN
+
+lib_swap
+push -3
+lib_eq
+
+# If statement
+!succ_label
+!fail_label
+!continue_label
+branch .succ_label .fail_label
+
+label .succ_label
+push 3
+push 1
+roll
+
+pop
+
+push 1
+add
+goto .continue_label
+
+label .fail_label
+pop
+goto .continue_label
+
+label .continue_label

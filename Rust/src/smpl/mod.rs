@@ -11,8 +11,8 @@ use crate::piet_interpreter::CMD;
 use pest::iterators::Pair;
 use std::fs;
 
-use std::path::*;
 use std::io::Read;
+use std::path::*;
 
 #[derive(Clone)]
 pub enum Variable {
@@ -33,7 +33,7 @@ impl Variable {
 pub struct SmplExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
-    pub variables: HashMap<String, Variable>,
+    pub variables: HashMap<String, (Variable, isize, usize)>,
     pub stack: Vec<isize>,
     pub label: String,
 }
@@ -44,11 +44,11 @@ pub struct SmplParser;
 
 pub fn parse_subblocks(
     filepath: &str,
-    mut block_name : String,
+    mut block_name: String,
     sub_block: Pair<Rule>,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, Variable>,
+    variables: &mut HashMap<String, (Variable, isize, usize)>,
 
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
@@ -59,6 +59,8 @@ pub fn parse_subblocks(
     }
 
     for x in sub_block.into_inner() {
+        println!("{}: {:?}", block_name, x.as_rule());
+        
         match x.as_rule() {
             Rule::NewLabel => {
                 let ref_label = String::from(x.into_inner().next().unwrap().as_str());
@@ -70,19 +72,18 @@ pub fn parse_subblocks(
             }
             Rule::LibFun => {
                 let lib_name = String::from(x.into_inner().next().unwrap().as_str());
-
                 let s = imports[&lib_name].clone();
-                let actual_filepath = String::from(
-                    Path::new(filepath)
-                        .parent()
-                        .unwrap()
-                        .join(s.clone())
-                        .to_str()
-                        .unwrap(),
-                );
+                let actual_filepath = s; // String::from(
+                //     Path::new(filepath)
+                //         .parent()
+                //         .unwrap()
+                //         .join(s.clone())
+                //         .to_str()
+                //         .unwrap(),
+                // );
 
                 let unparsed_file =
-                    fs::read_to_string(actual_filepath.clone()).expect("cannot read file");
+                    fs::read_to_string(actual_filepath.clone()).expect(format!("cannot read file {}", actual_filepath).as_str());
                 // parse
 
                 let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
@@ -124,7 +125,7 @@ pub fn parse_subblocks(
                         panic!()
                     }
 
-                    parse_block(
+                    block_name = parse_block(
                         actual_filepath.as_str(),
                         b,
                         blocks,
@@ -155,20 +156,17 @@ pub fn parse_block(
     b: Pair<Rule>,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, Variable>,
+    variables: &mut HashMap<String, (Variable, isize, usize)>,
 
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
-) {
+) -> String {
     if b.as_rule() != Rule::Block {
         panic!();
     }
 
     let mut block = b.into_inner();
-    if block.size_hint().0 == 0 {
-        return;
-    }
 
     let label = block.next().unwrap();
     let name = match Label::parse_label(label, &label_map) {
@@ -182,20 +180,29 @@ pub fn parse_block(
 
     let sub_block = block.next().unwrap();
     parse_subblocks(
-        filepath, name, sub_block,
-        blocks, block_index, variables, label_map, label_count, imports
-    );
+        filepath,
+        name,
+        sub_block,
+        blocks,
+        block_index,
+        variables,
+        label_map,
+        label_count,
+        imports,
+    )
 }
 
 pub fn parse_string(
     filepath: &str,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, Variable>,
+    variables: &mut HashMap<String, (Variable, isize, usize)>,
 ) {
-    let unparsed = fs::read_to_string(filepath).expect("cannot read file");
+    let unparsed = fs::read_to_string(filepath).expect(
+        format!("cannot read file: {}",filepath).as_str()
+    );
     let document = SmplParser::parse(Rule::Document, unparsed.as_str())
-        .expect("unsuccessful parse")
+        .expect(format!("unsuccessful parse of {}", filepath).as_str())
         .next()
         .unwrap();
 
@@ -239,13 +246,13 @@ pub fn parse_string(
                                         "num" => {
                                             variables.insert(
                                                 String::from(name.as_str()),
-                                                Variable::NUM(0isize),
+                                                (Variable::NUM(0isize), 0, variables.len()),
                                             );
                                         }
                                         "list" => {
                                             variables.insert(
                                                 String::from(name.as_str()),
-                                                Variable::LIST(Vec::new()),
+                                                (Variable::LIST(Vec::new()), -1, variables.len()),
                                             );
                                         }
                                         _ => (),
@@ -268,9 +275,7 @@ pub fn parse_string(
 
             match main.as_rule() {
                 Rule::SubBlock => {
-                    blocks.insert(
-                        String::from("main"),
-                        vec![]);
+                    blocks.insert(String::from("main"), vec![]);
                     block_index.insert(String::from("main"), 0);
 
                     parse_subblocks(
@@ -316,6 +321,15 @@ pub fn parse_string(
 
             blocks.insert(String::from("term"), vec![]); // TODO
             block_index.insert(String::from("term"), block_index.len());
+
+            for (n,b) in blocks {
+                println!("{:?}", n);
+                for v in b {
+                    println!("{:?}", v);
+                }
+                println!();
+            }
+            
         }
         _ => panic!(),
     }
@@ -347,7 +361,7 @@ impl SmplExecutor {
                 true
             }
             Expr::Debug => {
-                println!("Debug: {:?}", self.stack);
+                println!("Debug {}: {:?}", self.label, self.stack);
                 false
             }
             Expr::Comment(_) => false,
@@ -358,12 +372,18 @@ impl SmplExecutor {
                 false
             }
             Expr::Get(s) => {
-                self.stack.push(self.variables[&s].clone().value());
+                self.stack.push(self.variables[&s].clone().1);
                 false
             }
             Expr::Set(s) => {
-                self.variables
-                    .insert(s, Variable::NUM(self.stack.pop().unwrap()));
+                self.variables.insert(
+                    s.clone(),
+                    (
+                        self.variables[&s].0.clone(),
+                        self.stack.pop().unwrap(),
+                        self.variables.len(),
+                    ),
+                );
                 false
             }
         }
@@ -405,17 +425,14 @@ impl SmplExecutor {
         SmplExecutor::new(unparsed).interpret(input, output);
     }
 
-    pub fn run_on_string(mut self, input: &str) -> String{
+    pub fn run_on_string(mut self, input: &str) -> String {
         let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
         let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
 
         let mut stk_byt_out = vec![];
         {
             let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-            self.interpret(
-                &mut Some(stk_input),
-                &mut Some(stk_output),
-            );
+            self.interpret(&mut Some(stk_input), &mut Some(stk_output));
         }
 
         String::from_utf8(stk_byt_out).unwrap()

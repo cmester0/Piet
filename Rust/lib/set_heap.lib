@@ -1,0 +1,26 @@
+dup
+push 1
+add
+
+lib_dup_at_depth
+# lib_dup_value_x_deep(instrs, index, 2)
+push 2
+lib_dup_at_depth
+#
+add
+
+push 3
+push -1
+roll
+sub
+
+push 3
+push -1
+roll
+
+lib_swap
+lib_swap_at_depth
+
+pop
+push 2
+sub

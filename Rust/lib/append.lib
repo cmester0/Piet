@@ -1,0 +1,413 @@
+lib_swap
+dup
+
+# Is it -1?
+push -1
+lib_eq
+
+!suc_label
+!fail_label
+branch .suc_label .fail_label
+
+####################################
+# Success block = Initialize alloc #
+####################################
+
+label .suc_label
+pop
+push 3
+lib_swap
+lib_malloc
+
+dup
+push 1
+add
+
+lib_dup_at_depth
+
+push 3
+sub
+
+lib_swap
+
+push 1
+add
+
+lib_swap
+dup
+
+push 4
+push 1
+roll
+lib_swap
+
+push 1
+add
+
+push 0
+
+# dup_value_x_deep(instrs, next_index, 3)
+push 3
+push -1
+roll
+
+dup
+
+push 4
+push 1
+roll
+# /
+
+push 1
+add
+
+push 1
+
+push 5
+push 3
+roll
+
+push 3
+add
+
+lib_set_heap
+lib_set_heap
+
+push 3
+push -1
+roll
+
+goto .fail_label
+
+###########################################
+# End of Success block = Initialize alloc #
+###########################################
+
+label .fail_label
+
+push 3
+push 1
+roll
+
+# dup_value_x_deep(instrs, fail_label_index, 3)
+push 3
+push -1
+roll
+
+dup
+
+push 4
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+
+# dup_value_x_deep(instrs, fail_label_index, 2)
+push 2
+push 1
+roll
+
+dup
+
+push 4
+push 1
+roll
+# /
+
+lib_swap
+
+push 1
+add
+
+lib_get_heap
+
+push 3
+push -1
+roll
+
+push 1
+add
+lib_swap
+
+lib_get_heap
+
+# dup_value_x_deep(instrs, next_index, 3)
+push 3
+push -1
+roll
+
+dup
+
+push 4
+push 1
+roll
+# /
+# dup_value_x_deep(instrs, next_index, 3)
+push 3
+push -1
+roll
+
+dup
+
+push 4
+push 1
+roll
+# /
+greater
+
+!in_bounds
+!realloc
+!continue_label
+
+branch .in_bounds .realloc
+
+###################
+# in bounds block #
+###################
+
+label .in_bounds
+
+push 3
+push 1
+roll
+lib_swap
+
+pop
+push 1
+add
+dup
+
+push 3
+push 2
+roll
+
+# dup_value_x_deep(instrs, next_index, 5)
+push 5
+push -1
+roll
+
+dup
+
+push 6
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+
+lib_swap
+push 1
+add
+lib_swap
+
+lib_set_heap
+
+# dup_value_x_deep(instrs, next_index, 4)
+push 4
+push -1
+roll
+
+dup
+
+push 5
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+
+push 3
+push 1
+roll
+push 1
+add
+add
+lib_swap
+push 1
+sub
+
+lib_set_heap
+
+goto .continue_label
+
+##########################
+# END of in bounds block #
+##########################
+
+#################
+# realloc block #
+#################
+
+label .realloc
+
+lib_swap
+pop
+lib_swap
+push 2
+mul
+dup
+push 2
+add
+
+push 3
+push 2
+roll
+
+lib_malloc
+
+# dup_value_x_deep(instrs, next_index, 4)
+push 4
+push -1
+roll
+dup
+push 5
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+
+dup
+push 1
+add
+
+lib_dup_at_depth
+
+push 2
+sub
+# dup_value_x_deep(instrs, next_index, 4)
+push 4
+push -1
+roll
+dup
+push 5
+push 1
+roll
+# /
+
+sub
+
+lib_swap
+
+push 1
+add
+
+push 6
+push -1
+roll
+pop
+push 1
+sub
+lib_swap
+
+push 5
+push 1
+roll
+
+# dup_value_x_deep(instrs, next_index, 2)
+push 2
+push -1
+roll
+dup
+push 3
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+lib_get_heap
+lib_swap
+push 2
+mul
+lib_swap
+
+# dup_value_x_deep(instrs, next_index, 6)
+push 6
+push -1
+roll
+dup
+push 7
+push 1
+roll
+# /
+
+lib_swap
+push 1
+add
+
+lib_set_heap
+
+lib_swap
+dup
+
+push 1
+add
+
+push 3
+push 2
+roll
+
+push 1
+add
+
+lib_get_heap
+
+push 0
+lib_swap
+
+push 1
+add
+
+# dup_value_x_deep(instrs, next_index, 7)
+push 7
+push -1
+roll
+dup
+push 8
+push 1
+roll
+# /
+
+push 5
+push 1
+roll
+
+push 1
+add
+
+lib_copy_memory
+
+push 5
+push -1
+roll
+
+push 1
+add
+lib_swap
+
+lib_set_heap
+push 3
+push -1
+roll
+pop
+push 1
+sub
+
+goto .in_bounds
+
+########################
+# end of realloc block #
+########################
+
+label .continue_label

@@ -1,0 +1,11 @@
+push 3
+push 1
+roll
+
+add
+
+lib_swap
+
+# Update stack
+push 1
+sub

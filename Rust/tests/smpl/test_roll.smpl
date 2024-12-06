@@ -1,0 +1,31 @@
+use swap ./lib/swap.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+
+use push ./lib/push.lib
+use outN ./lib/outN.lib
+use roll ./lib/roll.lib
+
+use dup ./lib/dup.lib
+
+push 0
+lib_push
+
+push 1
+lib_push
+
+push 2
+lib_push
+
+push 3
+lib_push
+
+push -1
+lib_push
+
+lib_roll
+
+lib_outN
+lib_outN
+lib_outN
+
+goto term

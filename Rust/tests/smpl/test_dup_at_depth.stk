@@ -1,0 +1,76 @@
+label main
+push 0
+push 1
+# +Instr(Push(4))
+push 4
+# -Instr(Push(4))
+# +Instr(Push(18))
+push 18
+# -Instr(Push(18))
+# +Instr(Push(32))
+push 32
+# -Instr(Push(32))
+# +Instr(Push(43))
+push 43
+# -Instr(Push(43))
+# +Instr(Push(75))
+push 75
+# -Instr(Push(75))
+# +Instr(Push(183))
+push 183
+# -Instr(Push(183))
+# +Instr(Push(3))
+push 3
+# -Instr(Push(3))
+# +Instr(Dup)
+dup
+# -Instr(Dup)
+# +Instr(Push(1))
+push 1
+# -Instr(Push(1))
+# +Instr(Add)
+add
+# -Instr(Add)
+# +Instr(Push(-1))
+push -1
+# -Instr(Push(-1))
+# +Instr(Roll)
+roll
+# -Instr(Roll)
+# +Instr(Dup)
+dup
+# -Instr(Dup)
+# +Instr(Push(3))
+push 3
+# -Instr(Push(3))
+# +Instr(Push(-1))
+push -1
+# -Instr(Push(-1))
+# +Instr(Roll)
+roll
+# -Instr(Roll)
+# +Instr(Push(1))
+push 1
+# -Instr(Push(1))
+# +Instr(Add)
+add
+# -Instr(Add)
+# +Instr(Push(1))
+push 1
+# -Instr(Push(1))
+# +Instr(Roll)
+roll
+# -Instr(Roll)
+# +Instr(OutN)
+outN
+# -Instr(OutN)
+# +Instr(Push(10))
+push 10
+# -Instr(Push(10))
+# +Instr(OutC)
+outC
+# -Instr(OutC)
+# +Goto(Name("term"))
+goto term
+# -Goto(Name("term"))
+

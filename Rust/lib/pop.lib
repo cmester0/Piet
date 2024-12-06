@@ -1,0 +1,7 @@
+lib_swap
+
+pop
+
+# Update stack
+push 1
+sub

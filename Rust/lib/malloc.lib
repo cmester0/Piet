@@ -1,0 +1,74 @@
+dup
+
+push 3
+push -1
+roll
+
+dup
+dup
+
+push 4
+push -1
+roll
+add
+push 1
+add
+
+lib_swap
+
+dup
+
+!malloc_label_index
+goto .malloc_label_index
+
+label .malloc_label_index
+dup
+push 0
+greater
+
+!malloc_loop_index
+!malloc_roll_index
+branch .malloc_loop_index .malloc_roll_index
+
+label .malloc_loop_index
+push 0
+
+push 4
+push 1
+roll
+
+push 1
+sub
+goto .malloc_label_index
+
+label .malloc_roll_index
+
+debug
+
+pop
+roll
+
+# Dup at depth 2
+push 2
+lib_dup_at_depth
+# / dup at depth 2
+
+push 1
+add
+
+# Update heap size
+lib_dup_at_depth
+add
+
+# Dup at depth 2
+push 2
+lib_dup_at_depth
+# / dup at depth 2
+
+push 1
+add
+lib_swap_at_depth
+pop
+
+push 1
+sub

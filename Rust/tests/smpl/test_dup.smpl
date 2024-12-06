@@ -1,0 +1,20 @@
+use swap ./lib/swap.lib
+
+use push ./lib/push.lib
+use outN ./lib/outN.lib
+
+use dup ./lib/dup.lib
+
+push 15
+lib_push
+
+lib_dup
+
+lib_outN
+
+push 32
+outC
+
+lib_outN
+
+goto term

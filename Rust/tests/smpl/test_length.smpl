@@ -1,0 +1,38 @@
+use swap ./lib/swap.lib
+use malloc ./lib/malloc.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+use eq ./lib/eq.lib
+use set_heap ./lib/set_heap.lib
+use get_heap ./lib/get_heap.lib
+
+use copy_memory
+
+use append
+
+var l list
+
+push 10
+push 15
+push 13
+push 14
+push 15
+push 13
+push 14
+get l
+append
+append
+append
+append
+append
+append
+append
+set l
+
+get l
+length
+
+outN
+push 10
+outC
+
+goto term

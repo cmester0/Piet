@@ -119,6 +119,29 @@ impl SmplToStk {
         self.stk_executor.label = continue_label;
     }
 
+    fn dup_at_depth(&mut self) {
+        // Save / update depth
+        self.add_cmd(Dup);
+        self.add_cmd(Push(1));
+        self.add_cmd(Add);
+
+        // Fetch the element
+        self.add_cmd(Push(-1));
+        self.add_cmd(Roll);
+
+        // dup and save element
+        self.add_cmd(Dup);
+        self.add_cmd(Push(3));
+        self.add_cmd(Push(-1));
+        self.add_cmd(Roll);
+
+        // Put back the new element
+        self.add_cmd(Push(1));
+        self.add_cmd(Add);
+        self.add_cmd(Push(1));
+        self.add_cmd(Roll);
+    }
+
     fn dup_value_x_deep(&mut self, x: isize) {
         // Get the value to the top
         self.add_cmd(Push(x));
@@ -129,6 +152,26 @@ impl SmplToStk {
 
         // put it back
         self.add_cmd(Push(x + 1));
+        self.add_cmd(Push(1));
+        self.add_cmd(Roll);
+    }
+
+    fn swap_at_depth(&mut self){
+        // Save / update depth
+        self.add_cmd(Dup);
+        self.add_cmd(Push(1));
+        self.add_cmd(Add);
+
+        // Fetch the element
+        self.add_cmd(Push(-1));
+        self.add_cmd(Roll);
+
+        // Do the swap
+        self.add_cmd(Push(3));
+        self.add_cmd(Push(1));
+        self.add_cmd(Roll);
+
+        // Put back the new element
         self.add_cmd(Push(1));
         self.add_cmd(Roll);
     }
@@ -179,97 +222,13 @@ impl SmplToStk {
                 self.add_cmd(Push(1));
                 self.add_cmd(Sub);
             }
-            SmplExpr::Instr(c) => match c {
-                Push(n) => {
-                    self.c_add(1);
-                    self.add_cmd(Push(n));
-                    self.swap();
-                }
-                Pop => {
-                    self.swap();
-                    self.add_cmd(Pop);
-                    self.c_sub(1);
-                }
-                Not => {
-                    self.swap();
-                    self.add_cmd(Not);
-                    self.swap();
-                }
-                op @ (Add | Greater | Sub | Div | Mod | Mul) => {
-                    self.c_binop(op);
-                }
-                Dup => {
-                    self.swap();
-                    self.add_cmd(Dup);
-                    self.add_cmd(Push(3));
-                    self.add_cmd(Push(-1));
-                    self.add_cmd(Roll);
-                    self.add_cmd(Push(1));
-                    self.add_cmd(Add);
-                }
-                in_cmd @ (InN | InC) => {
-                    self.goto_new_label();
-
-                    self.add_cmd(Push(-2));
-                    self.add_cmd(Push(-3));
-                    self.add_cmd(in_cmd);
-                    self.swap();
-
-                    self.add_cmd(Push(-3));
-                    self.c_eq();
-
-                    self.c_if(
-                        |x| {
-                            x.add_cmd(Push(3));
-                            x.add_cmd(Push(1));
-                            x.add_cmd(Roll);
-                            x.add_cmd(Pop);
-                            x.add_cmd(Push(1));
-                            x.add_cmd(Add);
-                        },
-                        |x| {
-                            x.add_cmd(Pop);
-                        },
-                    );
-                }
-                out_cmd @ (OutC | OutN) => {
-                    self.swap();
-                    self.add_cmd(out_cmd);
-                    self.add_cmd(Push(1));
-                    self.add_cmd(Sub);
-                }
-                Roll => {
-                    self.dup_value_x_deep(2);
-                    self.dup_value_x_deep(4);
-                    self.add_cmd(Mod);
-
-                    self.add_cmd(Push(3));
-                    self.add_cmd(Add);
-                    self.add_cmd(Push(1));
-                    self.add_cmd(Roll);
-
-                    self.dup_value_x_deep(2);
-                    self.add_cmd(Mod);
-
-                    self.swap();
-                    self.add_cmd(Push(1));
-                    self.add_cmd(Add);
-                    self.swap();
-
-                    self.add_cmd(Roll);
-                    self.add_cmd(Push(2));
-                    self.add_cmd(Sub);
-                }
-                Nop => {}
-                Pointer | Switch => panic!("Unsupported instructions {:?}", c),
+            SmplExpr::Instr(c) => {
+                self.add_cmd(c);
             },
             SmplExpr::Goto(l) => {
                 self.add_expr(Goto(l.get_label_name()));
             }
             SmplExpr::Branch(a, b) => {
-                self.add_cmd(Push(1));
-                self.add_cmd(Sub);
-                self.swap();
                 self.add_expr(Branch(a.get_label_name(), b.get_label_name()));
             }
             SmplExpr::Debug => {
@@ -279,88 +238,55 @@ impl SmplToStk {
                 self.add_expr(Comment(s));
             }
             SmplExpr::Set(var) => {
-                todo!()
-        //     case "set":
-        //         assert (len(l) == 2) # set
+                let var_index = self.smpl_executor.variables[&var].clone().1;
 
-        //         var_index = 0
-        //         for i, x in enumerate(var_list):
-        //             if x == l[1]:
-        //                 var_index = i
-        //                 break
-        //         else:
-        //             print ("Variable", l[1], "was not defined")
-        //             exit(1)
+                self.add_cmd(Push((var_index+1) as isize));
 
-        //         new_index = get_offset_for_var_index(instrs, index, var_index)
-        //         swap(instrs, new_index)
-        //         instrs[new_index][1].append("dup")
+                self.swap();
+                self.add_cmd(Dup);
 
-        //         instrs[new_index][1].append("push 3")
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("roll")
-        //         swap(instrs, new_index)
-        //         instrs[new_index][1].append("sub")
+                self.add_cmd(Push(3));
+                self.add_cmd(Push(1));
+                self.add_cmd(Roll);
+                self.swap();
+                self.add_cmd(Sub);
 
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("add")
-        //         # Add 1?
-        //         # instrs[new_index][1].append("push 1")
-        //         # instrs[new_index][1].append("add")
+                self.add_cmd(Push(1));
+                self.add_cmd(Add);
 
-        //         instrs[new_index][1].append("push 3")
-        //         instrs[new_index][1].append("push -1")
-        //         instrs[new_index][1].append("roll")
+                self.add_cmd(Push(3));
+                self.add_cmd(Push(-1));
+                self.add_cmd(Roll);
 
-        //         swap(instrs, new_index)
+                self.swap();
 
-        //         swap_at_depth(instrs, new_index)
-
-        //         instrs[new_index][1].append("pop")
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("sub")
-
-        //         index = new_index
-        //         next_index = new_index
-
+                self.swap_at_depth();
+                self.add_cmd(Pop);
+                self.add_cmd(Push(1));
+                self.add_cmd(Sub);
             }
             SmplExpr::Get(var) => {
-                todo!()
+                let var_index = self.smpl_executor.variables[&var].clone().1;
 
-        //     case "get":
-        //         assert (len(l) == 2) # get
+                self.add_cmd(Push(var_index+1));
+                self.swap();
+                self.add_cmd(Dup);
 
-        //         var_index = 0
-        //         for i, x in enumerate(var_list):
-        //             if x == l[1]:
-        //                 var_index = i
-        //                 break
-        //         else:
-        //             print ("Variable", l[1], "was not defined")
-        //             exit(1)
+                self.add_cmd(Push(3));
+                self.add_cmd(Push(1));
+                self.add_cmd(Roll);
+                self.swap();
+                self.add_cmd(Sub);
 
-        //         new_index = get_offset_for_var_index(instrs, index, var_index)
-        //         swap(instrs, new_index)
-        //         instrs[new_index][1].append("dup")
+                // Add 1?
+                self.add_cmd(Push(1));
+                self.add_cmd(Add);
 
-        //         instrs[new_index][1].append("push 3")
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("roll")
-        //         swap(instrs, new_index)
-        //         instrs[new_index][1].append("sub")
+                self.dup_at_depth();
 
-        //         # Add 1?
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("add")
-
-        //         dup_at_depth(instrs, new_index)
-
-        //         swap(instrs, new_index)
-        //         instrs[new_index][1].append("push 1")
-        //         instrs[new_index][1].append("add")
-
-        //         index = new_index
-        //         next_index = new_index
+                self.swap();
+                self.add_cmd(Push(1));
+                self.add_cmd(Add);
             }
         }
 
@@ -619,67 +545,6 @@ impl SmplToStk {
         //         index = next_index
         //         next_index = next_index
 
-        //     case "malloc":
-        //         instrs[index][1].append("dup")
-
-        //         instrs[index][1].append("push 3")
-        //         instrs[index][1].append("push -1")
-        //         instrs[index][1].append("roll")
-
-        //         instrs[index][1].append("dup")
-        //         instrs[index][1].append("dup")
-
-        //         instrs[index][1].append("push 4")
-        //         instrs[index][1].append("push -1")
-        //         instrs[index][1].append("roll")
-        //         instrs[index][1].append("add")
-        //         instrs[index][1].append("push 1")
-        //         instrs[index][1].append("add")
-
-        //         swap(instrs, index)
-        //         instrs[index][1].append("dup")
-
-        //         label_index = goto_new_label(instrs, index)
-        //         instrs[label_index][1].append("dup")
-        //         instrs[label_index][1].append("push 0")
-        //         instrs[label_index][1].append("greater")
-        //         loop_index, roll_index = branch_new_labels(instrs, label_index)
-
-        //         instrs[loop_index][1].append("push 0")
-
-        //         instrs[loop_index][1].append("push 4")
-        //         instrs[loop_index][1].append("push 1")
-        //         instrs[loop_index][1].append("roll")
-
-        //         instrs[loop_index][1].append("push 1")
-        //         instrs[loop_index][1].append("sub")
-        //         instrs[loop_index][1].append("goto " + "l" + str(label_index))
-
-        //         instrs[roll_index][1].append("pop")
-        //         instrs[roll_index][1].append("roll")
-
-        //         dup_value_x_deep(instrs, roll_index, 2)
-
-        //         # # Add 1 extra??
-        //         instrs[roll_index][1].append("push 1")
-        //         instrs[roll_index][1].append("add")
-
-        //         dup_at_depth(instrs, roll_index)
-        //         instrs[roll_index][1].append("add")
-
-        //         dup_value_x_deep(instrs, roll_index, 2)
-        //         # # Add 1 extra??
-        //         instrs[roll_index][1].append("push 1")
-        //         instrs[roll_index][1].append("add")
-        //         swap_at_depth(instrs, roll_index)
-        //         instrs[roll_index][1].append("pop")
-
-        //         # Decrement stack size
-        //         instrs[roll_index][1].append("push 1")
-        //         instrs[roll_index][1].append("sub")
-
-        //         index = roll_index
-        //         next_index = roll_index
 
         //     case "length":
         //         assert (len(l) == 1) # length
@@ -773,7 +638,7 @@ impl SmplToStk {
         // var_list = add_var(var_list, "__R7__", "num")
 
         // Stack frame
-        for (var_name, var_type) in smpl_to_stk.smpl_executor.variables.clone() {
+        for (var_name, (var_type, _, _)) in smpl_to_stk.smpl_executor.variables.clone().into_iter().sorted_by(|(_, (_, _, var_index1)), (_, (_, _, var_index2))| var_index1.cmp(var_index2)) {
             smpl_to_stk.add_var(var_name, var_type);
         }
 
@@ -800,9 +665,9 @@ impl SmplToStk {
             }
 
             for e in v.clone() {
-                smpl_to_stk.add_expr(Comment(format!("+{:?}", e.clone())));
+                // smpl_to_stk.add_expr(Comment(format!("+{:?}", e.clone())));
                 smpl_to_stk.handle_smpl_instr(e.clone());
-                smpl_to_stk.add_expr(Comment(format!("-{:?}", e)));
+                // smpl_to_stk.add_expr(Comment(format!("-{:?}", e)));
             }
         }
 

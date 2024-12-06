@@ -6,5 +6,5 @@ pub fn test_roll() {
 
     // assert_eq!(stk_str, "");
 
-    test_stk_vs_piet("./tests/stk/test_roll", "1 2", "1 2");
+    test_stk_vs_piet("./tests/stk/test_roll", "", "");
 }

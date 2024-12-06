@@ -1,0 +1,112 @@
+label main
+push 0
+push 1
+push 0
+push 2
+push 1
+roll
+push 1
+add
+push 1
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 2
+push 1
+roll
+push 1
+add
+push 3
+push 2
+push 1
+roll
+push 1
+add
+push -1
+push 2
+push 1
+roll
+push 1
+add
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+mod
+push 3
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+mod
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+roll
+push 2
+sub
+push 2
+push 1
+roll
+outN
+push 1
+sub
+push 2
+push 1
+roll
+outN
+push 1
+sub
+push 2
+push 1
+roll
+outN
+push 1
+sub
+goto term
+

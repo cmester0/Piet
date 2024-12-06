@@ -1,0 +1,16 @@
+use swap ./lib/swap.lib
+
+use push ./lib/push.lib
+use outN ./lib/outN.lib
+
+var x num
+
+push 42
+lib_push
+
+debug
+set x
+get x
+debug
+lib_outN
+goto term

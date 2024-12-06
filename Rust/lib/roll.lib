@@ -1,0 +1,31 @@
+//         self.dup_value_x_deep(2);
+push 2
+lib_dup_at_depth
+
+//         self.dup_value_x_deep(4);
+push 4
+lib_dup_at_depth
+
+mod
+
+push 3
+add
+push 1
+roll
+
+//         self.dup_value_x_deep(2);
+push 2
+lib_dup_at_depth
+
+mod
+
+lib_swap
+push 1
+add
+lib_swap
+
+roll
+
+# Update stack
+push 2
+sub

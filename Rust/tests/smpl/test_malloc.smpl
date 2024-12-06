@@ -1,0 +1,107 @@
+use swap ./lib/swap.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+use swap_at_depth ./lib/swap_at_depth.lib
+
+use malloc ./lib/malloc.lib
+use dup ./lib/dup.lib
+use add ./lib/add.lib
+use roll ./lib/roll.lib
+use push ./lib/push.lib
+
+push 4
+lib_push
+
+push 4
+lib_push
+
+push 4
+lib_push
+
+push 4
+lib_push
+
+push 10
+lib_push
+
+lib_malloc
+
+# Print stack and heap
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+# push 32
+# outC
+
+# outN
+
+goto term

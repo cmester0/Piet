@@ -1,0 +1,17 @@
+use swap ./lib/swap.lib
+
+use push ./lib/push.lib
+use pop ./lib/pop.lib
+use outN ./lib/outN.lib
+
+push 41
+lib_push
+
+push 42
+lib_push
+
+lib_pop
+
+lib_outN
+
+goto term
