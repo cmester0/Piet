@@ -48,13 +48,59 @@ pub fn test_dup() {
 
 #[test]
 pub fn test_malloc() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_malloc", "", "");
+    // (reverse) Stack/heap layout after push 4 x 4 and malloc 10
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_malloc", "", "5,4,4,4,4,10,0,0,0,0,0,0,0,0,0,0");
 }
 
 #[test]
 pub fn test_stack_size() { // stack_layout not stack_size..
     test_simpl_vs_stk_vs_piet("./tests/smpl/test_stack_size", "", "11 0123456789");
 }
+
+#[test]
+pub fn test_set_heap() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_set_heap", "", "1,1,77"); // (reverse) Stack/heap layout after setting heap location 0
+}
+
+#[test]
+pub fn test_get_heap() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_get_heap", "", "77"); // set heap, get heap returns value set.
+}
+
+// #[test]
+// pub fn test_copy_memory() {
+//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_copy_memory", "", "77"); // set heap, get heap returns value set.
+// }
+
+#[test]
+pub fn test_var_num() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_var_num", "", "2,0,0"); // variables are at the bottom of the stack (frame)
+}
+
+#[test]
+pub fn test_var_list() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_var_list", "", "2,-1,0"); // list variables index into memory, and are -1 when not allocated / nill
+}
+
+#[test]
+pub fn test_length() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_length", "", "7\n");
+}
+
+#[test]
+pub fn test_set_elem_get_elem() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_set_elem_get_elem", "", "14\n11\n");
+}
+
+// #[test]
+// pub fn test_get_list() {
+//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_get_list", "", "[114,119,113,115,110,]\n");
+// }
+
+// #[test]
+// pub fn test_append() {
+//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_append", "", "[114,119,113,115,110,]\n");
+// }
 
 // #[test]
 // pub fn test_roll() {
@@ -66,11 +112,6 @@ pub fn test_stack_size() { // stack_layout not stack_size..
 //     test_simpl_vs_stk_vs_piet("./tests/smpl/test_set_var_get_var", "", "42");
 // }
 
-// // #[test]
-// // pub fn test_length() {
-// //     test_simpl_vs_stk_vs_piet("./tests/test_length", "", "7\n");
-// // }
-
 // #[test]
 // pub fn test_eq0() {
 //     test_simpl_vs_stk_vs_piet("./tests/smpl/test_eq0", "", "0\n");
@@ -79,11 +120,6 @@ pub fn test_stack_size() { // stack_layout not stack_size..
 // #[test]
 // pub fn test_eq1() {
 //     test_stk_vs_piet("./tests/test_eq1", "", "1\n");
-// }
-
-// #[test]
-// pub fn test_append() {
-//     test_stk_vs_piet("./tests/test_append", "", "[114,119,113,115,110,]\n");
 // }
 
 // #[test]
@@ -109,11 +145,6 @@ pub fn test_stack_size() { // stack_layout not stack_size..
 // #[test]
 // pub fn test_swap() {
 //     test_simpl_vs_stk_vs_piet("./tests/smpl/test_swap", "23 43\n", "23 43");
-// }
-
-// #[test]
-// pub fn test_set_elem_get_elem() {
-//     test_stk_vs_piet("./tests/test_set_elem_get_elem", "", "14\n11\n");
 // }
 
 // #[test]

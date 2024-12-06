@@ -8,78 +8,71 @@ use add ./lib/add.lib
 use roll ./lib/roll.lib
 use push ./lib/push.lib
 use malloc ./lib/malloc.lib
-use outN ./lib/outN.lib
-use outC ./lib/outC.lib
 use eq ./lib/eq.lib
 use stk_eq ./lib/stk_eq.lib
 
 use set_heap ./lib/set_heap.lib
-use get_heap ./lib/get_heap.lib
-
-use set_elem ./lib/set_elem.lib
-use get_elem ./lib/get_elem.lib
+use get_heap ./lib/set_heap.lib
 
 use copy_memory ./lib/copy_memory.lib
-use append ./lib/append.lib
 
-#########
-
-var x list
-
-# 4
-push 13
-lib_push
-
-# 3
 push 14
 lib_push
 
-# 2
-push 15
-lib_push
+lib_malloc
 
-# 1
-push 32
-lib_push
-
-# 0
-push 29
-lib_push
-
-get x
-lib_append
-lib_append
-lib_append
-lib_append
-lib_append
-set x
+debug
 
 push 3
 lib_push
 
-get x
-lib_get_elem
+push 0
+lib_push
+lib_set_heap
 
-lib_outN
-push 10
+push 2
 lib_push
-lib_outC
 
-push 11
+push 1
 lib_push
-push 3
-lib_push
-get x
-lib_set_elem
+lib_set_heap
 
-push 3
+push 1
 lib_push
-get x
-lib_get_elem
 
-lib_outN
-push 10
+push 2
 lib_push
-lib_outC
+lib_set_heap
+
+# Filler valus
+push 77
+lib_push
+
+push 77
+lib_push
+
+# Arguments for copy memory
+
+push 1
+lib_push
+
+push 2
+lib_push
+
+push 1
+lib_push
+
+push 2
+lib_push
+
+push 1
+lib_push
+
+push 2
+lib_push
+
+debug
+lib_copy_memory
+debug
 
 goto term

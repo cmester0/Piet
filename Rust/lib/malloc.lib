@@ -42,9 +42,6 @@ sub
 goto .malloc_label_index
 
 label .malloc_roll_index
-
-debug
-
 pop
 roll
 

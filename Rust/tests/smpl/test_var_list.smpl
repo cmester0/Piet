@@ -1,0 +1,9 @@
+var l list
+outN
+push ,
+outC
+outN
+push ,
+outC
+outN
+goto term

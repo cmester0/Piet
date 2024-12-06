@@ -238,7 +238,8 @@ impl SmplToStk {
                 self.add_expr(Comment(s));
             }
             SmplExpr::Set(var) => {
-                let var_index = self.smpl_executor.variables[&var].clone().1;
+                let var_index = self.smpl_executor.variables[&var].clone().2;
+                println!("{} {} {:?}", var_index, var, self.smpl_executor.variables);
 
                 self.add_cmd(Push((var_index+1) as isize));
 
@@ -266,9 +267,9 @@ impl SmplToStk {
                 self.add_cmd(Sub);
             }
             SmplExpr::Get(var) => {
-                let var_index = self.smpl_executor.variables[&var].clone().1;
+                let var_index = self.smpl_executor.variables[&var].clone().2;
 
-                self.add_cmd(Push(var_index+1));
+                self.add_cmd(Push((var_index+1) as isize));
                 self.swap();
                 self.add_cmd(Dup);
 

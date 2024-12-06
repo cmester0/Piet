@@ -1,0 +1,83 @@
+// Document = { SOI ~ NEWLINE* ~ Imports ~ Variables ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks ~ NEWLINE* ~ EOI }
+
+// // WHITESPACE = _{ " " }
+// COMMENT = _{
+//     ("/*" ~ (!"*/" ~ ANY)* ~ "*/")
+//   | (" "* ~ ("//" ~ (!NEWLINE ~ ANY)*))
+//   | (" "* ~ ("#" ~ (!NEWLINE ~ ANY)*))
+// }
+
+// Name = @{ (ASCII_ALPHANUMERIC | "_")+ }
+// Number = @{ "-"? ~ ASCII_DIGIT+ }
+// Char = @{ ASCII }
+// Filepath = @{ ("." | "/" | Name)+ }
+
+// Imports = { (Import ~ NEWLINE*)* } // imports +
+// Import = { "use" ~ SEPARATOR ~ Name ~ SEPARATOR ~ Filepath }
+
+// Variables = { (Variable ~ NEWLINE*)* } // variables +
+// Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }
+// VarType = { "list" | "num" }
+
+// NewLabel = { "!" ~ Name }
+
+// LabelName = { Name }
+// LabelRef = { "." ~ Name }
+// Label = { LabelName | LabelRef }
+
+// LibFun = {"lib_" ~ Name }
+
+// LibBlocks = {
+//     SOI ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks? ~ NEWLINE* ~ EOI
+// }
+// Blocks = { Block* }
+// Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
+// SubBlock = { ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }
+
+// Push = { "push" }
+// Pop = { "pop" }
+// Not = { "not" }
+// Add = { "add" }
+// Greater = { "greater" }
+// Sub = { "sub" }
+// Div = { "div" }
+// Mod = { "mod" }
+// Mul = { "mul" }
+// Dup = { "dup" }
+// InN = { "inN" }
+// InC = { "inC" }
+// Goto = { "goto" }
+// Branch = { "branch" }
+// Debug = { "debug" }
+// OutC = { "outC" }
+// OutN = { "outN" }
+// Roll = { "roll" }
+
+// Get = { "get" }
+// Set = { "set" }
+
+// Eq = { "eq" }
+
+// Expr = {
+//   | Push ~ SEPARATOR ~ Number
+//   | Push ~ SEPARATOR ~ Char
+
+//   | Pop
+//   | Not
+//   | Add
+//   | Greater | Sub | Div | Mod | Mul
+//   | Dup
+//   | InN
+//   | InC
+//   | Goto ~ SEPARATOR ~ Label
+//   | Branch ~ SEPARATOR ~ Label ~ SEPARATOR ~ Label
+//   | Debug
+//   | OutC
+//   | OutN
+//   | Roll
+
+//   | Set ~ SEPARATOR ~ Name
+//   | Get ~ SEPARATOR ~ Name
+
+//   | Eq
+// }

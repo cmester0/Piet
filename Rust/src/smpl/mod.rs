@@ -14,7 +14,7 @@ use std::fs;
 use std::io::Read;
 use std::path::*;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Variable {
     NUM(isize),
     LIST(Vec<isize>),
@@ -59,8 +59,6 @@ pub fn parse_subblocks(
     }
 
     for x in sub_block.into_inner() {
-        println!("{}: {:?}", block_name, x.as_rule());
-        
         match x.as_rule() {
             Rule::NewLabel => {
                 let ref_label = String::from(x.into_inner().next().unwrap().as_str());
@@ -72,6 +70,9 @@ pub fn parse_subblocks(
             }
             Rule::LibFun => {
                 let lib_name = String::from(x.into_inner().next().unwrap().as_str());
+                if !imports.contains_key(&lib_name) {
+                    panic!("could not find key {}", lib_name);
+                }
                 let s = imports[&lib_name].clone();
                 let actual_filepath = s; // String::from(
                 //     Path::new(filepath)
@@ -322,14 +323,6 @@ pub fn parse_string(
             blocks.insert(String::from("term"), vec![]); // TODO
             block_index.insert(String::from("term"), block_index.len());
 
-            for (n,b) in blocks {
-                println!("{:?}", n);
-                for v in b {
-                    println!("{:?}", v);
-                }
-                println!();
-            }
-            
         }
         _ => panic!(),
     }

@@ -1,0 +1,5 @@
+lib_swap
+push 1
+add
+lib_swap
+lib_get_heap

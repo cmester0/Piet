@@ -4,39 +4,45 @@ use swap_at_depth ./lib/swap_at_depth.lib
 use dup ./lib/dup.lib
 use dup_at_depth ./lib/dup_at_depth.lib
 
-use outN ./lib/outN.lib
-use outC ./lib/outC.lib
+use add ./lib/add.lib
 use sub ./lib/sub.lib
-
+use roll ./lib/roll.lib
+use push ./lib/push.lib
 use malloc ./lib/malloc.lib
+use outN ./lib/outN.lib
 use eq ./lib/eq.lib
 use stk_eq ./lib/stk_eq.lib
+
 use set_heap ./lib/set_heap.lib
 use get_heap ./lib/get_heap.lib
+
+use get_elem ./lib/get_elem.lib
+
 use copy_memory ./lib/copy_memory.lib
 use append ./lib/append.lib
+
 use length ./lib/length.lib
-use push ./lib/push.lib
+
+use get_list ./lib/get_list.lib
 
 var l list
 
-push 10
+push 110
 lib_push
-push 15
+
+push 115
 lib_push
-push 13
+
+push 113
 lib_push
-push 14
+
+push 119
 lib_push
-push 15
+
+push 114
 lib_push
-push 13
-lib_push
-push 14
-lib_push
+
 get l
-lib_append
-lib_append
 lib_append
 lib_append
 lib_append
@@ -45,11 +51,8 @@ lib_append
 set l
 
 get l
-lib_length
+lib_get_list
 
-lib_outN
-push 10
-lib_push
-lib_outC
+debug
 
 goto term

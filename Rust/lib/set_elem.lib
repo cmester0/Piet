@@ -1,0 +1,5 @@
+push 2
+lib_push
+lib_add
+lib_add
+lib_set_heap

@@ -1,31 +1,30 @@
-!label
-goto label
+!copy_mem_label
+goto .copy_mem_label
 
-label .label
+label .copy_mem_label
+# dup_value_x_deep(instrs, label_index, 3)
+push 3
+lib_dup_at_depth
 
 # dup_value_x_deep(instrs, label_index, 3)
 push 3
 lib_dup_at_depth
-# /
-# dup_value_x_deep(instrs, label_index, 3)
-push 3
-lib_dup_at_depth
-# /
-lib_eq
 
-!done
-!loop
-branch .done .loop
+lib_stk_eq
 
-label .loop
+!copy_mem_done
+!copy_mem_loop
+branch .copy_mem_done .copy_mem_loop
+
+label .copy_mem_loop
 # dup_value_x_deep(instrs, label_index, 4)
 push 4
 lib_dup_at_depth
-# /
+
 # dup_value_x_deep(instrs, label_index, 3)
 push 3
 lib_dup_at_depth
-# /
+
 add
 push 2
 add
@@ -39,7 +38,7 @@ lib_get_heap
 # dup_value_x_deep(instrs, next_index, 6)
 push 6
 lib_dup_at_depth
-# /
+
 lib_swap
 push 1
 add
@@ -48,11 +47,12 @@ lib_swap
 # dup_value_x_deep(instrs, next_index, 4)
 push 4
 lib_dup_at_depth
-# /
+
 add
 push 2
 add
 lib_swap
+
 lib_set_heap
 
 lib_swap
@@ -60,6 +60,6 @@ push 1
 add
 lib_swap
 
-goto .label
+goto .copy_mem_label
 
-label .done
+label .copy_mem_done

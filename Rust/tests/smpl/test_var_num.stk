@@ -1,0 +1,24 @@
+label main
+push 0
+push 1
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+outN
+push 44
+outC
+outN
+push 44
+outC
+outN
+goto term
+

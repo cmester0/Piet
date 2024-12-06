@@ -1,0 +1,36 @@
+use swap ./lib/swap.lib
+use swap_at_depth ./lib/swap_at_depth.lib
+
+use dup ./lib/dup.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+
+use add ./lib/add.lib
+use roll ./lib/roll.lib
+use push ./lib/push.lib
+use malloc ./lib/malloc.lib
+
+use set_heap ./lib/set_heap.lib
+
+push 1
+lib_push
+
+lib_malloc
+
+debug
+
+push 77
+lib_push
+
+push 0
+lib_push
+lib_set_heap
+
+outN
+push ,
+outC
+outN
+push ,
+outC
+outN
+
+goto term

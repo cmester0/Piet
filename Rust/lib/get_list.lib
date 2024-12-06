@@ -1,0 +1,48 @@
+lib_dup
+lib_length
+
+!get_list_label
+goto .get_list_label
+
+label .get_list_label
+
+push 1
+lib_push
+lib_sub
+lib_dup
+push -1
+lib_push
+lib_eq
+
+push 1
+sub
+
+lib_swap
+
+!get_list_return
+!get_list_in_bounds
+
+branch .get_list_return .get_list_in_bounds
+
+label .get_list_in_bounds
+lib_dup
+
+push 4
+lib_dup_at_depth
+
+lib_swap
+
+push 1
+add
+
+lib_get_elem
+
+lib_swap
+push 4
+push 1
+roll
+
+goto .get_list_label
+
+label .get_list_return
+pop

@@ -9,43 +9,29 @@ use roll ./lib/roll.lib
 use push ./lib/push.lib
 use malloc ./lib/malloc.lib
 use outN ./lib/outN.lib
-use eq ./lib/eq.lib
-use stk_eq ./lib/stk_eq.lib
 
 use set_heap ./lib/set_heap.lib
 use get_heap ./lib/get_heap.lib
 
-use copy_memory ./lib/copy_memory.lib
-use append ./lib/append.lib
-
-var l list
-
-push 110
+push 1
 lib_push
 
-push 115
+lib_malloc
+
+debug
+
+push 77
 lib_push
 
-push 113
+push 0
+lib_push
+lib_set_heap
+
+push 0
 lib_push
 
-push 119
-lib_push
+lib_get_heap
 
-push 114
-lib_push
-
-get l
-lib_append
-lib_append
-lib_append
-lib_append
-lib_append
-set l
-
-get l
-lib_print_listN
-push 10
-outC
+lib_outN
 
 goto term

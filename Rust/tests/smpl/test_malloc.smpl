@@ -27,81 +27,81 @@ lib_malloc
 
 # Print stack and heap
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
-# push 32
-# outC
+push ,
+outC
 
-# outN
+outN
 
 goto term
