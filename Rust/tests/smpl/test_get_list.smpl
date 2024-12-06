@@ -7,6 +7,7 @@ use dup_at_depth ./lib/dup_at_depth.lib
 use add ./lib/add.lib
 use sub ./lib/sub.lib
 use roll ./lib/roll.lib
+use pop ./lib/pop.lib
 use push ./lib/push.lib
 use malloc ./lib/malloc.lib
 use outN ./lib/outN.lib
@@ -53,6 +54,28 @@ set l
 get l
 lib_get_list
 
-debug
+lib_pop
+
+push [
+outC
+lib_outN
+push ,
+outC
+lib_outN
+push ,
+outC
+lib_outN
+push ,
+outC
+lib_outN
+push ,
+outC
+lib_outN
+push ,
+outC
+push ]
+outC
+push 10
+outC
 
 goto term

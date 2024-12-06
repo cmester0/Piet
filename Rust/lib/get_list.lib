@@ -45,4 +45,4 @@ roll
 goto .get_list_label
 
 label .get_list_return
-pop
+lib_pop

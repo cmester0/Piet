@@ -92,15 +92,15 @@ pub fn test_set_elem_get_elem() {
     test_simpl_vs_stk_vs_piet("./tests/smpl/test_set_elem_get_elem", "", "14\n11\n");
 }
 
-// #[test]
-// pub fn test_get_list() {
-//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_get_list", "", "[114,119,113,115,110,]\n");
-// }
+#[test]
+pub fn test_get_list() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_get_list", "", "[114,119,113,115,110,]\n");
+}
 
-// #[test]
-// pub fn test_append() {
-//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_append", "", "[114,119,113,115,110,]\n");
-// }
+#[test]
+pub fn test_append() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_append", "", "[114,119,113,115,110,]\n");
+}
 
 // #[test]
 // pub fn test_roll() {

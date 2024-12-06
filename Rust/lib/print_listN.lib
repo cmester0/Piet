@@ -2,40 +2,44 @@ push [
 outC
 
 lib_get_list
+lib_length
 
+!print_listN_label
+goto .print_listN_label
 
-_, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord("["))])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+label .print_listN_label
+push 1
+lib_push
+lib_sub
+lib_dup
+push -1
+lib_push
+lib_eq
 
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_list"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["length"])
+push 1
+sub
 
-            label_index = goto_new_label(instrs, next_index) # move all elements to new array
-            _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
+lib_swap
 
-            instrs[next_index][1].append("push 1")
-            instrs[next_index][1].append("sub")
+!print_listN_return
+!print_listN_in_bounds
+branch .print_listN_return .print_listN_in_bounds
 
-            swap(instrs, next_index)
-            return_index, in_bounds_index = branch_new_labels(instrs, next_index)
+label .print_listN_in_bounds
+push 3
+push -1
+roll
 
-            instrs[in_bounds_index][1].append("push 3")
-            instrs[in_bounds_index][1].append("push -1")
-            instrs[in_bounds_index][1].append("roll")
-            swap(instrs, in_bounds_index)
-            _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["outN"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord(","))])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+lib_swap
 
-            instrs[next_index][1].append("goto l" + str(label_index))
+lib_outN
 
-            _, next_index = handle_smpl_instr(var_list, instrs, return_index, ["pop"])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord("]"))])
-            _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["outC"])
+push ,
+outC
 
-            index = next_index
-            next_index = next_index
+goto .print_listN_label
+
+label .print_listN_return
+lib_pop
+push ]
+outC
