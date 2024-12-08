@@ -2,35 +2,46 @@ label main
 push 0
 push 1
 push 4
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 4
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 4
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 4
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 10
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +malloc
 dup
 push 3
 push -1
@@ -126,6 +137,7 @@ roll
 pop
 push 1
 sub
+# -malloc
 outN
 push 44
 outC

@@ -1,9 +1,9 @@
 use image::DynamicImage;
+use mid_smpl_to_stk::SmplToStk;
+use piet::mid_smpl::*;
 use piet::optimize_stk::StackOptimizer;
 use piet::piet_stack::*;
-use piet::smpl::*;
-use smpl_to_stk::SmplToStk;
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::{Read, Write};
 
 pub fn run_piet(img_path: &str, input: &str) -> String {
@@ -29,8 +29,8 @@ pub fn stk_to_piet(filepath: &str, output: &str) {
     let _ = dyn_img.save_with_format(output, image::ImageFormat::Png);
 }
 
-pub fn smpl_to_stk(filepath: &str, output: &str) {
-    let smpl_executor = SmplExecutor::new(filepath);
+pub fn smpl_to_stk(filepath: &str, output: &str, registers : usize) {
+    let smpl_executor = SmplExecutor::new(filepath, registers); // Default to 0 registers
     let stk_executor = SmplToStk::to_stk(smpl_executor);
     let file_str = stk_executor.to_file_string();
 
@@ -54,7 +54,7 @@ pub fn test_stk_vs_piet(path: &str, input: &str, output: &str) {
     assert_eq!(piet_str, output, "PIET FAILED");
 }
 
-pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str) {
+pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str, registers: usize) {
     // let smpl_str =
     //     SmplExecutor::new(format!("{}.smpl", path).as_str())
     //     .run_on_string(input);
@@ -65,11 +65,10 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str) {
     smpl_to_stk(
         format!("{}.smpl", path).as_str(),
         format!("{}.stk", path).as_str(),
+        registers,
     );
 
-    let stk_str =
-        PietStackExecutor::new(format!("{}.stk", path).as_str())
-        .run_on_string(input);
+    let stk_str = PietStackExecutor::new(format!("{}.stk", path).as_str()).run_on_string(input);
     println!("STACK DONE\n");
 
     assert_eq!(stk_str, output, "STACK FAILED");

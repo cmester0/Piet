@@ -1,5 +1,5 @@
 mod expr;
-pub mod smpl_to_stk;
+pub mod mid_smpl_to_stk;
 
 use expr::*;
 use pest::*;
@@ -12,47 +12,48 @@ use pest::iterators::Pair;
 use std::fs;
 
 use std::io::Read;
-use std::path::*;
 
 #[derive(Clone, Debug)]
-pub enum Variable {
-    NUM(isize),
-    LIST(Vec<isize>),
+// #[repr(isize)]
+pub enum VariableType {
+    NUM = 0,
+    LIST = -1,
 }
 
-impl Variable {
-    fn value(self) -> isize {
-        match self {
-            Variable::NUM(i) => i,
-            _ => panic!(),
-        }
-    }
+#[derive(Clone, Debug)]
+#[allow(dead_code)]
+pub struct Variable {
+    var_type: VariableType,
+    value: isize,
+    var_index: usize,
 }
 
 #[derive(Clone)]
 pub struct SmplExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
-    pub variables: HashMap<String, (Variable, isize, usize)>,
+    pub variables: HashMap<String, Variable>,
     pub stack: Vec<isize>,
     pub label: String,
+    pub registers: usize,
 }
 
 #[derive(Parser)]
-#[grammar = "smpl/smpl.pest"] // relative to src
+#[grammar = "mid_smpl/mid_smpl.pest"] // relative to src
 pub struct SmplParser;
 
 pub fn parse_subblocks(
-    filepath: &str,
     mut block_name: String,
     sub_block: Pair<Rule>,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, (Variable, isize, usize)>,
+    variables: &mut HashMap<String, Variable>,
 
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
+
+    top_level: bool,
 ) -> String {
     if sub_block.as_rule() != Rule::SubBlock {
         panic!()
@@ -74,18 +75,17 @@ pub fn parse_subblocks(
                     panic!("could not find key {}", lib_name);
                 }
                 let s = imports[&lib_name].clone();
-                let actual_filepath = s; // String::from(
-                //     Path::new(filepath)
-                //         .parent()
-                //         .unwrap()
-                //         .join(s.clone())
-                //         .to_str()
-                //         .unwrap(),
-                // );
+                let actual_filepath = s;
 
-                let unparsed_file =
-                    fs::read_to_string(actual_filepath.clone()).expect(format!("cannot read file {}", actual_filepath).as_str());
-                // parse
+                if top_level {
+                    blocks
+                        .get_mut(&block_name)
+                        .unwrap()
+                        .push(Expr::Comment(format!("+{}", lib_name)));
+                }
+
+                let unparsed_file = fs::read_to_string(actual_filepath.clone())
+                    .expect(format!("cannot read file {}", actual_filepath).as_str());
 
                 let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
                     .expect("unsuccessful parse")
@@ -98,7 +98,6 @@ pub fn parse_subblocks(
                 match initial_sub_block.as_rule() {
                     Rule::SubBlock => {
                         block_name = parse_subblocks(
-                            actual_filepath.as_str(),
                             block_name.clone(),
                             initial_sub_block,
                             blocks,
@@ -107,6 +106,7 @@ pub fn parse_subblocks(
                             label_map,
                             label_count,
                             imports,
+                            false,
                         );
                     }
                     _ => panic!("INITIAL not subblock?"),
@@ -127,7 +127,6 @@ pub fn parse_subblocks(
                     }
 
                     block_name = parse_block(
-                        actual_filepath.as_str(),
                         b,
                         blocks,
                         block_index,
@@ -135,11 +134,16 @@ pub fn parse_subblocks(
                         label_map,
                         label_count,
                         imports,
+                        false,
                     );
                 }
 
-                // HashMap<String, Vec<Expr>>, HashMap<String, usize>
-                // parse_string(s);
+                if top_level {
+                    blocks
+                        .get_mut(&block_name)
+                        .unwrap()
+                        .push(Expr::Comment(format!("-{}", lib_name)));
+                }
             }
             Rule::Expr => blocks
                 .get_mut(&block_name)
@@ -153,15 +157,15 @@ pub fn parse_subblocks(
 }
 
 pub fn parse_block(
-    filepath: &str,
     b: Pair<Rule>,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, (Variable, isize, usize)>,
+    variables: &mut HashMap<String, Variable>,
 
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
+    top_level: bool,
 ) -> String {
     if b.as_rule() != Rule::Block {
         panic!();
@@ -181,7 +185,6 @@ pub fn parse_block(
 
     let sub_block = block.next().unwrap();
     parse_subblocks(
-        filepath,
         name,
         sub_block,
         blocks,
@@ -190,6 +193,7 @@ pub fn parse_block(
         label_map,
         label_count,
         imports,
+        top_level,
     )
 }
 
@@ -197,11 +201,10 @@ pub fn parse_string(
     filepath: &str,
     blocks: &mut HashMap<String, Vec<Expr>>,
     block_index: &mut HashMap<String, usize>,
-    variables: &mut HashMap<String, (Variable, isize, usize)>,
+    variables: &mut HashMap<String, Variable>,
 ) {
-    let unparsed = fs::read_to_string(filepath).expect(
-        format!("cannot read file: {}",filepath).as_str()
-    );
+    let unparsed =
+        fs::read_to_string(filepath).expect(format!("cannot read file: {}", filepath).as_str());
     let document = SmplParser::parse(Rule::Document, unparsed.as_str())
         .expect(format!("unsuccessful parse of {}", filepath).as_str())
         .next()
@@ -231,8 +234,6 @@ pub fn parse_string(
                                 _ => todo!("Not variable!"),
                             }
                         }
-
-                        // variables.insert(_ , _)
                     }
                     Rule::Variables => {
                         let a = pre_main.into_inner();
@@ -247,13 +248,21 @@ pub fn parse_string(
                                         "num" => {
                                             variables.insert(
                                                 String::from(name.as_str()),
-                                                (Variable::NUM(0isize), 0, variables.len()),
+                                                Variable {
+                                                    var_type: VariableType::NUM,
+                                                    value: 0isize,
+                                                    var_index: variables.len(),
+                                                },
                                             );
                                         }
                                         "list" => {
                                             variables.insert(
                                                 String::from(name.as_str()),
-                                                (Variable::LIST(Vec::new()), -1, variables.len()),
+                                                Variable {
+                                                    var_type: VariableType::LIST,
+                                                    value: -1isize,
+                                                    var_index: variables.len(),
+                                                },
                                             );
                                         }
                                         _ => (),
@@ -280,7 +289,6 @@ pub fn parse_string(
                     block_index.insert(String::from("main"), 0);
 
                     parse_subblocks(
-                        filepath,
                         String::from("main"),
                         main,
                         blocks,
@@ -289,6 +297,7 @@ pub fn parse_string(
                         &mut label_map,
                         &mut label_count,
                         &imports,
+                        true,
                     );
                 }
                 _ => panic!("MAIN not subblock?"),
@@ -309,7 +318,6 @@ pub fn parse_string(
                 }
 
                 parse_block(
-                    filepath,
                     b,
                     blocks,
                     block_index,
@@ -317,12 +325,12 @@ pub fn parse_string(
                     &mut label_map,
                     &mut label_count,
                     &imports,
+                    true,
                 );
             }
 
             blocks.insert(String::from("term"), vec![]); // TODO
             block_index.insert(String::from("term"), block_index.len());
-
         }
         _ => panic!(),
     }
@@ -358,24 +366,18 @@ impl SmplExecutor {
                 false
             }
             Expr::Comment(_) => false,
-            Expr::Eq => {
-                let a = self.stack.pop().unwrap();
-                let b = self.stack.pop().unwrap();
-                self.stack.push((b == a) as isize);
-                false
-            }
             Expr::Get(s) => {
-                self.stack.push(self.variables[&s].clone().1);
+                self.stack.push(self.variables[&s].value);
                 false
             }
             Expr::Set(s) => {
+                let v: Variable = self.variables[&s].clone();
                 self.variables.insert(
                     s.clone(),
-                    (
-                        self.variables[&s].0.clone(),
-                        self.stack.pop().unwrap(),
-                        self.variables.len(),
-                    ),
+                    Variable {
+                        value: self.stack.pop().unwrap(),
+                        ..v
+                    },
                 );
                 false
             }
@@ -396,17 +398,32 @@ impl SmplExecutor {
         }
     }
 
-    pub fn new(filepath: &str) -> Self {
+    pub fn new(filepath: &str, registers: usize) -> Self {
         let mut blocks = HashMap::new();
         let mut block_index = HashMap::new();
-        let mut variables = HashMap::new();
+
+        let mut variables: HashMap<String, Variable> = HashMap::new();
+        // Add registers
+        for _ in 0..registers {
+            variables.insert(
+                format!("__R{}__", variables.len()),
+                Variable {
+                    var_type: VariableType::NUM,
+                    value: 0,
+                    var_index: variables.len(),
+                },
+            );
+        }
+
         parse_string(filepath, &mut blocks, &mut block_index, &mut variables);
+        println!("variables {:?}", variables);
         SmplExecutor {
             blocks,
             block_index,
             variables,
             stack: Vec::new(),
             label: String::from("main"),
+            registers,
         }
     }
 
@@ -414,8 +431,9 @@ impl SmplExecutor {
         unparsed: &str,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
+        registers: usize,
     ) {
-        SmplExecutor::new(unparsed).interpret(input, output);
+        SmplExecutor::new(unparsed, registers).interpret(input, output);
     }
 
     pub fn run_on_string(mut self, input: &str) -> String {

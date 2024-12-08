@@ -45,8 +45,6 @@ pub enum Expr {
     Branch(Label, Label),
     Debug,
 
-    // Lib(String),
-    Eq,
     Set(String),
     Get(String),
 
@@ -89,7 +87,6 @@ pub fn parse_expr(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Expr {
         Rule::OutN => Instr(CMD::OutN),
         Rule::Roll => Instr(CMD::Roll),
 
-        Rule::Eq => Eq,
         Rule::Set => Set(String::from(e.next().unwrap().as_str())),
         Rule::Get => Get(String::from(e.next().unwrap().as_str())),
 

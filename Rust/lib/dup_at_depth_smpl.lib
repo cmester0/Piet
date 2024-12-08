@@ -1,0 +1,24 @@
+push 1
+lib_push
+
+lib_add
+lib_dup
+
+push -1
+lib_push
+
+lib_roll
+lib_dup
+
+push 3
+lib_push
+
+push -1
+lib_push
+
+lib_roll
+
+push 1
+lib_push
+
+lib_roll

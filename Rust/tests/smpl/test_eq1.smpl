@@ -1,7 +1,22 @@
+use swap ./lib/swap.lib
+use eq ./lib/eq.lib
+use stk_eq ./lib/stk_eq.lib
+use push ./lib/push.lib
+use outC ./lib/outC.lib
+use outN ./lib/outN.lib
+
 push 4
+lib_push
+
 push 4
-eq
-outN
+lib_push
+
+lib_eq
+lib_outN
+
 push 10
-outC
+lib_push
+
+lib_outC
+
 goto term

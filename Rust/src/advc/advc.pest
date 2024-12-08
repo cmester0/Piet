@@ -1,4 +1,11 @@
-// Document = { SOI ~ NEWLINE* ~ Imports ~ Variables ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks ~ NEWLINE* ~ EOI }
+// Document = {
+//     SOI ~
+//     NEWLINE* ~ Imports ~ Variables ~
+//     NEWLINE* ~ SubBlock ~
+//     NEWLINE* ~ Blocks ~
+//     NEWLINE* ~
+//     EOI
+// }
 
 // // WHITESPACE = _{ " " }
 // COMMENT = _{

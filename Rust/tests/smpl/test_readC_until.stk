@@ -1,0 +1,2009 @@
+label main
+push 0
+push 1
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push -1
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+push 32
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +readC_until
+# -"__R0__"
+push 1
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+# -"__R0__"
+goto l_ref_0
+
+label l_ref_0
+goto l_ref_1
+
+label l_ref_1
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l_ref_2 l_ref_3
+
+label l_ref_2
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l_ref_4
+
+label l_ref_3
+pop
+goto l_ref_4
+
+label l_ref_4
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+# +"__R0__"
+push 1
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"__R0__"
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+push 1
+sub
+push 1
+sub
+push 2
+push 1
+roll
+branch l_ref_5 l_ref_6
+
+label l_ref_5
+push 2
+push 1
+roll
+pop
+push 1
+sub
+# -readC_until
+# +print_listC
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+goto l_ref_21
+
+label l_ref_6
+push 2
+push 2
+push 1
+roll
+push 1
+add
+push 1
+push 2
+push 1
+roll
+push 1
+add
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+mod
+push 3
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+mod
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+roll
+push 2
+sub
+push 2
+push 1
+roll
+dup
+push -1
+sub
+dup
+mul
+push 0
+greater
+not
+branch l_ref_7 l_ref_8
+
+label l_ref_7
+pop
+push 3
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+dup
+dup
+push 4
+push -1
+roll
+add
+push 1
+add
+push 2
+push 1
+roll
+dup
+goto l_ref_9
+
+label l_ref_8
+push 3
+push 1
+roll
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+greater
+branch l_ref_12 l_ref_13
+
+label l_ref_9
+dup
+push 0
+greater
+branch l_ref_10 l_ref_11
+
+label l_ref_10
+push 0
+push 4
+push 1
+roll
+push 1
+sub
+goto l_ref_9
+
+label l_ref_11
+pop
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 3
+sub
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 4
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 0
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 1
+add
+push 1
+push 5
+push 3
+roll
+push 3
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+push 3
+push -1
+roll
+goto l_ref_8
+
+label l_ref_12
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+pop
+push 1
+add
+dup
+push 3
+push 2
+roll
+push 5
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 3
+push 1
+roll
+push 1
+add
+add
+push 2
+push 1
+roll
+push 1
+sub
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+goto l_ref_14
+
+label l_ref_13
+push 2
+push 1
+roll
+pop
+push 2
+push 1
+roll
+push 2
+mul
+dup
+push 2
+add
+push 3
+push 2
+roll
+dup
+push 3
+push -1
+roll
+dup
+dup
+push 4
+push -1
+roll
+add
+push 1
+add
+push 2
+push 1
+roll
+dup
+goto l_ref_15
+
+label l_ref_14
+goto l_ref_0
+
+label l_ref_15
+dup
+push 0
+greater
+branch l_ref_16 l_ref_17
+
+label l_ref_16
+push 0
+push 4
+push 1
+roll
+push 1
+sub
+goto l_ref_15
+
+label l_ref_17
+pop
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+sub
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+sub
+push 2
+push 1
+roll
+push 1
+add
+push 6
+push -1
+roll
+pop
+push 1
+sub
+push 2
+push 1
+roll
+push 5
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 2
+push 1
+roll
+push 2
+mul
+push 2
+push 1
+roll
+push 6
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+push 2
+push 1
+roll
+dup
+push 1
+add
+push 3
+push 2
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+push 7
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 5
+push 1
+roll
+push 1
+add
+goto l_ref_18
+
+label l_ref_18
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+branch l_ref_19 l_ref_20
+
+label l_ref_19
+push 5
+push -1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+push 3
+push -1
+roll
+pop
+push 1
+sub
+goto l_ref_12
+
+label l_ref_20
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 3
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 2
+add
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 6
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 2
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 2
+sub
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+goto l_ref_18
+
+label l_ref_21
+push 1
+push 2
+push 1
+roll
+push 1
+add
+push 3
+push 1
+roll
+sub
+push 2
+push 1
+roll
+push 1
+sub
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push -1
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+push 1
+sub
+push 1
+sub
+push 2
+push 1
+roll
+branch l_ref_22 l_ref_23
+
+label l_ref_22
+push 2
+push 1
+roll
+pop
+push 1
+sub
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+goto l_ref_24
+
+label l_ref_23
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 4
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 2
+push 1
+roll
+push 1
+add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+dup
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+add
+push 3
+push -1
+roll
+sub
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 2
+push 1
+roll
+push 4
+push 1
+roll
+goto l_ref_21
+
+label l_ref_24
+push 1
+push 2
+push 1
+roll
+push 1
+add
+push 3
+push 1
+roll
+sub
+push 2
+push 1
+roll
+push 1
+sub
+push 2
+push 1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push -1
+push 2
+push 1
+roll
+push 1
+add
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+push 1
+sub
+push 1
+sub
+push 2
+push 1
+roll
+branch l_ref_25 l_ref_26
+
+label l_ref_25
+push 2
+push 1
+roll
+pop
+push 1
+sub
+# -print_listC
+goto term
+
+label l_ref_26
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+push 2
+push 1
+roll
+outC
+push 1
+sub
+goto l_ref_24
+

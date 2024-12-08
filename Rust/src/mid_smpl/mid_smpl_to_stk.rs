@@ -2,8 +2,8 @@ use itertools::Itertools;
 
 use super::Expr::{self as SmplExpr};
 use super::SmplExecutor;
+use crate::mid_smpl::*;
 use crate::piet_stack::expr::Expr::{self, *};
-use crate::smpl::*;
 use crate::{
     piet_interpreter::CMD::{self, *},
     piet_stack::PietStackExecutor,
@@ -13,38 +13,6 @@ use std::collections::HashMap;
 pub struct SmplToStk {
     smpl_executor: SmplExecutor,
     stk_executor: PietStackExecutor,
-    var_index: HashMap<String, usize>,
-}
-
-impl SmplToStk {
-    fn c_add(&mut self, n: isize) {
-        self.add_cmd(Push(n));
-        self.add_cmd(Add);
-    }
-
-    fn c_sub(&mut self, n: isize) {
-        self.add_cmd(Push(n));
-        self.add_cmd(Sub);
-    }
-
-    fn c_eq(&mut self) {
-        self.add_cmd(Sub);
-        self.add_cmd(Dup);
-        self.add_cmd(Mul);
-        self.add_cmd(Push(0));
-        self.add_cmd(Greater);
-        self.add_cmd(Not);
-    }
-
-    fn c_binop(&mut self, op: CMD) {
-        self.add_cmd(Push(3));
-        self.add_cmd(Push(1));
-        self.add_cmd(Roll);
-        self.add_cmd(op);
-        self.swap();
-        self.add_cmd(Push(-1));
-        self.add_cmd(Add);
-    }
 }
 
 impl SmplToStk {
@@ -156,7 +124,7 @@ impl SmplToStk {
         self.add_cmd(Roll);
     }
 
-    fn swap_at_depth(&mut self){
+    fn swap_at_depth(&mut self) {
         // Save / update depth
         self.add_cmd(Dup);
         self.add_cmd(Push(1));
@@ -176,16 +144,13 @@ impl SmplToStk {
         self.add_cmd(Roll);
     }
 
-    fn add_var(&mut self, var_name: String, var_type: Variable) {
+    fn add_var(&mut self, var: Variable) {
         // Set variable index
         // (var_index.len() - var_index[i]) is actual index
-        self.var_index.insert(var_name, self.var_index.len());
+        // self.smpl_executor.variables.insert(var_name, var.var_index);
 
         // Allocate empty variable
-        self.add_cmd(Push(match var_type {
-            Variable::NUM(_) => 0,
-            Variable::LIST(_) => -1,
-        }));
+        self.add_cmd(Push(var.value));
 
         //////////////////////
         // Fetch stack size //
@@ -212,19 +177,9 @@ impl SmplToStk {
 
     fn handle_smpl_instr(&mut self, e: SmplExpr) {
         match e {
-            SmplExpr::Eq => {
-                self.swap();
-                self.add_cmd(Push(3));
-                self.add_cmd(Push(-1));
-                self.add_cmd(Roll);
-                self.c_eq();
-                self.swap();
-                self.add_cmd(Push(1));
-                self.add_cmd(Sub);
-            }
             SmplExpr::Instr(c) => {
                 self.add_cmd(c);
-            },
+            }
             SmplExpr::Goto(l) => {
                 self.add_expr(Goto(l.get_label_name()));
             }
@@ -238,10 +193,13 @@ impl SmplToStk {
                 self.add_expr(Comment(s));
             }
             SmplExpr::Set(var) => {
-                let var_index = self.smpl_executor.variables[&var].clone().2;
-                println!("{} {} {:?}", var_index, var, self.smpl_executor.variables);
+                let var_index =
+                // self.smpl_executor.variables.len() - 1 -
+                    self.smpl_executor.variables[&var].clone().var_index;
 
-                self.add_cmd(Push((var_index+1) as isize));
+                self.add_expr(Expr::Comment(format!("-{:?}", var)));
+
+                self.add_cmd(Push((var_index + 1) as isize));
 
                 self.swap();
                 self.add_cmd(Dup);
@@ -265,11 +223,17 @@ impl SmplToStk {
                 self.add_cmd(Pop);
                 self.add_cmd(Push(1));
                 self.add_cmd(Sub);
+
+                self.add_expr(Expr::Comment(format!("-{:?}", var)));
             }
             SmplExpr::Get(var) => {
-                let var_index = self.smpl_executor.variables[&var].clone().2;
+                let var_index =
+                    // self.smpl_executor.variables.len() - 1 -
+                    self.smpl_executor.variables[&var].clone().var_index;
 
-                self.add_cmd(Push((var_index+1) as isize));
+                self.add_expr(Expr::Comment(format!("+{:?}", var)));
+
+                self.add_cmd(Push((var_index + 1) as isize));
                 self.swap();
                 self.add_cmd(Dup);
 
@@ -288,103 +252,10 @@ impl SmplToStk {
                 self.swap();
                 self.add_cmd(Push(1));
                 self.add_cmd(Add);
+
+                self.add_expr(Expr::Comment(format!("-{:?}", var)));
             }
         }
-
-
-        // match l[0]:
-
-        //     case "get_heap":
-        //         assert (len(l) == 1) # get_heap
-        //         instrs[index][1].append("dup")
-        //         instrs[index][1].append("push 1")
-        //         instrs[index][1].append("add")
-
-        //         dup_at_depth(instrs, index)
-        //         dup_value_x_deep(instrs, index, 2)
-        //         instrs[index][1].append("add")
-
-        //         instrs[index][1].append("push 3")
-        //         instrs[index][1].append("push -1")
-        //         instrs[index][1].append("roll")
-        //         instrs[index][1].append("sub")
-
-        //         dup_at_depth(instrs, index)
-        //         swap(instrs, index)
-
-        //         index = index
-        //         next_index = index
-
-        //     case "set_heap":
-        //         assert (len(l) == 1) # set_heap
-
-        //         instrs[index][1].append("dup")
-        //         instrs[index][1].append("push 1")
-        //         instrs[index][1].append("add")
-
-        //         dup_at_depth(instrs, index)
-        //         dup_value_x_deep(instrs, index, 2)
-        //         instrs[index][1].append("add")
-        //         # instrs[index][1].append("push 1")
-        //         # instrs[index][1].append("add")
-
-        //         instrs[index][1].append("push 3")
-        //         instrs[index][1].append("push -1")
-        //         instrs[index][1].append("roll")
-        //         instrs[index][1].append("sub")
-
-        //         instrs[index][1].append("push 3")
-        //         instrs[index][1].append("push -1")
-        //         instrs[index][1].append("roll")
-
-        //         swap(instrs, index)
-        //         swap_at_depth(instrs, index)
-
-        //         instrs[index][1].append("pop")
-        //         instrs[index][1].append("push 2")
-        //         instrs[index][1].append("sub")
-
-        //         index = index
-        //         next_index = index
-
-        //     case "get_list":
-        //         _, next_index = handle_smpl_instr(var_list, instrs, index, ["dup"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, index, ["length"])
-
-        //         label_index = goto_new_label(instrs, next_index) # move all elements to new array
-        //         _, next_index = handle_smpl_instr(var_list, instrs, label_index, ["push", "1"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["sub"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["dup"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push", "-1"])
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["eq"])
-
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("sub")
-
-        //         swap(instrs, next_index)
-
-        //         return_index, in_bounds_index = branch_new_labels(instrs, next_index)
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, in_bounds_index, ["dup"])
-
-        //         dup_value_x_deep(instrs, next_index, 4)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_elem"])
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 4")
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("roll")
-
-        //         instrs[next_index][1].append("goto l" + str(label_index))
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, return_index, ["pop"])
-
-        //         index = next_index
-        //         next_index = next_index
 
         //     case "print_listC":
         //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_list"])
@@ -546,60 +417,6 @@ impl SmplToStk {
         //         index = next_index
         //         next_index = next_index
 
-
-        //     case "length":
-        //         assert (len(l) == 1) # length
-        //         swap(instrs, index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-        //         index, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get_heap"])
-
-        //     case "copy_memory":
-        //         label_index = goto_new_label(instrs, index) # move all elements to new array
-
-        //         dup_value_x_deep(instrs, label_index, 3)
-        //         dup_value_x_deep(instrs, label_index, 3)
-        //         eq(instrs, label_index)
-
-        //         done_index, loop_index = branch_new_labels(instrs, label_index)
-
-        //         dup_value_x_deep(instrs, loop_index, 4)
-        //         dup_value_x_deep(instrs, loop_index, 3)
-        //         instrs[loop_index][1].append("add")
-        //         instrs[loop_index][1].append("push 2")
-        //         instrs[loop_index][1].append("add")
-
-        //         swap(instrs, loop_index)
-        //         instrs[loop_index][1].append("push 1")
-        //         instrs[loop_index][1].append("add")
-
-        //         _, next_index = handle_smpl_instr(var_list, instrs, loop_index, ["get_heap"])
-
-        //         # _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["get", l[1]])
-        //         dup_value_x_deep(instrs, next_index, 6)
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-
-        //         swap(instrs, next_index)
-        //         dup_value_x_deep(instrs, next_index, 4)
-        //         instrs[next_index][1].append("add")
-        //         instrs[next_index][1].append("push 2")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-        //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["set_heap"])
-
-        //         swap(instrs, next_index)
-        //         instrs[next_index][1].append("push 1")
-        //         instrs[next_index][1].append("add")
-        //         swap(instrs, next_index)
-
-        //         instrs[next_index][1].append("goto l" + str(label_index))
-
-        //         index = next_index
-        //         next_index = done_index
-
         //     case default:
         //         print ("Did not find", l)
     }
@@ -613,7 +430,6 @@ impl SmplToStk {
                 stack: vec![],
                 label: String::from("main"),
             },
-            var_index: HashMap::new(),
         };
 
         let mut bi = 0;
@@ -629,18 +445,15 @@ impl SmplToStk {
             .insert(String::from("main"), bi);
         bi += 1;
 
-        // var_list = add_var(var_list, "__R0__", "num")
-        // var_list = add_var(var_list, "__R1__", "num")
-        // var_list = add_var(var_list, "__R2__", "num")
-        // var_list = add_var(var_list, "__R3__", "num")
-        // var_list = add_var(var_list, "__R4__", "num")
-        // var_list = add_var(var_list, "__R5__", "num")
-        // var_list = add_var(var_list, "__R6__", "num")
-        // var_list = add_var(var_list, "__R7__", "num")
-
         // Stack frame
-        for (var_name, (var_type, _, _)) in smpl_to_stk.smpl_executor.variables.clone().into_iter().sorted_by(|(_, (_, _, var_index1)), (_, (_, _, var_index2))| var_index1.cmp(var_index2)) {
-            smpl_to_stk.add_var(var_name, var_type);
+        for (_, var) in smpl_to_stk
+            .smpl_executor
+            .variables
+            .clone()
+            .into_iter()
+            .sorted_by(|(_, a), (_, b)| a.var_index.cmp(&b.var_index).reverse())
+        {
+            smpl_to_stk.add_var(var);
         }
 
         for (x, _) in smpl_to_stk

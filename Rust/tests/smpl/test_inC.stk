@@ -1,0 +1,47 @@
+label main
+push 0
+push 1
+# +inC
+goto l_ref_0
+
+label l_ref_0
+push -2
+push -3
+inC
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l_ref_1 l_ref_2
+
+label l_ref_1
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l_ref_3
+
+label l_ref_2
+pop
+goto l_ref_3
+
+label l_ref_3
+# -inC
+# +outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+# -outC
+goto term
+

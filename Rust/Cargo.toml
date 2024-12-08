@@ -14,7 +14,7 @@ name = "piet"
 name = "piet_stack"
 
 [[bin]]
-name = "smpl"
+name = "mid_smpl"
 
 [[bin]]
 name = "piet_optimize_stk"

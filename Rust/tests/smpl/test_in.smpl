@@ -1,38 +1,113 @@
+use swap ./lib/swap.lib
+use swap_at_depth ./lib/swap_at_depth.lib
+
+use dup ./lib/dup.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+
+use get_at_depth ./lib/get_at_depth.lib
+use put_at_depth ./lib/put_at_depth.lib
+
+use sub ./lib/sub.lib
+use add ./lib/add.lib
+use roll ./lib/roll.lib
+use push ./lib/push.lib
+use pop ./lib/pop.lib
+use malloc ./lib/malloc.lib
+use outN ./lib/outN.lib
+use not ./lib/not.lib
+use eq ./lib/eq.lib
+use stk_eq ./lib/stk_eq.lib
+
+use set_heap ./lib/set_heap.lib
+use get_heap ./lib/get_heap.lib
+
+use set_elem ./lib/set_elem.lib
+use get_elem ./lib/get_elem.lib
+
+use copy_memory ./lib/copy_memory.lib
+
+use print_listN ./lib/print_listN.lib
+use get_list ./lib/get_list.lib
+use length ./lib/length.lib
+
+use append ./lib/append.lib
+
+use pre_branch ./lib/pre_branch.lib
+use dup_at_depth_smpl ./lib/dup_at_depth_smpl.lib
+use swap_smpl ./lib/swap_smpl.lib
+
+use in ./lib/in.lib
+
+var x list
+
 push 84  # 4
+lib_push
 push 145 # 3
+lib_push
 push 631 # 2
+lib_push
 push 123 # 1
+lib_push
 push 52  # 0
+lib_push
 
 push -1
+lib_push
 
-append
-append
-append
-append
-append
+lib_append
+lib_append
+lib_append
+lib_append
+lib_append
 
-dup
+set x
 
-push 123 # is 123 in list?
-push 1
+push 0
+lib_push
+push 0
+lib_push
+push 0
+lib_push
 
-push 3
-get_at_depth
+get x
+get x
 
-in
-outN
+lib_in
 
-push 321 # is 321 in list?
-push 1
 
-push 3
-get_at_depth
+# push 123 # is 123 in list?
+# lib_push
+# push 1
+# lib_push
 
-in
-outN
+# push 3
+# lib_push
+# lib_get_at_depth
 
-push 10
-outC
+# set __R1__
+# set __R0__
+
+# lib_in
+
+# debug
+
+# lib_outN
+
+# push 321 # is 321 in list?
+# lib_push
+# push 1
+# lib_push
+
+# push 3
+# lib_push
+# get_at_depth
+
+# lib_in
+# lib_outN
+
+# push 10
+# lib_push
+
+# lib_outC
 
 goto term

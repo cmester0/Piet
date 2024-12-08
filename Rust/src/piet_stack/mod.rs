@@ -11,7 +11,7 @@ use pest_derive::Parser;
 use std::collections::HashMap;
 use std::fs;
 
-use std::io::{Read, Write};
+use std::io::Read;
 
 
 pub struct PietStackExecutor {

@@ -2,65 +2,85 @@ label main
 push 0
 push 1
 push 9
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 8
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 7
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 6
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 5
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 4
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 3
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 2
-push 2
-push 1
-roll
-push 1
-add
-push 1
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+push 1
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
 push 0
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 outN
 push 32
 outC

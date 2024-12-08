@@ -1,5 +1,44 @@
+use swap ./lib/swap.lib
+use swap_at_depth ./lib/swap_at_depth.lib
+
+use dup ./lib/dup.lib
+use dup_at_depth ./lib/dup_at_depth.lib
+
+use sub ./lib/sub.lib
+use add ./lib/add.lib
+use roll ./lib/roll.lib
+use push ./lib/push.lib
+use pop ./lib/pop.lib
+use malloc ./lib/malloc.lib
+use outC ./lib/outC.lib
+use outN ./lib/outN.lib
+use inC ./lib/inC.lib
+use eq ./lib/eq.lib
+use stk_eq ./lib/stk_eq.lib
+
+use set_heap ./lib/set_heap.lib
+use get_heap ./lib/get_heap.lib
+
+use set_elem ./lib/set_elem.lib
+use get_elem ./lib/get_elem.lib
+
+use copy_memory ./lib/copy_memory.lib
+
+use print_listN ./lib/print_listN.lib
+use get_list ./lib/get_list.lib
+use length ./lib/length.lib
+
+use append ./lib/append.lib
+use readC_until ./lib/readC_until.lib
+use print_listC ./lib/print_listC.lib
+
+use readlines ./lib/readlines.lib
+use printC_list_of_list ./lib/printC_list_of_list.lib
+
 push -1
-readlines
-printC_list_of_list
+lib_push
+
+lib_readlines
+lib_printC_list_of_list
 
 goto term

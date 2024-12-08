@@ -1,0 +1,42 @@
+!readlines_label
+goto .readlines_label
+
+label .readlines_label
+lib_inC
+lib_dup
+
+push -1
+lib_push
+
+lib_eq
+
+push 1
+sub
+lib_swap
+
+!readlines_done
+!readlines_append
+branch .readlines_done .readlines_append
+
+label .readlines_append
+push -1
+lib_push
+
+lib_append
+
+push 10
+lib_push
+lib_readC_until
+
+push 3
+push -1
+roll
+
+lib_swap
+lib_append
+
+goto .readlines_label
+
+
+label .readlines_done
+lib_pop

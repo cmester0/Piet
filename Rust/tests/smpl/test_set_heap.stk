@@ -2,11 +2,14 @@ label main
 push 0
 push 1
 push 1
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +malloc
 dup
 push 3
 push -1
@@ -102,19 +105,25 @@ roll
 pop
 push 1
 sub
+# -malloc
 debug
 push 77
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 0
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +set_heap
 dup
 push 1
 add
@@ -169,6 +178,7 @@ roll
 pop
 push 2
 sub
+# -set_heap
 outN
 push 44
 outC

@@ -2,35 +2,46 @@ label main
 push 0
 push 1
 push 0
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 1
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 2
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 3
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push -1
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +roll
 push 2
 dup
 push 1
@@ -90,23 +101,30 @@ roll
 roll
 push 2
 sub
+# -roll
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 goto term
 

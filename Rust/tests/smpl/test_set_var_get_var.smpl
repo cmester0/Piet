@@ -4,13 +4,37 @@ use push ./lib/push.lib
 use outN ./lib/outN.lib
 
 var x num
+var y list
+var z num
 
 push 42
 lib_push
 
-debug
 set x
 get x
-debug
+
 lib_outN
+
+push 10
+outC
+
+push 15
+lib_push
+
+set y
+get y
+
+lib_outN
+
+push 10
+outC
+
+push 13
+lib_push
+
+set z
+get z
+
+lib_outN
+
 goto term

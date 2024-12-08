@@ -1,0 +1,44 @@
+lib_get_list
+lib_length
+
+!printC_list_of_list_label
+goto .printC_list_of_list_label
+
+label .printC_list_of_list_label
+push 1
+lib_push
+
+lib_sub
+lib_dup
+
+push -1
+lib_push
+
+lib_eq
+
+push 1
+sub
+lib_swap
+
+!printC_list_of_list_return
+!printC_list_of_list_in_bounds
+branch .printC_list_of_list_return .printC_list_of_list_in_bounds
+
+label .printC_list_of_list_in_bounds
+push 3
+push -1
+roll
+
+lib_swap
+
+lib_print_listC
+
+push 10
+lib_push
+
+lib_outC
+
+goto .printC_list_of_list_label
+
+label .printC_list_of_list_return
+lib_pop

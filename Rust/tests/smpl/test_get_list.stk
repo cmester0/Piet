@@ -14,35 +14,46 @@ roll
 push 1
 roll
 push 110
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 115
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 113
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 119
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 114
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +"l"
 push 1
 push 2
 push 1
@@ -75,6 +86,8 @@ push 1
 roll
 push 1
 add
+# -"l"
+# +append
 push 2
 push 1
 roll
@@ -759,6 +772,8 @@ dup
 goto l_ref_8
 
 label l_ref_7
+# -append
+# +append
 push 2
 push 1
 roll
@@ -2131,6 +2146,8 @@ dup
 goto l_ref_22
 
 label l_ref_21
+# -append
+# +append
 push 2
 push 1
 roll
@@ -3503,6 +3520,8 @@ dup
 goto l_ref_36
 
 label l_ref_35
+# -append
+# +append
 push 2
 push 1
 roll
@@ -4875,6 +4894,8 @@ dup
 goto l_ref_50
 
 label l_ref_49
+# -append
+# +append
 push 2
 push 1
 roll
@@ -6247,6 +6268,8 @@ dup
 goto l_ref_64
 
 label l_ref_63
+# -append
+# -"l"
 push 1
 push 2
 push 1
@@ -6280,6 +6303,8 @@ roll
 pop
 push 1
 sub
+# -"l"
+# +"l"
 push 1
 push 2
 push 1
@@ -6312,6 +6337,8 @@ push 1
 roll
 push 1
 add
+# -"l"
+# +get_list
 push 2
 push 1
 roll
@@ -7132,52 +7159,65 @@ roll
 pop
 push 1
 sub
+# -get_list
+# +pop
 push 2
 push 1
 roll
 pop
 push 1
 sub
+# -pop
 push 91
 outC
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 push 44
 outC
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 push 44
 outC
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 push 44
 outC
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 push 44
 outC
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 push 44
 outC
 push 93

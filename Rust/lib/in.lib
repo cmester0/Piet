@@ -1,0 +1,126 @@
+# push 2
+# lib_push
+# push 1
+# lib_push
+# lib_roll
+
+# Tuple size
+set __R0__
+
+lib_get_list
+
+lib_length
+
+# Length
+set __R1__
+
+get __R0__
+
+!get_tuple
+goto .get_tuple
+
+label .get_tuple
+push 1
+lib_push
+
+lib_sub
+lib_dup
+
+push -1
+lib_push
+
+lib_eq
+
+debug
+
+!get_tuple_done
+!get_tuple_loop
+lib_pre_branch
+branch .get_tuple_done .get_tuple_loop
+
+label .get_tuple_loop
+
+get __R1__
+push 2
+lib_push
+lib_add
+push 2
+lib_push
+
+lib_dup_at_depth_smpl
+
+lib_add
+
+lib_get_at_depth
+
+lib_swap_smpl
+
+goto .get_tuple
+
+label .get_tuple_done
+
+lib_pop
+
+push 0
+lib_push
+
+!for_loop
+goto .for_loop
+
+label .for_loop
+
+push 3
+lib_push
+
+lib_get_at_depth
+push 1
+lib_push
+
+lib_sub
+lib_dup
+
+push 4
+lib_push
+
+push 1
+lib_push
+
+lib_roll
+
+push -1
+lib_push
+
+lib_eq
+
+!loop
+!done
+lib_pre_branch
+branch .done .loop
+
+label .loop
+push 2
+lib_push
+
+lib_dup_at_depth_smpl
+
+push 5
+lib_push
+
+lib_get_at_depth
+
+lib_eq
+lib_add
+goto .for_loop
+
+label .done
+
+lib_not
+lib_not
+
+push 3
+lib_push
+
+lib_put_at_depth
+
+lib_pop
+lib_pop

@@ -1,40 +1,64 @@
 label main
 push 0
 push 1
-# +Instr(Push(3))
 push 3
-# -Instr(Push(3))
-# +Instr(Push(4))
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
 push 4
-# -Instr(Push(4))
-# +Instr(Sub)
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +eq
+push 2
+push 1
+roll
+push 3
+push -1
+roll
 sub
-# -Instr(Sub)
-# +Instr(Dup)
 dup
-# -Instr(Dup)
-# +Instr(Mul)
 mul
-# -Instr(Mul)
-# +Instr(Push(0))
 push 0
-# -Instr(Push(0))
-# +Instr(Greater)
 greater
-# -Instr(Greater)
-# +Instr(Not)
 not
-# -Instr(Not)
-# +Instr(OutN)
+push 2
+push 1
+roll
+push 1
+sub
+# -eq
+# +outN
+push 2
+push 1
+roll
 outN
-# -Instr(OutN)
-# +Instr(Push(10))
+push 1
+sub
+# -outN
 push 10
-# -Instr(Push(10))
-# +Instr(OutC)
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +outC
+push 2
+push 1
+roll
 outC
-# -Instr(OutC)
-# +Goto(Name("term"))
+push 1
+sub
+# -outC
 goto term
-# -Goto(Name("term"))
 

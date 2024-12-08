@@ -1,13 +1,14 @@
 !inC_label
 goto .inC_label
 
+label .inC_label
 push -2
 push -3
 inC
 
 lib_swap
 push -3
-lib_eq
+lib_stk_eq
 
 # If statement
 !succ_label

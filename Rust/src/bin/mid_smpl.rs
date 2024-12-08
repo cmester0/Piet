@@ -1,9 +1,8 @@
-
 use clap::Parser as CliParser;
 use image::DynamicImage;
 use piet::optimize_stk::StackOptimizer;
-use piet::smpl::SmplExecutor;
-use piet::smpl::smpl_to_stk::SmplToStk;
+use piet::mid_smpl::SmplExecutor;
+use piet::mid_smpl::mid_smpl_to_stk::SmplToStk;
 use std::fs::File;
 use std::io::{Read, Write};
 
@@ -18,6 +17,8 @@ struct Args {
     output: Option<String>,
     #[arg(short, long)]
     to_piet: Option<String>,
+    #[arg(short, long)]
+    registers: Option<usize>,
 }
 
 fn main() {
@@ -26,7 +27,9 @@ fn main() {
     let input = std::io::stdin().bytes().peekable();
     let output = std::io::stdout();
 
-    let mut smpl_executor = SmplExecutor::new(args.filepath.as_str());
+    let registers = args.registers.unwrap_or(5);
+
+    let mut smpl_executor = SmplExecutor::new(args.filepath.as_str(), registers);
 
     if args.run {
         smpl_executor.interpret(

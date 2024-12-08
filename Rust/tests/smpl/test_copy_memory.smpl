@@ -4,32 +4,35 @@ use swap_at_depth ./lib/swap_at_depth.lib
 use dup ./lib/dup.lib
 use dup_at_depth ./lib/dup_at_depth.lib
 
-use add ./lib/add.lib
-use roll ./lib/roll.lib
-use push ./lib/push.lib
-use malloc ./lib/malloc.lib
 use eq ./lib/eq.lib
 use stk_eq ./lib/stk_eq.lib
 
+use malloc ./lib/malloc.lib
+
+use add ./lib/add.lib
+use roll ./lib/roll.lib
+use push ./lib/push.lib
+use outC ./lib/outC.lib
+
 use set_heap ./lib/set_heap.lib
-use get_heap ./lib/set_heap.lib
+use get_heap ./lib/get_heap.lib
 
 use copy_memory ./lib/copy_memory.lib
 
-push 14
+push 10
 lib_push
 
 lib_malloc
 
-debug
-
-push 3
+# Set heap 0: 2
+push 2
 lib_push
 
 push 0
 lib_push
 lib_set_heap
 
+# Set heap 1: 2
 push 2
 lib_push
 
@@ -37,42 +40,71 @@ push 1
 lib_push
 lib_set_heap
 
-push 1
+# Set heap 2: 114
+push 114
 lib_push
 
 push 2
 lib_push
 lib_set_heap
 
-# Filler valus
-push 77
+# Set heap 3: 110
+push 110
 lib_push
 
-push 77
+push 3
 lib_push
+lib_set_heap
+
+# Set heap 4: 4
+push 4
+lib_push
+
+push 4
+lib_push
+lib_set_heap
 
 # Arguments for copy memory
 
-push 1
+# Index of the new list
+push 4
 lib_push
 
+# Index of the old list
+push 0
+lib_push
+
+# Number of elements to copy (end count)
 push 2
 lib_push
 
-push 1
-lib_push
-
-push 2
-lib_push
-
-push 1
-lib_push
-
-push 2
+# Start count
+push 0
 lib_push
 
 debug
+# From:
+# [2, 2, 114, 110, 4, 0, 0, 0, 0, 0, 12, 4, 0, 2, 0, 5]
+
 lib_copy_memory
 debug
+
+# To:
+# [2, 2, 114, 110, 4, 0, 114, 110, 0, 0, 12, 4, 0, 2, 2, 5]
+
+# copies element from heap location 6: 114 - h
+push 6
+lib_push
+lib_get_heap
+
+# copies element from heap location 7: 110 - e
+push 7
+lib_push
+lib_get_heap
+
+debug
+
+lib_outC
+lib_outC
 
 goto term

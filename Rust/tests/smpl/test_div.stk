@@ -2,17 +2,22 @@ label main
 push 0
 push 1
 push 52
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
 push 15
+# +push
 push 2
 push 1
 roll
 push 1
 add
+# -push
+# +div
 push 3
 push 1
 roll
@@ -22,11 +27,14 @@ push 1
 roll
 push 1
 sub
+# -div
+# +outN
 push 2
 push 1
 roll
 outN
 push 1
 sub
+# -outN
 goto term
 

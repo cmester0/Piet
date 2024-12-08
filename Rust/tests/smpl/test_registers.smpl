@@ -1,0 +1,25 @@
+use swap ./lib/swap.lib
+use push ./lib/push.lib
+use outN ./lib/outN.lib
+
+push 10
+lib_push
+set __R0__
+
+push 11
+lib_push
+set __R1__
+
+push 12
+lib_push
+set __R2__
+
+get __R2__
+get __R1__
+get __R0__
+
+lib_outN
+lib_outN
+lib_outN
+
+goto term
