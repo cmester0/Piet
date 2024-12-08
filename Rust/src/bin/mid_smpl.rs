@@ -11,8 +11,8 @@ use std::io::{Read, Write};
 struct Args {
     #[arg(short, long)]
     filepath: String,
-    #[arg(short, long)]
-    run: bool,
+    // #[arg(short, long)]
+    // run: bool,
     #[arg(short, long)]
     output: Option<String>,
     #[arg(short, long)]
@@ -31,12 +31,12 @@ fn main() {
 
     let mut smpl_executor = SmplExecutor::new(args.filepath.as_str(), registers);
 
-    if args.run {
-        smpl_executor.interpret(
-            &mut Some(input),
-            &mut Some(output),
-        );
-    }
+    // if args.run {
+    //     smpl_executor.interpret(
+    //         &mut Some(input),
+    //         &mut Some(output),
+    //     );
+    // }
 
     if args.output.is_some() || args.to_piet.is_some() {
         let stk_executor = SmplToStk::to_stk(smpl_executor);

@@ -337,66 +337,66 @@ pub fn parse_string(
 }
 
 impl SmplExecutor {
-    fn interpret_expr<I: std::io::Read, O: std::io::Write>(
-        &mut self,
-        e: Expr,
-        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &mut Option<O>,
-    ) -> bool {
-        match e {
-            Expr::Instr(cmd) => {
-                cmd.interpret(&mut self.stack, input, output);
-                false
-            }
-            Expr::Goto(l) => {
-                self.label = l.get_label_name();
-                true
-            }
-            Expr::Branch(thn, els) => {
-                let a = self.stack.pop().unwrap();
-                if a == 0 {
-                    self.label = els.get_label_name();
-                } else {
-                    self.label = thn.get_label_name();
-                }
-                true
-            }
-            Expr::Debug => {
-                println!("Debug {}: {:?}", self.label, self.stack);
-                false
-            }
-            Expr::Comment(_) => false,
-            Expr::Get(s) => {
-                self.stack.push(self.variables[&s].value);
-                false
-            }
-            Expr::Set(s) => {
-                let v: Variable = self.variables[&s].clone();
-                self.variables.insert(
-                    s.clone(),
-                    Variable {
-                        value: self.stack.pop().unwrap(),
-                        ..v
-                    },
-                );
-                false
-            }
-        }
-    }
+    // fn interpret_expr<I: std::io::Read, O: std::io::Write>(
+    //     &mut self,
+    //     e: Expr,
+    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+    //     output: &mut Option<O>,
+    // ) -> bool {
+    //     match e {
+    //         Expr::Instr(cmd) => {
+    //             cmd.interpret(&mut self.stack, input, output);
+    //             false
+    //         }
+    //         Expr::Goto(l) => {
+    //             self.label = l.get_label_name();
+    //             true
+    //         }
+    //         Expr::Branch(thn, els) => {
+    //             let a = self.stack.pop().unwrap();
+    //             if a == 0 {
+    //                 self.label = els.get_label_name();
+    //             } else {
+    //                 self.label = thn.get_label_name();
+    //             }
+    //             true
+    //         }
+    //         Expr::Debug => {
+    //             println!("Debug {}: {:?}", self.label, self.stack);
+    //             false
+    //         }
+    //         Expr::Comment(_) => false,
+    //         Expr::Get(s) => {
+    //             self.stack.push(self.variables[&s].value);
+    //             false
+    //         }
+    //         Expr::Set(s) => {
+    //             let v: Variable = self.variables[&s].clone();
+    //             self.variables.insert(
+    //                 s.clone(),
+    //                 Variable {
+    //                     value: self.stack.pop().unwrap(),
+    //                     ..v
+    //                 },
+    //             );
+    //             false
+    //         }
+    //     }
+    // }
 
-    pub fn interpret<I: std::io::Read, O: std::io::Write>(
-        &mut self,
-        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &mut Option<O>,
-    ) {
-        while self.label != "term" {
-            for expr in self.blocks[&self.label].clone() {
-                if self.interpret_expr(expr, input, output) {
-                    break;
-                }
-            }
-        }
-    }
+    // pub fn interpret<I: std::io::Read, O: std::io::Write>(
+    //     &mut self,
+    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+    //     output: &mut Option<O>,
+    // ) {
+    //     while self.label != "term" {
+    //         for expr in self.blocks[&self.label].clone() {
+    //             if self.interpret_expr(expr, input, output) {
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
 
     pub fn new(filepath: &str, registers: usize) -> Self {
         let mut blocks = HashMap::new();
@@ -427,25 +427,25 @@ impl SmplExecutor {
         }
     }
 
-    pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
-        unparsed: &str,
-        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-        output: &mut Option<O>,
-        registers: usize,
-    ) {
-        SmplExecutor::new(unparsed, registers).interpret(input, output);
-    }
+    // pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
+    //     unparsed: &str,
+    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+    //     output: &mut Option<O>,
+    //     registers: usize,
+    // ) {
+    //     SmplExecutor::new(unparsed, registers).interpret(input, output);
+    // }
 
-    pub fn run_on_string(mut self, input: &str) -> String {
-        let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
-        let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
+    // pub fn run_on_string(mut self, input: &str) -> String {
+    //     let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
+    //     let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
 
-        let mut stk_byt_out = vec![];
-        {
-            let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-            self.interpret(&mut Some(stk_input), &mut Some(stk_output));
-        }
+    //     let mut stk_byt_out = vec![];
+    //     {
+    //         let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
+    //         self.interpret(&mut Some(stk_input), &mut Some(stk_output));
+    //     }
 
-        String::from_utf8(stk_byt_out).unwrap()
-    }
+    //     String::from_utf8(stk_byt_out).unwrap()
+    // }
 }
