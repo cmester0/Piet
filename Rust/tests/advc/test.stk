@@ -1,0 +1,562 @@
+label main
+push 0
+push 1
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+goto read_input
+
+label read_input
+push 0
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# -"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+# -"i"
+push 100
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# -"end"
+push 7
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+# -"end"
+push 0
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+goto l_ref_0
+
+label l_ref_0
+# +"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"i"
+# +"end"
+push 7
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"end"
+# +eq
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+push 1
+sub
+# -eq
+# +pre_branch
+push 1
+sub
+push 2
+push 1
+roll
+# -pre_branch
+branch l_ref_2 l_ref_1
+
+label l_ref_1
+# +"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"i"
+push 2
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +mod
+push 3
+push 1
+roll
+mod
+push 2
+push 1
+roll
+push 1
+sub
+# -mod
+# +pre_branch
+push 1
+sub
+push 2
+push 1
+roll
+# -pre_branch
+branch l_ref_3 l_ref_4
+
+label l_ref_2
+goto term
+
+label l_ref_3
+# +"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"i"
+# +outN
+push 2
+push 1
+roll
+outN
+push 1
+sub
+# -outN
+push 10
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+# -outC
+goto l_ref_5
+
+label l_ref_4
+# +"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"i"
+# +outN
+push 2
+push 1
+roll
+outN
+push 1
+sub
+# -outN
+push 10
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +outC
+push 2
+push 1
+roll
+outC
+push 1
+sub
+# -outC
+goto l_ref_5
+
+label l_ref_5
+# +"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+dup
+push 1
+add
+push -1
+roll
+dup
+push 3
+push -1
+roll
+push 1
+add
+push 1
+roll
+push 2
+push 1
+roll
+push 1
+add
+# -"i"
+push 1
+# +push
+push 2
+push 1
+roll
+push 1
+add
+# -push
+# +add
+push 3
+push 1
+roll
+add
+push 2
+push 1
+roll
+push 1
+sub
+# -add
+# -"i"
+push 6
+push 2
+push 1
+roll
+dup
+push 3
+push 1
+roll
+push 2
+push 1
+roll
+sub
+push 1
+add
+push 3
+push -1
+roll
+push 2
+push 1
+roll
+dup
+push 1
+add
+push -1
+roll
+push 3
+push 1
+roll
+push 1
+roll
+pop
+push 1
+sub
+# -"i"
+goto l_ref_0
+

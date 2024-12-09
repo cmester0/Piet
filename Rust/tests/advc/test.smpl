@@ -1,0 +1,99 @@
+use dup_at_depth ./lib/dup_at_depth.lib
+use pre_branch ./lib/pre_branch.lib
+use greater ./lib/greater.lib
+use in ./lib/in.lib
+use div ./lib/div.lib
+use outN ./lib/outN.lib
+use readC_until ./lib/readC_until.lib
+use readlines ./lib/readlines.lib
+use get_at_depth ./lib/get_at_depth.lib
+use outC ./lib/outC.lib
+use malloc ./lib/malloc.lib
+use stk_eq ./lib/stk_eq.lib
+use mul ./lib/mul.lib
+use set_elem ./lib/set_elem.lib
+use inN ./lib/inN.lib
+use print_listC ./lib/print_listC.lib
+use get_list ./lib/get_list.lib
+use inC ./lib/inC.lib
+use dup_at_depth_smpl ./lib/dup_at_depth_smpl.lib
+use mod ./lib/mod.lib
+use swap_smpl ./lib/swap_smpl.lib
+use eq ./lib/eq.lib
+use printC_list_of_list ./lib/printC_list_of_list.lib
+use set_heap ./lib/set_heap.lib
+use put_at_depth ./lib/put_at_depth.lib
+use swap ./lib/swap.lib
+use swap_at_depth ./lib/swap_at_depth.lib
+use length ./lib/length.lib
+use add ./lib/add.lib
+use dup ./lib/dup.lib
+use append ./lib/append.lib
+use copy_memory ./lib/copy_memory.lib
+use push ./lib/push.lib
+use sub ./lib/sub.lib
+use print_listN ./lib/print_listN.lib
+use not ./lib/not.lib
+use roll ./lib/roll.lib
+use get_heap ./lib/get_heap.lib
+use get_elem ./lib/get_elem.lib
+use pop ./lib/pop.lib
+
+var i num
+var end num
+
+goto read_input
+
+label read_input
+push 0
+lib_push
+set i
+push 100
+lib_push
+set end
+push 0
+lib_push
+goto l_ref_0
+
+label l_ref_0
+get i
+get end
+lib_eq
+lib_pre_branch
+branch l_ref_2 l_ref_1
+
+label l_ref_1
+get i
+push 2
+lib_push
+lib_mod
+lib_pre_branch
+branch l_ref_3 l_ref_4
+
+label l_ref_2
+goto term
+
+label l_ref_3
+get i
+lib_outN
+push 10
+lib_push
+lib_outC
+goto l_ref_5
+
+label l_ref_4
+get i
+lib_outN
+push 10
+lib_push
+lib_outC
+goto l_ref_5
+
+label l_ref_5
+get i
+push 1
+lib_push
+lib_add
+set i
+goto l_ref_0
+

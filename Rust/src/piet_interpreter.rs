@@ -21,8 +21,36 @@ pub enum CMD {
     Pointer,
     Switch,
 }
+use CMD::*;
 
 impl CMD {
+    pub fn cmd_str(self) -> String {
+        String::from(
+            match self {
+                Nop => "",
+
+                Push(_) => "push",
+                Pop => "pop",
+                Add => "add",
+                Sub => "sub",
+                Mul => "mul",
+                Div => "div",
+                Mod => "mod",
+                Not => "not",
+                Greater => "greater",
+                Dup => "dup",
+                Roll => "roll",
+                InN => "inN",
+                InC => "inC",
+                OutN => "outN",
+                OutC => "outC",
+
+                Pointer => panic!(),
+                Switch => panic!(),
+            }
+        )
+    }
+    
     pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
         stack: &mut Vec<isize>,
@@ -65,7 +93,7 @@ impl CMD {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
-                if b == 0 { return None }
+                if a == 0 { return None }
                 stack.push(b.rem_euclid(a));
             }
             CMD::Not => {

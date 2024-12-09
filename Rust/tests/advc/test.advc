@@ -1,0 +1,40 @@
+var i num
+var end num
+
+goto read_input
+
+label read_input
+
+push 0
+set i
+
+push 100
+set end
+
+push 0
+
+for i to end {
+
+get i
+push 2
+mod
+
+if {
+
+get i
+outN
+push 10
+outC
+
+} else {
+
+get i
+outN
+push 10
+outC
+
+}
+
+}
+
+goto term

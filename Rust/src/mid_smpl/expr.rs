@@ -49,6 +49,8 @@ pub enum Expr {
     Get(String),
 
     Comment(String),
+
+    Lib(String),
 }
 use Expr::*;
 

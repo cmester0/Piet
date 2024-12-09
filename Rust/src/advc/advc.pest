@@ -1,90 +1,102 @@
-// Document = {
-//     SOI ~
-//     NEWLINE* ~ Imports ~ Variables ~
-//     NEWLINE* ~ SubBlock ~
-//     NEWLINE* ~ Blocks ~
-//     NEWLINE* ~
-//     EOI
-// }
+Document = {
+    SOI ~
+    NEWLINE* ~ Imports ~ Variables ~
+    NEWLINE* ~ SubBlock ~
+    NEWLINE* ~ Blocks ~
+    NEWLINE* ~
+    EOI
+}
 
-// // WHITESPACE = _{ " " }
-// COMMENT = _{
-//     ("/*" ~ (!"*/" ~ ANY)* ~ "*/")
-//   | (" "* ~ ("//" ~ (!NEWLINE ~ ANY)*))
-//   | (" "* ~ ("#" ~ (!NEWLINE ~ ANY)*))
-// }
+// WHITESPACE = _{ " " }
+COMMENT = _{
+    ("/*" ~ (!"*/" ~ ANY)* ~ "*/")
+  | (" "* ~ ("//" ~ (!NEWLINE ~ ANY)*))
+  | (" "* ~ ("#" ~ (!NEWLINE ~ ANY)*))
+}
 
-// Name = @{ (ASCII_ALPHANUMERIC | "_")+ }
-// Number = @{ "-"? ~ ASCII_DIGIT+ }
-// Char = @{ ASCII }
-// Filepath = @{ ("." | "/" | Name)+ }
+Name = @{ (ASCII_ALPHANUMERIC | "_")+ }
+Number = @{ "-"? ~ ASCII_DIGIT+ }
+Char = @{ ASCII }
+Filepath = @{ ("." | "/" | Name)+ }
 
-// Imports = { (Import ~ NEWLINE*)* } // imports +
-// Import = { "use" ~ SEPARATOR ~ Name ~ SEPARATOR ~ Filepath }
+Imports = { (Import ~ NEWLINE*)* } // imports +
+Import = { "use" ~ SEPARATOR ~ Name ~ SEPARATOR ~ Filepath }
 
-// Variables = { (Variable ~ NEWLINE*)* } // variables +
-// Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }
-// VarType = { "list" | "num" }
+Variables = { (Variable ~ NEWLINE*)* } // variables +
+Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }
+VarType = { "list" | "num" }
 
-// NewLabel = { "!" ~ Name }
+NewLabel = { "!" ~ Name }
 
-// LabelName = { Name }
-// LabelRef = { "." ~ Name }
-// Label = { LabelName | LabelRef }
+LabelName = { Name }
+LabelRef = { "." ~ Name }
+Label = { LabelName | LabelRef }
 
-// LibFun = {"lib_" ~ Name }
+LibFun = {"lib_" ~ Name }
 
-// LibBlocks = {
-//     SOI ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks? ~ NEWLINE* ~ EOI
-// }
-// Blocks = { Block* }
-// Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
-// SubBlock = { ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }
+LibBlocks = {
+    SOI ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ Blocks? ~ NEWLINE* ~ EOI
+}
+Blocks = { Block* }
+Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
+SubBlock = { ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }
 
-// Push = { "push" }
-// Pop = { "pop" }
-// Not = { "not" }
-// Add = { "add" }
-// Greater = { "greater" }
-// Sub = { "sub" }
-// Div = { "div" }
-// Mod = { "mod" }
-// Mul = { "mul" }
-// Dup = { "dup" }
-// InN = { "inN" }
-// InC = { "inC" }
-// Goto = { "goto" }
-// Branch = { "branch" }
-// Debug = { "debug" }
-// OutC = { "outC" }
-// OutN = { "outN" }
-// Roll = { "roll" }
+Push = { "push" }
+Pop = { "pop" }
+Not = { "not" }
+Add = { "add" }
+Greater = { "greater" }
+Sub = { "sub" }
+Div = { "div" }
+Mod = { "mod" }
+Mul = { "mul" }
+Dup = { "dup" }
+InN = { "inN" }
+InC = { "inC" }
+Goto = { "goto" }
+Branch = { "branch" }
+Debug = { "debug" }
+OutC = { "outC" }
+OutN = { "outN" }
+Roll = { "roll" }
 
-// Get = { "get" }
-// Set = { "set" }
+Get = { "get" }
+Set = { "set" }
 
-// Eq = { "eq" }
+Eq = { "eq" }
 
-// Expr = {
-//   | Push ~ SEPARATOR ~ Number
-//   | Push ~ SEPARATOR ~ Char
+GetHeap = { "get_heap" }
+SetHeap = { "set_heap" }
 
-//   | Pop
-//   | Not
-//   | Add
-//   | Greater | Sub | Div | Mod | Mul
-//   | Dup
-//   | InN
-//   | InC
-//   | Goto ~ SEPARATOR ~ Label
-//   | Branch ~ SEPARATOR ~ Label ~ SEPARATOR ~ Label
-//   | Debug
-//   | OutC
-//   | OutN
-//   | Roll
+If = { "if" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" ~ SEPARATOR ~ "else" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
+For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
 
-//   | Set ~ SEPARATOR ~ Name
-//   | Get ~ SEPARATOR ~ Name
+Expr = {
+  | Push ~ SEPARATOR ~ Number
+  | Push ~ SEPARATOR ~ Char
 
-//   | Eq
-// }
+  | Pop
+  | Not
+  | Add
+  | Greater | Sub | Div | Mod | Mul
+  | Dup
+  | InN
+  | InC
+  | Goto ~ SEPARATOR ~ Label
+  | Branch ~ SEPARATOR ~ Label ~ SEPARATOR ~ Label
+  | Debug
+  | OutC
+  | OutN
+  | Roll
+
+  | Set ~ SEPARATOR ~ Name
+  | Get ~ SEPARATOR ~ Name
+
+  | Eq
+
+  | For
+  | If
+
+  // | GetHeap
+  // | SetHeap
+}
