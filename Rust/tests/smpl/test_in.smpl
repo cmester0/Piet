@@ -76,6 +76,20 @@ lib_outN
 push 32
 outC
 
+# 145 in x?
+push 145 # is 145 in list?
+lib_push
+
+get x
+
+lib_in
+
+# At index 3
+lib_outN
+
+push 32
+outC
+
 push 321 # is 321 in list?
 lib_push
 

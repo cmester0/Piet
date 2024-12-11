@@ -171,7 +171,7 @@ pub fn test_readlines() {
 
 #[test]
 pub fn test_in() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "1 -1", 2);
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "1 3 -1", 2);
 }
 
 // // #[test]
