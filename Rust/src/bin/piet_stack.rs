@@ -2,7 +2,6 @@ use clap::Parser as CliParser;
 use image::DynamicImage;
 use piet::optimize_stk::StackOptimizer;
 use piet::piet_stack::*;
-use std::fs;
 use std::io::Read;
 
 #[derive(CliParser, Debug)]
@@ -14,6 +13,8 @@ struct Args {
     run: bool,
     #[arg(short, long)]
     output: Option<String>,
+    #[arg(short, long)]
+    optimize: bool,
 }
 
 fn main() {
@@ -23,6 +24,10 @@ fn main() {
     let output = std::io::stdout();
 
     let mut stk_executor = PietStackExecutor::new(args.filepath.as_str());
+
+    if args.optimize {
+        stk_executor.optimize();
+    }
 
     if args.run {
         stk_executor.interpret::<std::io::Stdin, std::io::Stdout>(

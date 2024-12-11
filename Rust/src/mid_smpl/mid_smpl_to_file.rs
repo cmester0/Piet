@@ -13,9 +13,9 @@ impl super::SmplExecutor {
             // .into_iter()
             // .sorted_by(|(_, var1), (_, var2)| var1.var_index.cmp(&var2.var_index))
             {
-                writeln!(smpl_output, "use {} {}", name, path);
+                writeln!(smpl_output, "use {} {}", name, path).unwrap();
             }
-            writeln!(smpl_output, "");
+            writeln!(smpl_output, "").unwrap();
 
             for (name, var) in self
                 .variables
@@ -35,9 +35,9 @@ impl super::SmplExecutor {
                         VariableType::NUM => "num",
                         VariableType::LIST => "list",
                     }
-                );
+                ).unwrap();
             }
-            writeln!(smpl_output, "");
+            writeln!(smpl_output, "").unwrap();
 
             for (k, _) in self
                 .block_index

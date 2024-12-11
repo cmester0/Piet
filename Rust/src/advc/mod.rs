@@ -81,6 +81,15 @@ pub enum Expr {
     If(Label, Label),
 
     Eq,
+    Append,
+    Malloc,
+    GetElem,
+    SetElem,
+    GetHeap,
+    SetHeap,
+    Readlines,
+    Length,
+    Index(String, Vec<(String, isize)>),
 
     Comment(String),
 }
@@ -93,7 +102,7 @@ pub fn new_label(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
 ) -> Label {
-    let actual_label = format!("l_ref_{}", label_count);
+    let actual_label = format!("advc_l_ref_{}", label_count);
     *label_count += 1;
     label_map.insert(ref_label, actual_label.clone());
     blocks.insert(actual_label.clone(), vec![Expr::Instr(CMD::Nop)]);
@@ -152,13 +161,42 @@ pub fn parse_expr(
         Rule::Set => Set(String::from(e.next().unwrap().as_str())),
         Rule::Get => Get(String::from(e.next().unwrap().as_str())),
 
+        Rule::Eq => Eq,
+        Rule::Append => Append,
+        Rule::SetHeap => SetHeap,
+        Rule::GetHeap => GetHeap,
+        Rule::Malloc => Malloc,
+        Rule::GetElem => GetElem,
+        Rule::Readlines => Readlines,
+        Rule::Length => Length,
+        Rule::Nop => Instr(CMD::Nop),
+        Rule::Index => {
+            let mut indx_stmt = ne.into_inner();
+            let name = String::from(indx_stmt.next().unwrap().as_str());
+
+            let mut index_vec = vec![];
+            while let Some(nst) = indx_stmt.next() {
+                let mut nos = nst.into_inner();
+                let n = String::from(nos.next().unwrap().as_str());
+                let v = if let Some(v) = nos.next() {
+                    (if v.as_rule() == Rule::Negative { -1 } else { 1 })
+                        * (nos.next().unwrap().as_str().parse::<isize>().unwrap())
+                } else {
+                    0
+                };
+
+                index_vec.push((n, v));
+            }
+            Index(name, index_vec)
+        }
+
         Rule::For => {
             let mut for_stmt = ne.into_inner();
             let start = String::from(for_stmt.next().unwrap().as_str());
             let end = String::from(for_stmt.next().unwrap().as_str());
 
             let start_label = new_label(
-                String::from("for"),
+                String::from("for_start"),
                 blocks,
                 block_index,
                 label_map,
@@ -169,12 +207,10 @@ pub fn parse_expr(
             blocks
                 .get_mut(&block_name.clone())
                 .unwrap()
-                .push(
-                    Expr::Goto(start_label.clone())
-                );
+                .push(Expr::Goto(start_label.clone()));
 
             let body_label = new_label(
-                String::from("body"),
+                String::from("for_body"),
                 blocks,
                 block_index,
                 label_map,
@@ -182,7 +218,7 @@ pub fn parse_expr(
             );
 
             let done_label = new_label(
-                String::from("done"),
+                String::from("for_done"),
                 blocks,
                 block_index,
                 label_map,
@@ -193,14 +229,12 @@ pub fn parse_expr(
             blocks
                 .get_mut(&start_label.clone().get_label_name())
                 .unwrap()
-                .extend(
-                    vec![
-                        Expr::Get(start.clone()),
-                        Expr::Get(end.clone()),
-                        Expr::Eq,
-                        Expr::Branch(done_label.clone(), body_label.clone()),
-                    ]
-                );
+                .extend(vec![
+                    Expr::Get(start.clone()),
+                    Expr::Get(end.clone()),
+                    Expr::Eq,
+                    Expr::Branch(done_label.clone(), body_label.clone()),
+                ]);
 
             block_name = parse_subblocks(
                 body_label.clone().get_label_name(),
@@ -214,26 +248,19 @@ pub fn parse_expr(
             );
 
             // end of body
-            blocks
-                .get_mut(&block_name.clone())
-                .unwrap()
-                .extend(
-                    vec![
-                        Expr::Get(start.clone()),
-                        Expr::Instr(CMD::Push(1)),
-                        Expr::Instr(CMD::Add),
-                        Expr::Set(start.clone()),
-                        Expr::Goto(start_label.clone())
-                    ]
-                );
+            blocks.get_mut(&block_name.clone()).unwrap().extend(vec![
+                Expr::Get(start.clone()),
+                Expr::Instr(CMD::Push(1)),
+                Expr::Instr(CMD::Add),
+                Expr::Set(start.clone()),
+                Expr::Goto(start_label.clone()),
+            ]);
 
             block_name = done_label.get_label_name();
 
             For(start, end, start_label)
         }
         Rule::If => {
-            println!("{}", ne.as_str());
-
             let mut if_stmt = ne.into_inner();
 
             let if_label = new_label(
@@ -264,9 +291,7 @@ pub fn parse_expr(
             blocks
                 .get_mut(&block_name.clone())
                 .unwrap()
-                .push(
-                    Expr::Branch(if_label.clone(), else_label.clone())
-                );
+                .push(Expr::Branch(if_label.clone(), else_label.clone()));
 
             // If:
             block_name = parse_subblocks(
@@ -284,9 +309,7 @@ pub fn parse_expr(
             blocks
                 .get_mut(&block_name.clone())
                 .unwrap()
-                .push(
-                    Expr::Goto(continue_label.clone())
-                );
+                .push(Expr::Goto(continue_label.clone()));
 
             // Else:
             block_name = parse_subblocks(
@@ -304,9 +327,7 @@ pub fn parse_expr(
             blocks
                 .get_mut(&block_name.clone())
                 .unwrap()
-                .push(
-                    Expr::Goto(continue_label.clone())
-                );
+                .push(Expr::Goto(continue_label.clone()));
 
             block_name = continue_label.clone().get_label_name();
 
@@ -356,7 +377,7 @@ pub fn parse_subblocks(
         match x.as_rule() {
             Rule::NewLabel => {
                 let ref_label = String::from(x.into_inner().next().unwrap().as_str());
-                let actual_label = format!("l_ref_{}", label_count);
+                let actual_label = format!("advc_l_ref_{}", label_count);
                 *label_count += 1;
                 label_map.insert(ref_label, actual_label.clone());
                 blocks.insert(actual_label.clone(), vec![Expr::Instr(CMD::Nop)]);
@@ -700,7 +721,7 @@ impl AdvcExecutor {
         }
 
         parse_string(filepath, &mut blocks, &mut block_index, &mut variables);
-        println!("variables {:?}", variables);
+
         AdvcExecutor {
             blocks,
             block_index,

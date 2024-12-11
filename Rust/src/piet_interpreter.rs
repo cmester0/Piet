@@ -105,6 +105,7 @@ impl CMD {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
+
                 stack.push(if b > a { 1 } else { 0 });
             }
             CMD::Dup => {
@@ -147,10 +148,8 @@ impl CMD {
                     break;
                 }
 
-                if input.size_hint().0 == 0 && char_vec.len() == 0 {
+                if input.size_hint().0 == 0 || char_vec.len() == 0 {
                     stack.push(-1isize);
-                // } else if char_vec.len() == 0 {
-                //     // stack.push(-1isize);
                 } else {
                     stack.push(
                         char_vec

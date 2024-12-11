@@ -1,40 +1,35 @@
 var i num
 var end num
 
+var primes list
+
 goto read_input
 
 label read_input
 
-push 0
-set i
-
-push 100
+push 10
 set end
 
-push 0
-
+# Set list to all zeros
 for i to end {
+push 0
+}
+get primes
 
-get i
-push 2
-mod
-
-if {
-
-get i
-outN
-push 10
-outC
-
-} else {
-
-get i
-outN
-push 10
-outC
-
+push 0
+set i
+for i to end {
+append
 }
 
+
+push 1
+set i
+for i to end {
+get i
 }
+
+
+
 
 goto term

@@ -1,4 +1,5 @@
 pub mod expr;
+pub mod optimize;
 mod stk_to_file;
 mod stk_to_piet;
 
@@ -13,6 +14,7 @@ use std::fs;
 
 use std::io::Read;
 
+use phf::phf_map;
 
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
@@ -137,10 +139,7 @@ impl PietStackExecutor {
         let mut stk_byt_out = vec![];
         {
             let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-            self.interpret(
-                &mut Some(stk_input),
-                &mut Some(stk_output),
-            );
+            self.interpret(&mut Some(stk_input), &mut Some(stk_output));
         }
 
         String::from_utf8(stk_byt_out).unwrap()

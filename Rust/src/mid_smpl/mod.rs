@@ -15,6 +15,7 @@ use std::fs;
 #[allow(unused_imports)]
 use std::io::Read;
 
+use phf::phf_map;
 
 #[derive(Clone, Debug)]
 // #[repr(isize)]
@@ -40,11 +41,134 @@ pub struct SmplExecutor {
     pub label: String,
     pub registers: usize,
     pub imports: HashMap<String, String>,
+    pub label_map: HashMap<String, String>,
+    pub label_count: usize,
 }
 
 #[derive(Parser)]
 #[grammar = "mid_smpl/mid_smpl.pest"] // relative to src
 pub struct SmplParser;
+
+static STDLIB: phf::Map<&str, &'static str> = phf_map! {
+    "add" => include_str!("../../lib/add.lib"),
+    "append" => include_str!("../../lib/append.lib"),
+    "copy_memory" => include_str!("../../lib/copy_memory.lib"),
+    "div" => include_str!("../../lib/div.lib"),
+    "dup" => include_str!("../../lib/dup.lib"),
+    "dup_at_depth" => include_str!("../../lib/dup_at_depth.lib"),
+    "dup_at_depth_smpl" => include_str!("../../lib/dup_at_depth_smpl.lib"),
+    "eq" => include_str!("../../lib/eq.lib"),
+    "get_at_depth" => include_str!("../../lib/get_at_depth.lib"),
+    "get_elem" => include_str!("../../lib/get_elem.lib"),
+    "get_heap" => include_str!("../../lib/get_heap.lib"),
+    "get_list" => include_str!("../../lib/get_list.lib"),
+    "greater" => include_str!("../../lib/greater.lib"),
+    "in" => include_str!("../../lib/in.lib"),
+    "inC" => include_str!("../../lib/inC.lib"),
+    "inN" => include_str!("../../lib/inN.lib"),
+    "length" => include_str!("../../lib/length.lib"),
+    "malloc" => include_str!("../../lib/malloc.lib"),
+"mod" => include_str!("../../lib/mod.lib"),
+    "mul" => include_str!("../../lib/mul.lib"),
+    "not" => include_str!("../../lib/not.lib"),
+    "outC" => include_str!("../../lib/outC.lib"),
+    "outN" => include_str!("../../lib/outN.lib"),
+    "pop" => include_str!("../../lib/pop.lib"),
+    "pre_branch" => include_str!("../../lib/pre_branch.lib"),
+    "printC_list_of_list" => include_str!("../../lib/printC_list_of_list.lib"),
+    "print_listC" => include_str!("../../lib/print_listC.lib"),
+    "print_listN" => include_str!("../../lib/print_listN.lib"),
+    "push" => include_str!("../../lib/push.lib"),
+    "put_at_depth" => include_str!("../../lib/put_at_depth.lib"),
+    "readC_until" => include_str!("../../lib/readC_until.lib"),
+    "readlines" => include_str!("../../lib/readlines.lib"),
+    "roll" => include_str!("../../lib/roll.lib"),
+    "set_elem" => include_str!("../../lib/set_elem.lib"),
+    "set_heap" => include_str!("../../lib/set_heap.lib"),
+    "stk_eq" => include_str!("../../lib/stk_eq.lib"),
+    "sub" => include_str!("../../lib/sub.lib"),
+    "swap" => include_str!("../../lib/swap.lib"),
+    "swap_at_depth" => include_str!("../../lib/swap_at_depth.lib"),
+    "swap_smpl" => include_str!("../../lib/swap_smpl.lib"),
+};
+
+pub fn handle_lib(
+    mut block_name: String,
+    lib_name: String,
+    blocks: &mut HashMap<String, Vec<Expr>>,
+    block_index: &mut HashMap<String, usize>,
+    variables: &mut HashMap<String, Variable>,
+
+    label_map: &mut HashMap<String, String>,
+    label_count: &mut usize,
+    imports: &HashMap<String, String>,
+) -> String {
+    let unparsed_file =
+        if STDLIB.contains_key(&lib_name) {
+            String::from(STDLIB[&lib_name])
+        } else {
+            if !imports.contains_key(&lib_name) {
+                panic!("could not find key {}", lib_name);
+            }
+            let s = imports[&lib_name].clone();
+            let actual_filepath = s;
+
+            fs::read_to_string(actual_filepath.clone()).expect(format!("cannot read file {}", actual_filepath).as_str())
+        };
+
+    let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
+        .expect("unsuccessful parse")
+        .next()
+        .unwrap()
+        .into_inner();
+
+    let initial_sub_block = v.next().unwrap();
+
+    match initial_sub_block.as_rule() {
+        Rule::SubBlock => {
+            block_name = parse_subblocks(
+                block_name.clone(),
+                initial_sub_block,
+                blocks,
+                block_index,
+                variables,
+                label_map,
+                label_count,
+                imports,
+                false,
+            );
+        }
+        _ => panic!("INITIAL not subblock?"),
+    }
+
+    let rule_blocks = v.next().unwrap();
+    if rule_blocks.as_rule() != Rule::Blocks {
+        panic!("NOT BLOCKS {:?}", v)
+    }
+
+    for b in rule_blocks.into_inner() {
+        if let Rule::EOI = b.as_rule() {
+            break;
+        }
+
+        if b.as_rule() != Rule::Block {
+            panic!()
+        }
+
+        block_name = parse_block(
+            b,
+            blocks,
+            block_index,
+            variables,
+            label_map,
+            label_count,
+            imports,
+            false,
+        );
+    }
+
+    block_name
+}
 
 pub fn parse_subblocks(
     mut block_name: String,
@@ -75,11 +199,6 @@ pub fn parse_subblocks(
             }
             Rule::LibFun => {
                 let lib_name = String::from(x.into_inner().next().unwrap().as_str());
-                if !imports.contains_key(&lib_name) {
-                    panic!("could not find key {}", lib_name);
-                }
-                let s = imports[&lib_name].clone();
-                let actual_filepath = s;
 
                 if top_level {
                     blocks
@@ -88,59 +207,16 @@ pub fn parse_subblocks(
                         .push(Expr::Comment(format!("+{}", lib_name)));
                 }
 
-                let unparsed_file = fs::read_to_string(actual_filepath.clone())
-                    .expect(format!("cannot read file {}", actual_filepath).as_str());
-
-                let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
-                    .expect("unsuccessful parse")
-                    .next()
-                    .unwrap()
-                    .into_inner();
-
-                let initial_sub_block = v.next().unwrap();
-
-                match initial_sub_block.as_rule() {
-                    Rule::SubBlock => {
-                        block_name = parse_subblocks(
-                            block_name.clone(),
-                            initial_sub_block,
-                            blocks,
-                            block_index,
-                            variables,
-                            label_map,
-                            label_count,
-                            imports,
-                            false,
-                        );
-                    }
-                    _ => panic!("INITIAL not subblock?"),
-                }
-
-                let rule_blocks = v.next().unwrap();
-                if rule_blocks.as_rule() != Rule::Blocks {
-                    panic!("NOT BLOCKS {:?}", v)
-                }
-
-                for b in rule_blocks.into_inner() {
-                    if let Rule::EOI = b.as_rule() {
-                        break;
-                    }
-
-                    if b.as_rule() != Rule::Block {
-                        panic!()
-                    }
-
-                    block_name = parse_block(
-                        b,
-                        blocks,
-                        block_index,
-                        variables,
-                        label_map,
-                        label_count,
-                        imports,
-                        false,
-                    );
-                }
+                block_name = handle_lib(
+                    block_name.clone(),
+                    lib_name.clone(),
+                    blocks,
+                    block_index,
+                    variables,
+                    label_map,
+                    label_count,
+                    imports,
+                );
 
                 if top_level {
                     blocks
@@ -408,6 +484,9 @@ impl SmplExecutor {
         let mut variables: HashMap<String, Variable> = HashMap::new();
         let mut imports: HashMap<String, String> = HashMap::new();
 
+        let mut label_map: HashMap<String, String> = HashMap::new();
+        let mut label_count = 0;
+
         // Add registers
         for _ in 0..registers {
             variables.insert(
@@ -422,13 +501,14 @@ impl SmplExecutor {
 
         parse_string(filepath, &mut blocks, &mut block_index, &mut variables, &mut imports);
 
-        println!("variables {:?}", variables);
         SmplExecutor {
             blocks,
             block_index,
             variables,
             stack: Vec::new(),
             label: String::from("main"),
+            label_map,
+            label_count,
             registers,
             imports,
         }

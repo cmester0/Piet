@@ -64,12 +64,24 @@ Get = { "get" }
 Set = { "set" }
 
 Eq = { "eq" }
+Append = { "append" }
 
 GetHeap = { "get_heap" }
 SetHeap = { "set_heap" }
 
-If = { "if" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" ~ SEPARATOR ~ "else" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
+If = { "if" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" ~ SEPARATOR ~ "else"  ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
 For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
+
+GetElem = { "get_elem" }
+Readlines = { "readlines" }
+Length = { "length" }
+Nop = { "nop" }
+Malloc = { "malloc" }
+
+Positive = { "+" }
+Negative = { "-" }
+IndexNameOffset = { Name ~ ((Positive | Negative) ~ Number)? }
+Index = { "index" ~ SEPARATOR~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
 
 Expr = {
   | Push ~ SEPARATOR ~ Number
@@ -97,6 +109,15 @@ Expr = {
   | For
   | If
 
-  // | GetHeap
-  // | SetHeap
+  | Append
+  | GetElem
+  | Readlines
+  | Length
+  | Nop
+
+  | Index
+  | Malloc
+
+  | GetHeap
+  | SetHeap
 }

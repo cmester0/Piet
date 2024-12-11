@@ -51,6 +51,7 @@ impl AdvcToSmpl {
         self.add_expr(Instr(c));
     }
 
+    #[allow(dead_code)]
     fn add_cmds(&mut self, c: Vec<CMD>) {
         self.smpl_executor
             .blocks
@@ -64,14 +65,27 @@ impl AdvcToSmpl {
         //     .imports
         //     .insert(lib.clone(), format!("./lib/{}.lib", lib));
 
-        // TODO:
-        self.smpl_executor
-            .blocks
-            .get_mut(&self.smpl_executor.label)
-            .unwrap()
-            .push(Expr::Lib(lib));
+        self.smpl_executor.label = crate::mid_smpl::handle_lib(
+            self.smpl_executor.label.clone(),
+            lib.clone(),
+            &mut self.smpl_executor.blocks,
+            &mut self.smpl_executor.block_index,
+            &mut self.smpl_executor.variables,
+
+            &mut self.smpl_executor.label_map,
+            &mut self.smpl_executor.label_count,
+            &mut self.smpl_executor.imports,
+        );
+
+        // // TODO:
+        // self.smpl_executor
+        //     .blocks
+        //     .get_mut(&self.smpl_executor.label)
+        //     .unwrap()
+        //     .push(Expr::Lib(lib));
     }
 
+    #[allow(dead_code)]
     fn new_label(&mut self) -> String {
         let ni = self.smpl_executor.block_index.len();
         let new_block_label = format!("l{}", ni);
@@ -116,7 +130,55 @@ impl AdvcToSmpl {
             }
             AdvcExpr::Eq => {
                 self.add_lib(String::from("eq"));
-                // self.add_expr(Expr::Eq);
+            }
+            AdvcExpr::Append => {
+                self.add_lib(String::from("append"));
+            }
+            AdvcExpr::Malloc => {
+                self.add_lib(String::from("malloc"));
+            }
+            AdvcExpr::GetElem => {
+                self.add_lib(String::from("get_elem"));
+            }
+            AdvcExpr::SetElem => {
+                self.add_lib(String::from("set_elem"));
+            }
+            AdvcExpr::GetHeap => {
+                self.add_lib(String::from("get_heap"));
+            }
+            AdvcExpr::SetHeap => {
+                self.add_lib(String::from("set_heap"));
+            }
+            AdvcExpr::Readlines => {
+                self.add_lib(String::from("readlines"));
+            }
+            AdvcExpr::Length => {
+                self.add_lib(String::from("length"));
+            }
+            AdvcExpr::Index(name, indexes) => {
+                let mut exprs = vec![
+                    AdvcExpr::Get(name),
+                ];
+                for (n, v) in indexes {
+                    exprs.push(AdvcExpr::Get(n));
+                    if v == 0 {
+                    }
+                    else if v < 0 {
+                        exprs.push(AdvcExpr::Instr(Push(-v)));
+                        exprs.push(AdvcExpr::Instr(Sub));
+                    } else {
+                        exprs.push(AdvcExpr::Instr(Push(v)));
+                        exprs.push(AdvcExpr::Instr(Add));
+                    }
+
+                    exprs.push(AdvcExpr::GetElem);
+                }
+
+                self.handle_advc_instr(AdvcExpr::Comment(String::from("+index")));
+                for x in exprs {
+                    self.handle_advc_instr(x);
+                }
+                self.handle_advc_instr(AdvcExpr::Comment(String::from("-index")));
             }
             AdvcExpr::For(_, _, _) => {
                 // NOP
@@ -135,6 +197,8 @@ impl AdvcToSmpl {
                 variables: HashMap::new(),
                 stack: vec![],
                 label: String::from("main"),
+                label_map: HashMap::new(),
+                label_count: 0,
                 registers: executor.registers.clone(),
                 imports: HashMap::new(),
             },
@@ -186,7 +250,7 @@ impl AdvcToSmpl {
             advc_to_smpl
                 .smpl_executor
                 .imports
-                .insert(String::from(s), format!("./lib/{}.lib", s));
+                .insert(String::from(s), String::from("stdlib"));
         }
 
         // Stack frame

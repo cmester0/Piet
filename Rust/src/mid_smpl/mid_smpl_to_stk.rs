@@ -63,20 +63,6 @@ impl SmplToStk {
         self.add_cmd(Roll);
     }
 
-    fn dup_value_x_deep(&mut self, x: isize) {
-        // Get the value to the top
-        self.add_cmd(Push(x));
-        self.add_cmd(Push(-1));
-        self.add_cmd(Roll);
-
-        self.add_cmd(Dup);
-
-        // put it back
-        self.add_cmd(Push(x + 1));
-        self.add_cmd(Push(1));
-        self.add_cmd(Roll);
-    }
-
     fn swap_at_depth(&mut self) {
         // Save / update depth
         self.add_cmd(Dup);
@@ -209,7 +195,7 @@ impl SmplToStk {
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
             },
             SmplExpr::Lib(s) => {
-                panic!("Does not include lib {}", s)
+                panic!("TODO: handle lib in direct translation. Does not include lib {}", s)
             }
         }
 

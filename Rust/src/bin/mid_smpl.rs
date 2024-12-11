@@ -1,10 +1,10 @@
 use clap::Parser as CliParser;
 use image::DynamicImage;
-use piet::optimize_stk::StackOptimizer;
-use piet::mid_smpl::SmplExecutor;
 use piet::mid_smpl::mid_smpl_to_stk::SmplToStk;
+use piet::mid_smpl::SmplExecutor;
+use piet::optimize_stk::StackOptimizer;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 
 #[derive(CliParser, Debug)]
 #[command(version, about, long_about = None)]
@@ -19,17 +19,19 @@ struct Args {
     to_piet: Option<String>,
     #[arg(short, long)]
     registers: Option<usize>,
+    #[arg(short, long)]
+    optimize_stk: bool
 }
 
 fn main() {
     let args = Args::parse();
 
-    let input = std::io::stdin().bytes().peekable();
-    let output = std::io::stdout();
+    // let input = std::io::stdin().bytes().peekable();
+    // let output = std::io::stdout();
 
     let registers = args.registers.unwrap_or(5);
 
-    let mut smpl_executor = SmplExecutor::new(args.filepath.as_str(), registers);
+    let smpl_executor = SmplExecutor::new(args.filepath.as_str(), registers);
 
     // if args.run {
     //     smpl_executor.interpret(
@@ -39,7 +41,11 @@ fn main() {
     // }
 
     if args.output.is_some() || args.to_piet.is_some() {
-        let stk_executor = SmplToStk::to_stk(smpl_executor);
+        let mut stk_executor = SmplToStk::to_stk(smpl_executor);
+
+        if args.optimize_stk {
+            stk_executor.optimize();
+        }
 
         if args.output.is_some() {
             let file_str = stk_executor.to_file_string();
@@ -51,8 +57,7 @@ fn main() {
             let mut optimizer = StackOptimizer::new();
             let img: image::RgbImage = stk_executor.to_png(&mut optimizer);
             let dyn_img = DynamicImage::ImageRgb8(img);
-            let _ = dyn_img.save_with_format(args.output.unwrap(), image::ImageFormat::Png);
+            let _ = dyn_img.save_with_format(args.to_piet.unwrap(), image::ImageFormat::Png);
         }
     }
-
 }
