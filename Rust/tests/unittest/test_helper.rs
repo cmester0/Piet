@@ -5,6 +5,7 @@ use piet::optimize_stk::StackOptimizer;
 use piet::piet_stack::*;
 use std::fs::File;
 use std::io::{Read, Write};
+use image::open;
 
 pub fn run_piet(img_path: &str, input: &str) -> String {
     let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
@@ -13,7 +14,7 @@ pub fn run_piet(img_path: &str, input: &str) -> String {
     let mut piet_byt_out = vec![];
     {
         let piet_output: Box<dyn std::io::Write> = Box::new(&mut piet_byt_out);
-        piet::piet::interpret(img_path, &mut Some(piet_input), &mut Some(piet_output));
+        piet::piet::interpret(open(img_path).unwrap(), &mut Some(piet_input), &mut Some(piet_output));
     }
 
     String::from_utf8(piet_byt_out).unwrap()

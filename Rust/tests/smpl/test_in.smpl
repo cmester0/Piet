@@ -62,52 +62,32 @@ lib_append
 
 set x
 
-push 0
-lib_push
-push 0
-lib_push
-push 0
+# 123 in x?
+push 123 # is 123 in list?
 lib_push
 
-get x
 get x
 
 lib_in
 
+# At index 1
+lib_outN
 
-# push 123 # is 123 in list?
-# lib_push
-# push 1
-# lib_push
+push 32
+outC
 
-# push 3
-# lib_push
-# lib_get_at_depth
+push 321 # is 321 in list?
+lib_push
 
-# set __R1__
-# set __R0__
+get x
 
-# lib_in
+debug
+debug
 
-# debug
+lib_in
 
-# lib_outN
-
-# push 321 # is 321 in list?
-# lib_push
-# push 1
-# lib_push
-
-# push 3
-# lib_push
-# get_at_depth
-
-# lib_in
-# lib_outN
-
-# push 10
-# lib_push
-
-# lib_outC
+# not -> index -1
+lib_in
+lib_outN
 
 goto term

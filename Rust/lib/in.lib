@@ -1,84 +1,86 @@
-# push 2
-# lib_push
-# push 1
-# lib_push
-# lib_roll
+# is element x in list l ?
 
-# Tuple size
-set __R0__
-
-lib_get_list
-
-lib_length
-
-# Length
-set __R1__
-
-get __R0__
-
-!get_tuple
-goto .get_tuple
-
-label .get_tuple
+# Put result bit below args
+push 0
+push 4
 push 1
-lib_push
+roll
+push 1
+add
 
-lib_sub
 lib_dup
-
-push -1
-lib_push
-
-lib_eq
-
-debug
-
-!get_tuple_done
-!get_tuple_loop
-lib_pre_branch
-branch .get_tuple_done .get_tuple_loop
-
-label .get_tuple_loop
-
-get __R1__
-push 2
-lib_push
-lib_add
-push 2
-lib_push
-
-lib_dup_at_depth_smpl
-
-lib_add
-
-lib_get_at_depth
-
-lib_swap_smpl
-
-goto .get_tuple
-
-label .get_tuple_done
-
-lib_pop
+lib_length
 
 push 0
 lib_push
 
-!for_loop
-goto .for_loop
+!in_loop_start
+goto .in_loop_start
 
-label .for_loop
+label .in_loop_start
 
+lib_dup
 push 3
 lib_push
+lib_dup_at_depth_smpl
+lib_eq
 
-lib_get_at_depth
+!in_done
+!in_body
+lib_pre_branch
+branch .in_done .in_body
+
+label .in_body
+
+# Get l
+push 3
+lib_push
+lib_dup_at_depth_smpl
+
+# Get i
+push 2
+lib_push
+lib_dup_at_depth_smpl
+
+# l[i]
+lib_get_elem
+
+# Get x
+push 5
+lib_push
+lib_dup_at_depth_smpl
+
+lib_eq
+
+!has_elem
+!not_yet
+
+lib_pre_branch
+branch .has_elem .not_yet
+
+label .not_yet
+
 push 1
 lib_push
+lib_add
 
-lib_sub
-lib_dup
+goto .in_loop_start
 
+label .has_elem
+
+push 6
+push -1
+roll
+not
+push 6
+push 1
+roll
+
+goto .in_done
+
+label .in_done
+
+# Return index
 push 4
 lib_push
 
@@ -87,40 +89,14 @@ lib_push
 
 lib_roll
 
-push -1
+lib_pop
+lib_pop
+lib_pop
+
+push 1
 lib_push
-
-lib_eq
-
-!loop
-!done
-lib_pre_branch
-branch .done .loop
-
-label .loop
-push 2
-lib_push
-
-lib_dup_at_depth_smpl
-
-push 5
-lib_push
-
-lib_get_at_depth
-
-lib_eq
 lib_add
-goto .for_loop
-
-label .done
-
-lib_not
-lib_not
-
-push 3
+lib_mul
+push 1
 lib_push
-
-lib_put_at_depth
-
-lib_pop
-lib_pop
+lib_sub

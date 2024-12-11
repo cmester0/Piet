@@ -169,10 +169,10 @@ pub fn test_readlines() {
 // Fails in Python //
 /////////////////////
 
-// #[test]
-// pub fn test_in() {
-//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "10\n", 2);
-// }
+#[test]
+pub fn test_in() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "1 -1", 2);
+}
 
 // // #[test]
 // // pub fn test_in_tuple() {
