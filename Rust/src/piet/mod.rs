@@ -1,5 +1,3 @@
-use image::open;
-
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -10,6 +8,8 @@ use ndarray::Ix2;
 
 use crate::piet_color::*;
 use crate::piet_interpreter::*;
+
+use image::DynamicImage;
 
 // use num::bigint::BigInt;
 
@@ -206,18 +206,20 @@ impl<'a> PietExecution<'a> {
     }
 }
 
+// let img = open(filepath).unwrap().into_rgb8();
+
 pub fn interpret<I: std::io::Read, O: std::io::Write>(
-    filepath: &str,
+    img: DynamicImage,
     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
     output: &mut Option<O>,
 ) {
-    let img = open(filepath).unwrap().into_rgb8();
-    let (w, h) = img.dimensions();
+    let rgb_img = img.into_rgb8();
+    let (w, h) = rgb_img.dimensions();
 
     let img_enum: Vec<ValidColor> = (0..h)
         .cartesian_product(0..w)
         .map(|(y, x)| {
-            let r: ValidColor = img[(x, y)].into();
+            let r: ValidColor = rgb_img[(x, y)].into();
             r
         })
         .collect();

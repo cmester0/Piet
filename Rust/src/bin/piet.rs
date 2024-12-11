@@ -1,6 +1,7 @@
 use clap::Parser;
 use piet::piet::*;
 use std::io::Read;
+use image::open;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -15,5 +16,5 @@ fn main() {
     let input = std::io::stdin().bytes().peekable();
     let output = std::io::stdout();
 
-    interpret(args.filepath.as_str(), &mut Some(input), &mut Some(output));
+    interpret(open(args.filepath).unwrap(), &mut Some(input), &mut Some(output));
 }
