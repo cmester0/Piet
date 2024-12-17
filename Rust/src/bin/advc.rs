@@ -1,4 +1,5 @@
 use clap::Parser as CliParser;
+use image::open;
 use image::DynamicImage;
 use piet::advc::advc_to_mid_smpl::AdvcToSmpl;
 use piet::advc::AdvcExecutor;
@@ -37,14 +38,12 @@ fn main() {
 
     let advc_executor = AdvcExecutor::new(args.filepath.as_str(), registers);
 
-    // if args.run_stk {
-    //     advc_executor.interpret(
-    //         &mut Some(input),
-    //         &mut Some(output),
-    //     );
-    // }
-
-    if args.output.is_some() || args.to_stk.is_some() || args.to_piet.is_some() || args.run_stk {
+    if args.output.is_some()
+        || args.to_stk.is_some()
+        || args.run_stk
+        || args.to_piet.is_some()
+        || args.run_piet
+    {
         let smpl_executor = AdvcToSmpl::to_smpl(advc_executor);
 
         if args.output.is_some() {
@@ -53,7 +52,11 @@ fn main() {
             output_file.write(file_str.as_str().as_bytes()).unwrap();
         }
 
-        if args.to_stk.is_some() || args.to_piet.is_some() || args.run_stk {
+        if args.to_stk.is_some()
+            || args.to_piet.is_some()
+            || args.run_stk
+            || args.run_piet
+        {
             let mut stk_executor = SmplToStk::to_stk(smpl_executor);
 
             if args.optimize_stk {
@@ -64,6 +67,13 @@ fn main() {
                 let file_str = stk_executor.to_file_string();
                 let mut stk_file = File::create(args.to_stk.clone().unwrap()).unwrap();
                 stk_file.write(file_str.as_str().as_bytes()).unwrap();
+            }
+
+            if args.run_stk {
+                let input = std::io::stdin().bytes().peekable();
+                let output = std::io::stdout();
+
+                stk_executor.interpret(&mut Some(input), &mut Some(output));
             }
 
             if args.to_piet.is_some() || args.run_piet {
@@ -81,13 +91,6 @@ fn main() {
 
                     piet::piet::interpret(dyn_img, &mut Some(input), &mut Some(output));
                 }
-            }
-
-            if args.run_stk {
-                let input = std::io::stdin().bytes().peekable();
-                let output = std::io::stdout();
-
-                stk_executor.interpret(&mut Some(input), &mut Some(output));
             }
         }
     }
