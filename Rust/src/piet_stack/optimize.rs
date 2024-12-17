@@ -1,5 +1,5 @@
-use super::expr::Expr::{self, *};
-use crate::piet_interpreter::CMD::{self, *};
+use super::expr::Expr::*;
+use crate::piet_interpreter::CMD::*;
 
 impl super::PietStackExecutor {
     pub fn optimize(&mut self) {
@@ -36,7 +36,7 @@ impl super::PietStackExecutor {
                 }
 
                 if i + 2 < new_block.len() {
-                    if let [Instr(Push(0)), Instr(op @ (Add | Sub))] = new_block[i..i + 2] {
+                    if let [Instr(Push(0)), Instr(_op @ (Add | Sub))] = new_block[i..i + 2] {
                         new_block.remove(i);
                         new_block.remove(i);
 
@@ -46,7 +46,7 @@ impl super::PietStackExecutor {
                 }
 
                 if i + 2 < new_block.len() {
-                    if let [Instr(Push(1)), Instr(op @ (Mul | Div))] = new_block[i..i + 2] {
+                    if let [Instr(Push(1)), Instr(_op @ (Mul | Div))] = new_block[i..i + 2] {
                         new_block.remove(i);
                         new_block.remove(i);
 
@@ -140,7 +140,7 @@ impl super::PietStackExecutor {
                 }
 
                 if i + 7 < new_block.len() {
-                    if let [Instr(Push(2)), Instr(Push(1 | -1)), Instr(Roll), Instr(Push(k)), Instr(Push(2)), Instr(Push(1 | -1)), Instr(Roll)] =
+                    if let [Instr(Push(2)), Instr(Push(1 | -1)), Instr(Roll), Instr(Push(_k)), Instr(Push(2)), Instr(Push(1 | -1)), Instr(Roll)] =
                         new_block[i..i + 7]
                     {
                         new_block.remove(i);
@@ -193,7 +193,7 @@ impl super::PietStackExecutor {
 
                 // Add assoc
                 if i + 4 < new_block.len() {
-                    if let [Instr(op1 @ Add), Instr(Push(b)), Instr(op2 @ Add)] =
+                    if let [Instr(_op1 @ Add), Instr(Push(_b)), Instr(_op2 @ Add)] =
                         new_block[i..i + 4]
                     {
                         new_block.remove(i);

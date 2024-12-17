@@ -1,23 +1,14 @@
-// mod expr;
 pub mod advc_to_mid_smpl;
 
-// use expr::*;
+use crate::advc::advc_to_mid_smpl::AdvcToSmpl;
+use crate::piet_interpreter::CMD;
+use pest::iterators::Pair;
 use pest::*;
 use pest_derive::Parser;
 use std::collections::HashMap;
-
-use crate::piet_interpreter::CMD;
-
-use pest::iterators::Pair;
 use std::fs;
-
 #[allow(unused_imports)]
 use std::io::Read;
-
-// use pest::iterators::Pair;
-// use crate::piet_interpreter::CMD;
-
-// use std::collections::HashMap;
 
 #[derive(Clone, Debug)]
 // #[repr(isize)]
@@ -758,4 +749,22 @@ impl AdvcExecutor {
 
     //     String::from_utf8(stk_byt_out).unwrap()
     // }
+
+    pub fn handle_advc(
+        self,
+        _run: bool,
+        output: Option<String>,
+        to_stk: Option<String>,
+        optimize_stk: bool,
+        run_stk: bool,
+        to_piet: Option<String>,
+        run_piet: bool,
+    ) {
+        if !(output.is_some() || to_stk.is_some() || run_stk || to_piet.is_some() || run_piet) {
+            return;
+        }
+
+        let smpl_executor = AdvcToSmpl::to_smpl(self);
+        smpl_executor.handle_smpl(output, to_stk, optimize_stk, run_stk, to_piet, run_piet);
+    }
 }

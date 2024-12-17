@@ -1,21 +1,20 @@
 pub mod expr;
-pub mod mid_smpl_to_stk;
 pub mod mid_smpl_to_file;
+pub mod mid_smpl_to_stk;
 
+use crate::mid_smpl::mid_smpl_to_stk::SmplToStk;
+use crate::piet_interpreter::CMD;
 use expr::*;
+use pest::iterators::Pair;
 use pest::*;
 use pest_derive::Parser;
+use phf::phf_map;
 use std::collections::HashMap;
-
-use crate::piet_interpreter::CMD;
-
-use pest::iterators::Pair;
 use std::fs;
-
+use std::fs::File;
 #[allow(unused_imports)]
 use std::io::Read;
-
-use phf::phf_map;
+use std::io::Write;
 
 #[derive(Clone, Debug)]
 // #[repr(isize)]
@@ -103,18 +102,18 @@ pub fn handle_lib(
     label_count: &mut usize,
     imports: &HashMap<String, String>,
 ) -> String {
-    let unparsed_file =
-        if STDLIB.contains_key(&lib_name) {
-            String::from(STDLIB[&lib_name])
-        } else {
-            if !imports.contains_key(&lib_name) {
-                panic!("could not find key {}", lib_name);
-            }
-            let s = imports[&lib_name].clone();
-            let actual_filepath = s;
+    let unparsed_file = if STDLIB.contains_key(&lib_name) {
+        String::from(STDLIB[&lib_name])
+    } else {
+        if !imports.contains_key(&lib_name) {
+            panic!("could not find key {}", lib_name);
+        }
+        let s = imports[&lib_name].clone();
+        let actual_filepath = s;
 
-            fs::read_to_string(actual_filepath.clone()).expect(format!("cannot read file {}", actual_filepath).as_str())
-        };
+        fs::read_to_string(actual_filepath.clone())
+            .expect(format!("cannot read file {}", actual_filepath).as_str())
+    };
 
     let mut v = SmplParser::parse(Rule::LibBlocks, &unparsed_file)
         .expect("unsuccessful parse")
@@ -484,8 +483,8 @@ impl SmplExecutor {
         let mut variables: HashMap<String, Variable> = HashMap::new();
         let mut imports: HashMap<String, String> = HashMap::new();
 
-        let mut label_map: HashMap<String, String> = HashMap::new();
-        let mut label_count = 0;
+        let label_map: HashMap<String, String> = HashMap::new();
+        let label_count = 0;
 
         // Add registers
         for _ in 0..registers {
@@ -499,7 +498,13 @@ impl SmplExecutor {
             );
         }
 
-        parse_string(filepath, &mut blocks, &mut block_index, &mut variables, &mut imports);
+        parse_string(
+            filepath,
+            &mut blocks,
+            &mut block_index,
+            &mut variables,
+            &mut imports,
+        );
 
         SmplExecutor {
             blocks,
@@ -535,4 +540,27 @@ impl SmplExecutor {
 
     //     String::from_utf8(stk_byt_out).unwrap()
     // }
+
+    pub fn handle_smpl(
+        self,
+        output: Option<String>,
+        to_stk: Option<String>,
+        optimize_stk: bool,
+        run_stk: bool,
+        to_piet: Option<String>,
+        run_piet: bool,
+    ) {
+        if output.is_some() {
+            let file_str = self.to_file_string();
+            let mut output_file = File::create(output.clone().unwrap()).unwrap();
+            output_file.write(file_str.as_str().as_bytes()).unwrap();
+        }
+
+        if !(to_stk.is_some() || to_piet.is_some() || run_stk || run_piet) {
+            return;
+        }
+
+        let stk_executor = SmplToStk::to_stk(self);
+        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet);
+    }
 }

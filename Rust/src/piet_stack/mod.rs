@@ -3,18 +3,19 @@ pub mod optimize;
 mod stk_to_file;
 mod stk_to_piet;
 
+use crate::optimize_stk::StackOptimizer;
 use expr::{
     parse_expr,
     Expr::{self, *},
 };
+use image::DynamicImage;
 use pest::*;
 use pest_derive::Parser;
 use std::collections::HashMap;
 use std::fs;
-
+use std::fs::File;
 use std::io::Read;
-
-use phf::phf_map;
+use std::io::Write;
 
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
@@ -143,5 +144,41 @@ impl PietStackExecutor {
         }
 
         String::from_utf8(stk_byt_out).unwrap()
+    }
+
+    pub fn handle_stk(
+        mut self,
+        output: Option<String>,
+        optimize_stk: bool,
+        run_stk: bool,
+        to_piet: Option<String>,
+        run_piet: bool,
+    ) {
+        if optimize_stk {
+            self.optimize()
+        }
+
+        if output.is_some() {
+            let file_str = self.to_file_string();
+            let mut stk_file = File::create(output.clone().unwrap()).unwrap();
+            stk_file.write(file_str.as_str().as_bytes()).unwrap();
+        }
+
+        if run_stk {
+            let input = std::io::stdin().bytes().peekable();
+            let output = std::io::stdout();
+
+            self.interpret(&mut Some(input), &mut Some(output));
+        }
+
+        if !(to_piet.is_some() || run_piet) {
+            return;
+        }
+
+        let mut optimizer = StackOptimizer::new();
+        let img: image::RgbImage = self.to_png(&mut optimizer);
+        let dyn_img = DynamicImage::ImageRgb8(img);
+
+        crate::piet::handle_piet(dyn_img, to_piet, run_piet);
     }
 }

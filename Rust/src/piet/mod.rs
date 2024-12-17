@@ -1,17 +1,12 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
-
-use itertools::Itertools;
-
-use ndarray::ArrayView;
-use ndarray::Ix2;
-
 use crate::piet_color::*;
 use crate::piet_interpreter::*;
-
 use image::DynamicImage;
-
-// use num::bigint::BigInt;
+use itertools::Itertools;
+use ndarray::ArrayView;
+use ndarray::Ix2;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::io::Read;
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {
@@ -366,9 +361,28 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
 
     // let mut total_steps = 0;
     // runner
-    if !runner.continue_step((0, 0), (0, 0), runner.check_valid_pixel((0, 0)), input, output) {
+    if !runner.continue_step(
+        (0, 0),
+        (0, 0),
+        runner.check_valid_pixel((0, 0)),
+        input,
+        output,
+    ) {
         while !runner.step(input, output) {
             // total_steps += 1;
         }
+    }
+}
+
+pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool) {
+    if output.is_some() {
+        let _ = img.save_with_format(output.clone().unwrap(), image::ImageFormat::Png);
+    }
+
+    if run {
+        let input = std::io::stdin().bytes().peekable();
+        let output = std::io::stdout();
+
+        crate::piet::interpret(img, &mut Some(input), &mut Some(output));
     }
 }
