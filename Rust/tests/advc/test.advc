@@ -18,7 +18,9 @@ push 0
 get primes
 push 0
 set i
+
 for i to end {
+debug
 append
 }
 

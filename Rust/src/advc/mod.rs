@@ -1,7 +1,8 @@
 pub mod advc_to_mid_smpl;
 
 use crate::advc::advc_to_mid_smpl::AdvcToSmpl;
-use crate::piet_interpreter::CMD;
+use crate::piet_interpreter::CMD::{self, *};
+use itertools::Itertools;
 use pest::iterators::Pair;
 use pest::*;
 use pest_derive::Parser;
@@ -637,67 +638,6 @@ pub fn parse_string(
 }
 
 impl AdvcExecutor {
-    // fn interpret_expr<I: std::io::Read, O: std::io::Write>(
-    //     &mut self,
-    //     e: Expr,
-    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-    //     output: &mut Option<O>,
-    // ) -> bool {
-    //     match e {
-    //         Expr::Instr(cmd) => {
-    //             cmd.interpret(&mut self.stack, input, output);
-    //             false
-    //         }
-    //         Expr::Goto(l) => {
-    //             self.label = l.get_label_name();
-    //             true
-    //         }
-    //         Expr::Branch(thn, els) => {
-    //             let a = self.stack.pop().unwrap();
-    //             if a == 0 {
-    //                 self.label = els.get_label_name();
-    //             } else {
-    //                 self.label = thn.get_label_name();
-    //             }
-    //             true
-    //         }
-    //         Expr::Debug => {
-    //             println!("Debug {}: {:?}", self.label, self.stack);
-    //             false
-    //         }
-    //         Expr::Comment(_) => false,
-    //         Expr::Get(s) => {
-    //             self.stack.push(self.variables[&s].value);
-    //             false
-    //         }
-    //         Expr::Set(s) => {
-    //             let v: Variable = self.variables[&s].clone();
-    //             self.variables.insert(
-    //                 s.clone(),
-    //                 Variable {
-    //                     value: self.stack.pop().unwrap(),
-    //                     ..v
-    //                 },
-    //             );
-    //             false
-    //         }
-    //     }
-    // }
-
-    // pub fn interpret<I: std::io::Read, O: std::io::Write>(
-    //     &mut self,
-    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-    //     output: &mut Option<O>,
-    // ) {
-    //     while self.label != "term" {
-    //         for expr in self.blocks[&self.label].clone() {
-    //             if self.interpret_expr(expr, input, output) {
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
     pub fn new(filepath: &str, registers: usize) -> Self {
         let mut blocks = HashMap::new();
         let mut block_index = HashMap::new();
@@ -728,31 +668,134 @@ impl AdvcExecutor {
         }
     }
 
-    // pub fn interpret_from_string<I: std::io::Read, O: std::io::Write>(
-    //     unparsed: &str,
-    //     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
-    //     output: &mut Option<O>,
-    //     registers: usize,
-    // ) {
-    //     AdvcExecutor::new(unparsed, registers).interpret(input, output);
-    // }
+    pub fn interpret<I: std::io::Read, O: std::io::Write>(
+        &mut self,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
+    ) {
+        for e in &self.blocks[&self.label] {
+            match e {
+                Instr(c) => c.interpret(&mut self.stack, input, output),
+                Goto(l) => {
+                    self.label = l.clone().get_label_name();
+                    break;
+                }
+                Branch(l_then, l_else) => {
+                    let a = self.stack.pop().unwrap();
+                    if a == 0 {
+                        self.label = l_else.clone().get_label_name();
+                    } else {
+                        self.label = l_then.clone().get_label_name();
+                    }
+                    break;
+                }
+                Debug => {
+                    println!();
+                    println!("Heap: {:?}", self.heap);
+                    println!("Variables: {:?}", self.variables.iter().sorted_by(|(_,v1),(_,v2)| v1.var_index.cmp(&v2.var_index)).map(|(x,v)| (x,v.value)).collect::<Vec<_>>());
+                    println!("Stack: {:?}", self.stack);
+                    println!();
+                }
 
-    // pub fn run_on_string(mut self, input: &str) -> String {
-    //     let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
-    //     let stk_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
+                Set(v) => {
+                    self.variables.get_mut(v).unwrap().value = self.stack.pop().unwrap();
+                }
+                Get(v) => self.stack.push(self.variables[v].value),
 
-    //     let mut stk_byt_out = vec![];
-    //     {
-    //         let stk_output: Box<dyn std::io::Write> = Box::new(&mut stk_byt_out);
-    //         self.interpret(&mut Some(stk_input), &mut Some(stk_output));
-    //     }
+                For(v_i, v_end, l) => {
+                    while self.variables[v_i].value != self.variables[v_end].value {
+                        self.label = l.clone().get_label_name();
+                        {
+                            // self.interpret();
+                        }
+                        if self.label != l.clone().get_label_name() {
+                            break;
+                        }
+                        self.variables.get_mut(v_i).unwrap().value += 1;
+                    }
+                }
+                If(l_then, l_else) => {
+                    if self.stack.pop().unwrap() != 0 {
+                        self.label = l_then.clone().get_label_name();
+                    } else {
+                        self.label = l_else.clone().get_label_name();
+                    }
+                }
 
-    //     String::from_utf8(stk_byt_out).unwrap()
-    // }
+                Eq => {
+                    let a = self.stack.pop();
+                    let b = self.stack.pop();
+                    self.stack.push(if a == b { 1 } else { 0 });
+                }
+                Append => {
+                    let ai = self.stack.pop().unwrap();
+                    // Array doubling
+
+                    let mut a = if ai == -1 {
+                        let na = self.heap.len();
+                        self.heap.push(2);
+                        self.heap.push(0);
+                        self.heap.push(0);
+                        na
+                    } else {
+                        ai as usize
+                    };
+
+                    if self.heap[a] - 1 == self.heap[a + 1] {
+                        let na = self.heap.len();
+                        self.heap.push(self.heap[a] * 2);
+                        self.heap.push(self.heap[a + 1]);
+                        self.heap.extend(
+                            self.heap[(a + 2)..(a + (self.heap[a + 1] as usize))]
+                                .iter()
+                                .cloned()
+                                .collect::<Vec<_>>(),
+                        );
+
+                        self.heap.extend([0].repeat(self.heap[a + 1] as usize));
+                        a = na;
+                    };
+
+                    let index = a + self.heap[a + 1] as usize;
+                    self.heap[index] = self.stack.pop().unwrap();
+                    self.heap[a + 1] += 1;
+
+                    self.stack.push(a as isize);
+                }
+                PrintCListOfList => {}
+                In => {}
+                Malloc => {}
+                GetElem => {}
+                SetElem => {}
+                GetHeap => {}
+                SetHeap => {}
+                Readlines => {}
+                Length => {
+                    let a = self.stack.pop().unwrap() as usize;
+                    self.stack.push(self.heap[a + 1]);
+                }
+                Index(s, v) => {
+                    let mut curr = self.variables[s].value;
+                    for (name, offset) in v {
+                        let index = self.variables[name].value + offset;
+                        curr = self.heap[(curr + 2isize + index) as usize];
+                    }
+                }
+
+                Comment(_) => {}
+            }
+        }
+
+        if self.label == "term" {
+            return;
+        }
+
+        self.interpret(input, output);
+    }
 
     pub fn handle_advc(
-        self,
-        _run: bool,
+        &mut self,
+        run: bool,
         output: Option<String>,
         to_stk: Option<String>,
         optimize_stk: bool,
@@ -760,11 +803,18 @@ impl AdvcExecutor {
         to_piet: Option<String>,
         run_piet: bool,
     ) {
+        if run {
+            let input = std::io::stdin().bytes().peekable();
+            let output = std::io::stdout();
+
+            self.interpret(&mut Some(input), &mut Some(output));
+        }
+
         if !(output.is_some() || to_stk.is_some() || run_stk || to_piet.is_some() || run_piet) {
             return;
         }
 
-        let smpl_executor = AdvcToSmpl::to_smpl(self);
+        let smpl_executor = AdvcToSmpl::to_smpl(self.clone());
         smpl_executor.handle_smpl(output, to_stk, optimize_stk, run_stk, to_piet, run_piet);
     }
 }

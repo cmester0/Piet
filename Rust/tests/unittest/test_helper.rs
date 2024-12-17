@@ -82,13 +82,21 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str, register
 }
 
 pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: usize) {
-    let advc_executor = AdvcExecutor::new(filepath, registers);
-    let smpl_executor = AdvcToSmpl::to_smpl(advc_executor);
+    let mut advc_executor = AdvcExecutor::new(filepath, registers);
+    let smpl_executor = AdvcToSmpl::to_smpl(advc_executor.clone());
     let mut stk_executor = SmplToStk::to_stk(smpl_executor);
     stk_executor.optimize();
     let mut optimizer = StackOptimizer::new();
     let img: image::RgbImage = stk_executor.to_png(&mut optimizer);
     let dyn_img: DynamicImage = DynamicImage::ImageRgb8(img);
+
+    assert_eq!(
+        output,
+        test_io_string(input, &mut |read, write| {
+            advc_executor.interpret(read, write);
+        }),
+        "ADVC FAILED"
+    );
 
     assert_eq!(
         output,

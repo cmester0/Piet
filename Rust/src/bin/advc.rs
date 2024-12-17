@@ -29,7 +29,7 @@ fn main() {
 
     let registers = args.registers.unwrap_or(5);
 
-    let advc_executor = AdvcExecutor::new(args.filepath.as_str(), registers);
+    let mut advc_executor = AdvcExecutor::new(args.filepath.as_str(), registers);
 
     advc_executor.handle_advc(
         args.run,
