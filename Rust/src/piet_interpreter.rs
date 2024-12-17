@@ -148,7 +148,7 @@ impl CMD {
                     break;
                 }
 
-                if input.size_hint().0 == 0 || char_vec.len() == 0 {
+                if char_vec.len() == 0 {
                     stack.push(-1isize);
                 } else {
                     stack.push(

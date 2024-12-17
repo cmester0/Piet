@@ -1,7 +1,7 @@
 pub mod advc_to_mid_smpl;
 
 use crate::advc::advc_to_mid_smpl::AdvcToSmpl;
-use crate::piet_interpreter::CMD::{self, *};
+use crate::piet_interpreter::CMD::{self};
 use itertools::Itertools;
 use pest::iterators::Pair;
 use pest::*;
@@ -668,12 +668,13 @@ impl AdvcExecutor {
         }
     }
 
-    pub fn interpret<I: std::io::Read, O: std::io::Write>(
+    pub fn interpret_label<I: std::io::Read, O: std::io::Write>(
         &mut self,
+        label: String,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
-    ) {
-        for e in &self.blocks[&self.label] {
+    ) -> bool {
+        for e in self.blocks[&label].clone() {
             match e {
                 Instr(c) => c.interpret(&mut self.stack, input, output),
                 Goto(l) => {
@@ -692,26 +693,32 @@ impl AdvcExecutor {
                 Debug => {
                     println!();
                     println!("Heap: {:?}", self.heap);
-                    println!("Variables: {:?}", self.variables.iter().sorted_by(|(_,v1),(_,v2)| v1.var_index.cmp(&v2.var_index)).map(|(x,v)| (x,v.value)).collect::<Vec<_>>());
+                    println!(
+                        "Variables: {:?}",
+                        self.variables
+                            .iter()
+                            .sorted_by(|(_, v1), (_, v2)| v1.var_index.cmp(&v2.var_index))
+                            .map(|(x, v)| (x, v.value))
+                            .collect::<Vec<_>>()
+                    );
                     println!("Stack: {:?}", self.stack);
                     println!();
                 }
-
                 Set(v) => {
-                    self.variables.get_mut(v).unwrap().value = self.stack.pop().unwrap();
+                    self.variables.get_mut(&v).unwrap().value = self.stack.pop().unwrap();
                 }
-                Get(v) => self.stack.push(self.variables[v].value),
+                Get(v) => self.stack.push(self.variables[&v].value),
 
                 For(v_i, v_end, l) => {
-                    while self.variables[v_i].value != self.variables[v_end].value {
+                    while self.variables[&v_i].value != self.variables[&v_end].value {
                         self.label = l.clone().get_label_name();
                         {
-                            // self.interpret();
+                            self.interpret_label(l.clone().get_label_name(), input, output);
                         }
                         if self.label != l.clone().get_label_name() {
-                            break;
+                            return true;
                         }
-                        self.variables.get_mut(v_i).unwrap().value += 1;
+                        self.variables.get_mut(&v_i).unwrap().value += 1;
                     }
                 }
                 If(l_then, l_else) => {
@@ -720,8 +727,8 @@ impl AdvcExecutor {
                     } else {
                         self.label = l_else.clone().get_label_name();
                     }
+                    return true;
                 }
-
                 Eq => {
                     let a = self.stack.pop();
                     let b = self.stack.pop();
@@ -733,7 +740,7 @@ impl AdvcExecutor {
 
                     let mut a = if ai == -1 {
                         let na = self.heap.len();
-                        self.heap.push(2);
+                        self.heap.push(1);
                         self.heap.push(0);
                         self.heap.push(0);
                         na
@@ -741,56 +748,93 @@ impl AdvcExecutor {
                         ai as usize
                     };
 
-                    if self.heap[a] - 1 == self.heap[a + 1] {
+                    if self.heap[a] == self.heap[a + 1] {
                         let na = self.heap.len();
                         self.heap.push(self.heap[a] * 2);
                         self.heap.push(self.heap[a + 1]);
                         self.heap.extend(
-                            self.heap[(a + 2)..(a + (self.heap[a + 1] as usize))]
+                            self.heap[(a + 2)..(a + 2 + (self.heap[a] as usize))]
                                 .iter()
                                 .cloned()
                                 .collect::<Vec<_>>(),
                         );
 
-                        self.heap.extend([0].repeat(self.heap[a + 1] as usize));
+                        self.heap.extend([0].repeat(self.heap[a] as usize));
                         a = na;
                     };
 
-                    let index = a + self.heap[a + 1] as usize;
+                    let index = a + 2 + self.heap[a + 1] as usize;
                     self.heap[index] = self.stack.pop().unwrap();
                     self.heap[a + 1] += 1;
 
                     self.stack.push(a as isize);
                 }
                 PrintCListOfList => {}
-                In => {}
+                In => {
+                    let a = self.stack.pop().unwrap();
+                    let l = self.stack.pop().unwrap();
+                    let z = self.stack.pop().unwrap();
+                    // a in l starting at z
+                    let mut index: isize = -1;
+                    for i in z..self.heap[(l + 1) as usize] {
+                        if a == self.heap[(l + 2 + i) as usize] {
+                            index = i as isize;
+                            break;
+                        }
+                    }
+                    self.stack.push(index);
+                }
                 Malloc => {}
-                GetElem => {}
-                SetElem => {}
-                GetHeap => {}
-                SetHeap => {}
+                GetElem => {
+                    let a = self.stack.pop().unwrap();
+                    let b = self.stack.pop().unwrap();
+                    self.stack.push(self.heap[(a + 2 + b) as usize]);
+                }
+                SetElem => {
+                    let a = self.stack.pop().unwrap();
+                    let b = self.stack.pop().unwrap();
+                    let c = self.stack.pop().unwrap();
+                    self.heap[(a + 2 + b) as usize] = c;
+                }
+                GetHeap => {
+                    let a = self.stack.pop().unwrap();
+                    self.stack.push(self.heap[a as usize]);
+                }
+                SetHeap => {
+                    let a = self.stack.pop().unwrap();
+                    let b = self.stack.pop().unwrap();
+                    self.heap[a as usize] = b;
+                }
                 Readlines => {}
                 Length => {
                     let a = self.stack.pop().unwrap() as usize;
                     self.stack.push(self.heap[a + 1]);
                 }
                 Index(s, v) => {
-                    let mut curr = self.variables[s].value;
+                    let mut curr = self.variables[&s].value;
                     for (name, offset) in v {
-                        let index = self.variables[name].value + offset;
+                        let index = self.variables[&name].value + offset;
                         curr = self.heap[(curr + 2isize + index) as usize];
                     }
+                    self.stack.push(curr);
                 }
-
                 Comment(_) => {}
             }
         }
 
         if self.label == "term" {
-            return;
+            return false;
         }
 
-        self.interpret(input, output);
+        true
+    }
+
+    pub fn interpret<I: std::io::Read, O: std::io::Write>(
+        &mut self,
+        input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+        output: &mut Option<O>,
+    ) {
+        while self.interpret_label(self.label.clone(), input, output) {}
     }
 
     pub fn handle_advc(

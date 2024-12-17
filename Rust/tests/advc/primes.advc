@@ -1,0 +1,93 @@
+var i num
+var j num
+var end num
+var end_j num
+
+var primes list
+
+goto read_input
+
+label read_input
+
+inN
+set end
+
+# Set list to all zeros
+for i to end {
+push 1
+}
+
+get primes
+
+push 0
+set i
+for i to end {
+append
+}
+
+set primes
+
+push 2
+set i
+for i to end {
+
+index primes[i]
+
+if {
+
+get end
+get i
+div
+push 1
+add
+set end_j
+
+push 2
+set j
+
+get j
+get end_j
+greater
+not
+if {
+
+for j to end_j {
+
+push 0
+
+get j
+get i
+mul
+
+dup
+get end
+greater
+if {
+
+} else {
+
+get primes
+push 2
+add
+add
+set_heap
+
+}
+}} else {}} else {}
+}
+
+debug
+
+push 2
+set i
+for i to end {
+index primes[i]
+if {
+get i
+outN
+push ,
+outC
+} else {}
+}
+
+goto term

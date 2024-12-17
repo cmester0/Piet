@@ -6,10 +6,9 @@ use piet::advc::AdvcExecutor;
 use piet::mid_smpl::*;
 use piet::optimize_stk::StackOptimizer;
 use piet::piet_stack::*;
-use std::fs::File;
-use std::io::{Read, Write};
-
 use piet::util::test_io_string;
+use std::fs::File;
+use std::io::Write;
 
 pub fn run_piet(img_path: &str, input: &str) -> String {
     test_io_string(input, &mut |read, write| {
@@ -106,10 +105,6 @@ pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: u
         "STACK FAILED"
     );
 
-    println!("{:?}", test_io_string(input, &mut |read, write| {
-        piet::piet::interpret(dyn_img.clone(), read, write);
-    }));
-
     assert_eq!(
         output,
         test_io_string(input, &mut |read, write| {
@@ -117,5 +112,4 @@ pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: u
         }),
         "PIET FAILED"
     );
-
 }
