@@ -14,8 +14,8 @@ set end
 for i to end {
 push 0
 }
-get primes
 
+get primes
 push 0
 set i
 for i to end {
@@ -29,7 +29,14 @@ for i to end {
 get i
 }
 
-
-
+outN
+outN
+outN
+outN
+outN
+outN
+outN
+outN
+outN
 
 goto term

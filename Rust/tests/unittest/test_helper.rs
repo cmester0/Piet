@@ -1,23 +1,20 @@
+use image::open;
 use image::DynamicImage;
 use mid_smpl_to_stk::SmplToStk;
+use piet::advc::advc_to_mid_smpl::*;
+use piet::advc::AdvcExecutor;
 use piet::mid_smpl::*;
 use piet::optimize_stk::StackOptimizer;
 use piet::piet_stack::*;
 use std::fs::File;
 use std::io::{Read, Write};
-use image::open;
+
+use piet::util::test_io_string;
 
 pub fn run_piet(img_path: &str, input: &str) -> String {
-    let str_inp: Box<dyn std::io::Read> = Box::new(input.as_bytes());
-    let piet_input: std::iter::Peekable<std::io::Bytes<_>> = str_inp.bytes().peekable();
-
-    let mut piet_byt_out = vec![];
-    {
-        let piet_output: Box<dyn std::io::Write> = Box::new(&mut piet_byt_out);
-        piet::piet::interpret(open(img_path).unwrap(), &mut Some(piet_input), &mut Some(piet_output));
-    }
-
-    String::from_utf8(piet_byt_out).unwrap()
+    test_io_string(input, &mut |read, write| {
+        piet::piet::interpret(open(img_path).unwrap(), read, write)
+    })
 }
 
 pub fn stk_to_piet(filepath: &str, output: &str) {
@@ -30,7 +27,7 @@ pub fn stk_to_piet(filepath: &str, output: &str) {
     let _ = dyn_img.save_with_format(output, image::ImageFormat::Png);
 }
 
-pub fn smpl_to_stk(filepath: &str, output: &str, registers : usize) {
+pub fn smpl_to_stk(filepath: &str, output: &str, registers: usize) {
     let smpl_executor = SmplExecutor::new(filepath, registers); // Default to 0 registers
     let stk_executor = SmplToStk::to_stk(smpl_executor);
     let file_str = stk_executor.to_file_string();
@@ -84,26 +81,33 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str, register
     assert_eq!(piet_str, output, "PIET FAILED");
 }
 
-// pub fn test_simpl_vs_stk_no_file(path: &str, input: &str, output: &str) {
-//     let smpl_str = run_smpl(format!("{}.smpl", path).as_str(), input);
-//     println!("STACK DONE\n");
+pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: usize) {
+    let advc_executor = AdvcExecutor::new(filepath, registers);
+    let smpl_executor = AdvcToSmpl::to_smpl(advc_executor);
+    let mut stk_executor = SmplToStk::to_stk(smpl_executor);
+    stk_executor.optimize();
+    let mut optimizer = StackOptimizer::new();
+    let img: image::RgbImage = stk_executor.to_png(&mut optimizer);
+    let dyn_img: DynamicImage = DynamicImage::ImageRgb8(img);
 
-//     assert_eq!(smpl_str, output, "SMPL FAILED");
+    assert_eq!(
+        output,
+        test_io_string(input, &mut |read, write| {
+            stk_executor.interpret(read, write);
+        }),
+        "STACK FAILED"
+    );
 
-//     let smpl_executor = SmplExecutor::new(format!("{}.smpl", path));
-//     let stk_executor = SmplToStk::to_stk(smpl_executor);
+    println!("{:?}", test_io_string(input, &mut |read, write| {
+        piet::piet::interpret(dyn_img.clone(), read, write);
+    }));
 
-//     let stk_str = run_stk(format!("{}.stk", path).as_str(), input);
-//     println!("STACK DONE\n");
+    assert_eq!(
+        output,
+        test_io_string(input, &mut |read, write| {
+            piet::piet::interpret(dyn_img.clone(), read, write);
+        }),
+        "PIET FAILED"
+    );
 
-//     assert_eq!(stk_str, output, "STACK FAILED");
-
-//     stk_to_piet(
-//         format!("{}.stk", path).as_str(),
-//         format!("{}.png", path).as_str(),
-//     );
-//     let piet_str = run_piet(format!("{}.png", path).as_str(), input);
-//     println!("PIET DONE\n");
-
-//     assert_eq!(piet_str, output, "PIET FAILED");
-// }
+}

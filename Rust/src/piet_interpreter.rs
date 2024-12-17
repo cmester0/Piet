@@ -50,7 +50,7 @@ impl CMD {
             }
         )
     }
-    
+
     pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
         stack: &mut Vec<isize>,

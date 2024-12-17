@@ -1,18 +1,23 @@
-# is element x in list l ?
+# is element x in list l starting at offset v ?
 
 # Put result bit below args
 push 0
-push 4
+push 5
 push 1
 roll
 push 1
 add
 
+lib_swap_smpl
+
 lib_dup
 lib_length
 
-push 0
+push 3
 lib_push
+push -1
+lib_push
+lib_roll
 
 !in_loop_start
 goto .in_loop_start

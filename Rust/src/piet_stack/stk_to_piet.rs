@@ -237,6 +237,11 @@ impl super::PietStackExecutor {
 
         for (x, (x_vec, (x_t, x_e))) in blocks {
             if x_t.is_some() && x_e.is_none() {
+
+                if !block_index.contains_key(&x_t.clone().unwrap()) {
+                    panic!("no block with name: {}", &x_t.unwrap());
+                }
+
                 // is goto
                 let goto_statement = Self::make_block(Self::goto_block_coord(
                     optimizer,

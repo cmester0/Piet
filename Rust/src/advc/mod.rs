@@ -82,6 +82,8 @@ pub enum Expr {
 
     Eq,
     Append,
+    PrintCListOfList,
+    In,
     Malloc,
     GetElem,
     SetElem,
@@ -163,6 +165,8 @@ pub fn parse_expr(
 
         Rule::Eq => Eq,
         Rule::Append => Append,
+        Rule::PrintCListOfList => PrintCListOfList,
+        Rule::In => In,
         Rule::SetHeap => SetHeap,
         Rule::GetHeap => GetHeap,
         Rule::Malloc => Malloc,

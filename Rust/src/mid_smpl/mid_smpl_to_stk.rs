@@ -132,8 +132,11 @@ impl SmplToStk {
                 self.add_expr(Comment(s));
             }
             SmplExpr::Set(var) => {
+                if !self.smpl_executor.variables.contains_key(&var) {
+                    panic!("No such variable {}!", var);
+                }
+
                 let var_index =
-                // self.smpl_executor.variables.len() - 1 -
                     self.smpl_executor.variables[&var].clone().var_index;
 
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
@@ -166,8 +169,11 @@ impl SmplToStk {
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
             }
             SmplExpr::Get(var) => {
+                if !self.smpl_executor.variables.contains_key(&var) {
+                    panic!("No such variable {}!", var);
+                }
+
                 let var_index =
-                    // self.smpl_executor.variables.len() - 1 -
                     self.smpl_executor.variables[&var].clone().var_index;
 
                 self.add_expr(Expr::Comment(format!("+{:?}", var)));
@@ -306,6 +312,9 @@ impl SmplToStk {
                 // smpl_to_stk.add_expr(Comment(format!("-{:?}", e)));
             }
         }
+
+        smpl_to_stk.stk_executor.blocks.insert(String::from("term"), vec![]);
+        smpl_to_stk.stk_executor.block_index.insert(String::from("term"), bi);
 
         smpl_to_stk.stk_executor.label = String::from("main");
 

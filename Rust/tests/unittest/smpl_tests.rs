@@ -1,4 +1,3 @@
-
 use super::test_helper::*;
 
 #[test]
@@ -49,11 +48,17 @@ pub fn test_dup() {
 #[test]
 pub fn test_malloc() {
     // (reverse) Stack/heap layout after push 4 x 4 and malloc 10
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_malloc", "", "5,4,4,4,4,10,0,0,0,0,0,0,0,0,0,0", 0);
+    test_simpl_vs_stk_vs_piet(
+        "./tests/smpl/test_malloc",
+        "",
+        "5,4,4,4,4,10,0,0,0,0,0,0,0,0,0,0",
+        0,
+    );
 }
 
 #[test]
-pub fn test_stack_size() { // stack_layout not stack_size..
+pub fn test_stack_size() {
+    // stack_layout not stack_size..
     test_simpl_vs_stk_vs_piet("./tests/smpl/test_stack_size", "", "11 0123456789", 0);
 }
 
@@ -94,12 +99,22 @@ pub fn test_set_elem_get_elem() {
 
 #[test]
 pub fn test_get_list() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_get_list", "", "[114,119,113,115,110,]\n", 0);
+    test_simpl_vs_stk_vs_piet(
+        "./tests/smpl/test_get_list",
+        "",
+        "[114,119,113,115,110,]\n",
+        0,
+    );
 }
 
 #[test]
 pub fn test_append() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_append", "", "[114,119,113,115,110,]\n", 0);
+    test_simpl_vs_stk_vs_piet(
+        "./tests/smpl/test_append",
+        "",
+        "[114,119,113,115,110,]\n",
+        0,
+    );
 }
 
 #[test]
@@ -143,36 +158,42 @@ pub fn test_registers() {
 #[test]
 #[allow(non_snake_case)]
 pub fn test_readC_until() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_readC_until",
-                     "hello\nworld how\nare you\ndoing\n",
-                     "hello\nworld", 1);
+    test_simpl_vs_stk_vs_piet(
+        "./tests/smpl/test_readC_until",
+        "hello\nworld how\nare you\ndoing\n",
+        "hello\nworld",
+        1,
+    );
 }
 
 #[test]
 pub fn test_readlines() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_readlines",
-                     "hello\nworld how\nare you\ndoing\n",
-                     "hello\nworld how\nare you\ndoing\n", 1);
+    test_simpl_vs_stk_vs_piet(
+        "./tests/smpl/test_readlines",
+        "hello\nworld how\nare you\ndoing\n",
+        "hello\nworld how\nare you\ndoing\n",
+        1,
+    );
 }
 
-// #[test]
-// pub fn test_swap() {
-//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_swap", "23 43\n", "23 43");
-// }
+#[test]
+pub fn test_swap() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_swap", "23 43\n", "23 43", 0);
+}
 
-// #[test]
-// pub fn test_dup_at_depth() {
-//     test_simpl_vs_stk_vs_piet("./tests/smpl/test_dup_at_depth", "", "43\n");
-// }
+#[test]
+pub fn test_dup_at_depth() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_dup_at_depth", "", "43\n", 0);
+}
+
+#[test]
+pub fn test_in() {
+    test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "1 3 -1 -1", 2);
+}
 
 /////////////////////
 // Fails in Python //
 /////////////////////
-
-#[test]
-pub fn test_in() {
-    test_simpl_vs_stk_vs_piet("./tests/smpl/test_in", "", "1 3 -1", 2);
-}
 
 // // #[test]
 // // pub fn test_in_tuple() {
