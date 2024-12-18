@@ -1,0 +1,25 @@
+goto start_test
+
+label start_test
+
+inN
+if {
+goto print10
+} else {
+goto print11
+}
+
+push 12
+outN
+
+goto term
+
+label print10
+push 10
+outN
+goto term
+
+label print11
+push 11
+outN
+goto term

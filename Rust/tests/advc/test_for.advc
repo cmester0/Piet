@@ -1,0 +1,23 @@
+var i num
+var end num
+
+goto start_test
+
+label start_test
+
+inN
+set end
+
+for i to end {
+goto print10
+}
+
+push 12
+outN
+
+goto term
+
+label print10
+push 10
+outN
+goto term

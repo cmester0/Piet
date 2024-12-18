@@ -1,0 +1,13 @@
+var i num
+var end num
+
+goto start_test
+
+label start_test
+
+readlines
+
+push 2
+outN
+
+goto term

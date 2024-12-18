@@ -676,10 +676,12 @@ impl AdvcExecutor {
     ) -> bool {
         for e in self.blocks[&label].clone() {
             match e {
-                Instr(c) => c.interpret(&mut self.stack, input, output),
+                Instr(c) => {
+                    c.interpret(&mut self.stack, input, output);
+                }
                 Goto(l) => {
                     self.label = l.clone().get_label_name();
-                    return true;
+                    return self.label != "term";
                 }
                 Branch(l_then, l_else) => {
                     let a = self.stack.pop().unwrap();
@@ -688,7 +690,7 @@ impl AdvcExecutor {
                     } else {
                         self.label = l_then.clone().get_label_name();
                     }
-                    return true;
+                    return self.label != "term";
                 }
                 Debug => {
                     println!();
@@ -708,18 +710,9 @@ impl AdvcExecutor {
                     self.variables.get_mut(&v).unwrap().value = self.stack.pop().unwrap();
                 }
                 Get(v) => self.stack.push(self.variables[&v].value),
-                For(v_i, v_end, l) => {
-                    while self.variables[&v_i].value != self.variables[&v_end].value {
-                        self.label = l.clone().get_label_name();
-                        {
-                            self.interpret_label(l.clone().get_label_name(), input, output);
-                        }
-                        if self.label != l.clone().get_label_name() {
-                            return true;
-                        }
-                        self.variables.get_mut(&v_i).unwrap().value += 1;
-                    }
-                    self.label = label.clone();
+                For(_, _, l) => {
+                    self.label = l.clone().get_label_name();
+                    return self.label != "term";
                 }
                 If(l_then, l_else) => {
                     if self.stack.pop().unwrap() != 0 {
@@ -727,7 +720,7 @@ impl AdvcExecutor {
                     } else {
                         self.label = l_else.clone().get_label_name();
                     }
-                    return true;
+                    return self.label != "term";
                 }
                 Eq => {
                     let a = self.stack.pop();
@@ -770,14 +763,15 @@ impl AdvcExecutor {
                     self.stack.push(a as isize);
                 }
                 PrintCListOfList => {
-                    todo!()
+                    todo!("print_c_list_of_list")
                 }
                 In => {
-                    let a = self.stack.pop().unwrap();
-                    let l = self.stack.pop().unwrap();
                     let z = self.stack.pop().unwrap();
+                    let l = self.stack.pop().unwrap();
+                    let a = self.stack.pop().unwrap();
                     // a in l starting at z
                     let mut index: isize = -1;
+
                     for i in z..self.heap[(l + 1) as usize] {
                         if a == self.heap[(l + 2 + i) as usize] {
                             index = i as isize;
@@ -814,7 +808,7 @@ impl AdvcExecutor {
                     let mut lines: Vec<isize> = Vec::new();
                     let mut line: Vec<isize> = Vec::new();
 
-                    let add_line = &mut |heap : &mut Vec<isize>, line : Vec<isize>| {
+                    let add_line = &mut |heap: &mut Vec<isize>, line: Vec<isize>| {
                         let mut p = 1;
                         while p < line.len() {
                             p *= 2;
@@ -826,7 +820,8 @@ impl AdvcExecutor {
                     };
 
                     while let Some(Ok(c)) = input.next() {
-                        if c == 10 { // 10 = \n
+                        if c == 10 {
+                            // 10 = \n
                             lines.push(self.heap.len() as isize);
                             add_line(&mut self.heap, line);
                             line = Vec::new();
@@ -857,10 +852,6 @@ impl AdvcExecutor {
             }
         }
 
-        if self.label == "term" {
-            return false;
-        }
-
         true
     }
 
@@ -869,11 +860,7 @@ impl AdvcExecutor {
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) {
-        while self.interpret_label(self.label.clone(), input, output) {
-            if self.label == "term" {
-                break;
-            }
-        }
+        while self.interpret_label(self.label.clone(), input, output) {}
     }
 
     pub fn handle_advc(
