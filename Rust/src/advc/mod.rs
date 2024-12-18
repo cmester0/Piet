@@ -679,7 +679,7 @@ impl AdvcExecutor {
                 Instr(c) => c.interpret(&mut self.stack, input, output),
                 Goto(l) => {
                     self.label = l.clone().get_label_name();
-                    break;
+                    return true;
                 }
                 Branch(l_then, l_else) => {
                     let a = self.stack.pop().unwrap();
@@ -688,7 +688,7 @@ impl AdvcExecutor {
                     } else {
                         self.label = l_then.clone().get_label_name();
                     }
-                    break;
+                    return true;
                 }
                 Debug => {
                     println!();
@@ -708,7 +708,6 @@ impl AdvcExecutor {
                     self.variables.get_mut(&v).unwrap().value = self.stack.pop().unwrap();
                 }
                 Get(v) => self.stack.push(self.variables[&v].value),
-
                 For(v_i, v_end, l) => {
                     while self.variables[&v_i].value != self.variables[&v_end].value {
                         self.label = l.clone().get_label_name();
@@ -720,6 +719,7 @@ impl AdvcExecutor {
                         }
                         self.variables.get_mut(&v_i).unwrap().value += 1;
                     }
+                    self.label = label.clone();
                 }
                 If(l_then, l_else) => {
                     if self.stack.pop().unwrap() != 0 {
@@ -769,7 +769,9 @@ impl AdvcExecutor {
 
                     self.stack.push(a as isize);
                 }
-                PrintCListOfList => {}
+                PrintCListOfList => {
+                    todo!()
+                }
                 In => {
                     let a = self.stack.pop().unwrap();
                     let l = self.stack.pop().unwrap();
@@ -784,7 +786,9 @@ impl AdvcExecutor {
                     }
                     self.stack.push(index);
                 }
-                Malloc => {}
+                Malloc => {
+                    todo!("Malloc")
+                }
                 GetElem => {
                     let a = self.stack.pop().unwrap();
                     let b = self.stack.pop().unwrap();
@@ -805,7 +809,38 @@ impl AdvcExecutor {
                     let b = self.stack.pop().unwrap();
                     self.heap[a as usize] = b;
                 }
-                Readlines => {}
+                Readlines => {
+                    let input = input.as_mut().unwrap();
+                    let mut lines: Vec<isize> = Vec::new();
+                    let mut line: Vec<isize> = Vec::new();
+
+                    let add_line = &mut |heap : &mut Vec<isize>, line : Vec<isize>| {
+                        let mut p = 1;
+                        while p < line.len() {
+                            p *= 2;
+                        }
+                        heap.push(p as isize);
+                        heap.push(line.len() as isize);
+                        heap.extend(line.clone());
+                        heap.extend([0].repeat(p - line.len()))
+                    };
+
+                    while let Some(Ok(c)) = input.next() {
+                        if c == 10 { // 10 = \n
+                            lines.push(self.heap.len() as isize);
+                            add_line(&mut self.heap, line);
+                            line = Vec::new();
+                        } else {
+                            line.push(c as isize)
+                        }
+                    }
+
+                    lines.push(self.heap.len() as isize);
+                    add_line(&mut self.heap, line);
+
+                    self.stack.push(self.heap.len() as isize);
+                    add_line(&mut self.heap, lines);
+                }
                 Length => {
                     let a = self.stack.pop().unwrap() as usize;
                     self.stack.push(self.heap[a + 1]);
@@ -834,7 +869,11 @@ impl AdvcExecutor {
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) {
-        while self.interpret_label(self.label.clone(), input, output) {}
+        while self.interpret_label(self.label.clone(), input, output) {
+            if self.label == "term" {
+                break;
+            }
+        }
     }
 
     pub fn handle_advc(
