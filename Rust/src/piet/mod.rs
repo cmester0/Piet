@@ -373,7 +373,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let scale = 5;
+    let scale = 7;
     let frame_size = 180;
 
     let window = video_subsystem
@@ -437,9 +437,23 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
                 }
             }
 
-            canvas.set_draw_color(Color::RGB(255, 0, 0));
-            for i in 0..scale {
-                for j in 0..scale {
+            canvas.set_draw_color(
+                {let rgb : image::Rgb<u8> = match (runner.cursor.dp, runner.cursor.cc) {
+                (0, 0) => ALL_COLORS[2].into(),
+                (0, 1) => ALL_COLORS[3].into(),
+                (1, 0) => ALL_COLORS[4].into(),
+                (1, 1) => ALL_COLORS[5].into(),
+                (2, 0) => ALL_COLORS[6].into(),
+                (2, 1) => ALL_COLORS[7].into(),
+                (3, 0) => ALL_COLORS[8].into(),
+                (3, 1) => ALL_COLORS[9].into(),
+                _ => panic!(),
+                };
+                 Color::RGB(rgb[0] / 2,rgb[1] / 2,rgb[2] / 2)
+                });
+
+            for i in 1..scale-1 {
+                for j in 1..scale-1 {
                     canvas
                         .draw_point((
                             ((frame_size / 2 * scale + i) as i32),

@@ -286,7 +286,8 @@ impl super::PietStackExecutor {
         }
 
         // // # Split blocks
-        let j_width = cmp::max(30, cmp::max(b_width, b_height) / 5);
+        let j_width = cmp::max(70, cmp::max(b_width, b_height) / 5);
+        // let j_width = cmp::max(30, cmp::max(b_width, b_height) / 5);
 
         let mut final_blocks: HashMap<String, (Vec<Vec<String>>, Vec<String>)> = HashMap::new();
 
