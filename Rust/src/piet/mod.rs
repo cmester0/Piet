@@ -3,10 +3,16 @@ use crate::piet_interpreter::*;
 use image::DynamicImage;
 use itertools::Itertools;
 use ndarray::ArrayView;
+use ndarray::AssignElem;
 use ndarray::Ix2;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Read;
+
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
+use sdl2::*;
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {
@@ -27,6 +33,7 @@ struct ABI {
     c: ValidColor,
 }
 
+#[derive(Clone)]
 struct PietImageData {
     width: usize,
     height: usize,
@@ -46,13 +53,14 @@ struct PietCursor {
 }
 
 #[derive(Clone)]
-struct PietExecution<'a> {
-    map: &'a PietImageData,
+struct PietExecution {
+    img: DynamicImage,
+    map: PietImageData,
     cursor: PietCursor,
     stack: Vec<isize>, /* TODO: needs bigint math? */
 }
 
-impl<'a> PietExecution<'a> {
+impl PietExecution {
     fn check_valid_pixel(&self, (nx, ny): (usize, usize)) -> bool {
         !(self.map.blobs[ValidColor::from("⚫") as usize].contains(&(nx, ny)))
             && (ny < self.map.height)
@@ -199,168 +207,181 @@ impl<'a> PietExecution<'a> {
             return false;
         }
     }
+
+    pub fn new(img: DynamicImage) -> PietExecution {
+        let rgb_img = img.clone().into_rgb8();
+        let (w, h) = rgb_img.dimensions();
+
+        let img_enum: Vec<ValidColor> = (0..h)
+            .cartesian_product(0..w)
+            .map(|(y, x)| {
+                let r: ValidColor = rgb_img[(x, y)].into();
+                r
+            })
+            .collect();
+
+        let pxls = ArrayView::from_shape(Ix2(h as usize, w as usize), &img_enum).unwrap();
+
+        let mut blobs: [HashSet<(usize, usize)>; 20] = core::array::from_fn(|_| HashSet::new());
+
+        for ((y, x), data) in pxls.indexed_iter() {
+            blobs[(*data) as usize].insert((x, y));
+            if *data == "⚫".into() || *data == "⚪".into() {
+                continue;
+            }
+        }
+
+        // Watershed (image processing)
+        let mut all_blobs: Vec<(ValidColor, HashSet<(usize, usize)>)> = Vec::new();
+        for l in ALL_COLORS {
+            if l == "⚫".into() || l == "⚪".into() {
+                continue;
+            }
+            let mut checked_coord: HashSet<(usize, usize)> = HashSet::new();
+            let mut seperate_blobs: Vec<HashSet<(usize, usize)>> = Vec::new();
+            for (x, y) in blobs[l as usize].iter().cloned() {
+                let mut sep_blob: HashSet<(usize, usize)> = HashSet::new();
+                let mut queue: Vec<(usize, usize)> = vec![(x, y)];
+
+                while queue.len() > 0 {
+                    let (xi, yi) = queue.pop().unwrap();
+                    if checked_coord.contains(&(xi, yi)) {
+                        continue;
+                    }
+                    checked_coord.insert((xi, yi));
+                    sep_blob.insert((xi, yi));
+
+                    let mut possible = Vec::new();
+                    if xi + 1 < w as usize {
+                        possible.push((xi + 1, yi))
+                    }
+                    if yi + 1 < h as usize {
+                        possible.push((xi, yi + 1))
+                    }
+                    if yi > 0 {
+                        possible.push((xi, yi - 1))
+                    }
+                    if xi > 0 {
+                        possible.push((xi - 1, yi))
+                    }
+
+                    for (xn, yn) in possible {
+                        if blobs[l as usize].contains(&(xn, yn)) {
+                            queue.push((xn, yn));
+                        }
+                    }
+                }
+
+                if sep_blob.len() > 0 {
+                    seperate_blobs.push(sep_blob);
+                }
+            }
+
+            for x in seperate_blobs {
+                all_blobs.push((l, x))
+            }
+        }
+
+        // let mut pix_to_blob = Vec::new();
+        let mut all_blobs_indexed: Vec<ABI> = Vec::new();
+        let mut pix_to_blob: HashMap<(usize, usize), usize> = HashMap::new();
+        for (i, (c, blob)) in all_blobs.iter().cloned().enumerate() {
+            let l: Vec<_> = vec![
+                (false, false, true),
+                (false, false, false),
+                (true, false, false),
+                (true, true, false),
+                (false, true, false),
+                (false, true, true),
+                (true, true, true),
+                (true, false, true),
+            ]
+            .into_iter()
+            .map(|(swap, rev1, rev2)| {
+                *blob
+                    .iter()
+                    .max_by(|(a, b), (x, y)| {
+                        let cmp1 = a.cmp(x);
+                        let cmp2 = b.cmp(y);
+
+                        let cmp1 = if rev1 { cmp1.reverse() } else { cmp1 };
+                        let cmp2 = if rev2 { cmp2.reverse() } else { cmp2 };
+
+                        if swap {
+                            cmp1.then(cmp2)
+                        } else {
+                            cmp2.then(cmp1)
+                        }
+                    })
+                    .unwrap()
+            })
+            .collect();
+            let [r_u, r_d, d_r, d_l, l_d, l_u, u_l, u_r] = l[..] else {
+                panic!()
+            };
+
+            let abi = ABI {
+                r_u,
+                r_d,
+                d_r,
+                d_l,
+                l_d,
+                l_u,
+                u_l,
+                u_r,
+                bs: blob.len(),
+                c,
+            };
+
+            all_blobs_indexed.push(abi);
+
+            for (y, x) in blob {
+                pix_to_blob.insert((y, x), i);
+            }
+        }
+
+        PietExecution {
+            img,
+            cursor: PietCursor {
+                cx: 0,
+                cy: 0,
+                dp: 0,
+                cc: 0,
+                last_color: ValidColor::from("⚪"),
+                last_bs: 0,
+            },
+            map: PietImageData {
+                width: w as usize,
+                height: h as usize,
+                blobs,
+                pix_to_blob,
+                all_blobs_indexed,
+            },
+            stack: Vec::new(),
+            //
+        }
+    }
 }
 
-// let img = open(filepath).unwrap().into_rgb8();
-
-pub fn interpret<I: std::io::Read, O: std::io::Write>(
+pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     img: DynamicImage,
     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
     output: &mut Option<O>,
 ) {
-    let rgb_img = img.into_rgb8();
-    let (w, h) = rgb_img.dimensions();
+    let mut runner = PietExecution::new(img.clone());
 
-    let img_enum: Vec<ValidColor> = (0..h)
-        .cartesian_product(0..w)
-        .map(|(y, x)| {
-            let r: ValidColor = rgb_img[(x, y)].into();
-            r
-        })
-        .collect();
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-    let pxls = ArrayView::from_shape(Ix2(h as usize, w as usize), &img_enum).unwrap();
+    let scale = 5;
+    let frame_size = 180;
 
-    let mut blobs: [HashSet<(usize, usize)>; 20] = core::array::from_fn(|_| HashSet::new());
+    let window = video_subsystem
+        .window("rust-sdl2 demo", frame_size * scale, frame_size * scale)
+        .position_centered()
+        .build()
+        .unwrap();
 
-    for ((y, x), data) in pxls.indexed_iter() {
-        blobs[(*data) as usize].insert((x, y));
-        if *data == "⚫".into() || *data == "⚪".into() {
-            continue;
-        }
-    }
-
-    // Watershed (image processing)
-    let mut all_blobs: Vec<(ValidColor, HashSet<(usize, usize)>)> = Vec::new();
-    for l in ALL_COLORS {
-        if l == "⚫".into() || l == "⚪".into() {
-            continue;
-        }
-        let mut checked_coord: HashSet<(usize, usize)> = HashSet::new();
-        let mut seperate_blobs: Vec<HashSet<(usize, usize)>> = Vec::new();
-        for (x, y) in blobs[l as usize].iter().cloned() {
-            let mut sep_blob: HashSet<(usize, usize)> = HashSet::new();
-            let mut queue: Vec<(usize, usize)> = vec![(x, y)];
-
-            while queue.len() > 0 {
-                let (xi, yi) = queue.pop().unwrap();
-                if checked_coord.contains(&(xi, yi)) {
-                    continue;
-                }
-                checked_coord.insert((xi, yi));
-                sep_blob.insert((xi, yi));
-
-                let mut possible = Vec::new();
-                if xi + 1 < w as usize {
-                    possible.push((xi + 1, yi))
-                }
-                if yi + 1 < h as usize {
-                    possible.push((xi, yi + 1))
-                }
-                if yi > 0 {
-                    possible.push((xi, yi - 1))
-                }
-                if xi > 0 {
-                    possible.push((xi - 1, yi))
-                }
-
-                for (xn, yn) in possible {
-                    if blobs[l as usize].contains(&(xn, yn)) {
-                        queue.push((xn, yn));
-                    }
-                }
-            }
-
-            if sep_blob.len() > 0 {
-                seperate_blobs.push(sep_blob);
-            }
-        }
-
-        for x in seperate_blobs {
-            all_blobs.push((l, x))
-        }
-    }
-
-    // let mut pix_to_blob = Vec::new();
-    let mut all_blobs_indexed: Vec<ABI> = Vec::new();
-    let mut pix_to_blob: HashMap<(usize, usize), usize> = HashMap::new();
-    for (i, (c, blob)) in all_blobs.iter().cloned().enumerate() {
-        let l: Vec<_> = vec![
-            (false, false, true),
-            (false, false, false),
-            (true, false, false),
-            (true, true, false),
-            (false, true, false),
-            (false, true, true),
-            (true, true, true),
-            (true, false, true),
-        ]
-        .into_iter()
-        .map(|(swap, rev1, rev2)| {
-            *blob
-                .iter()
-                .max_by(|(a, b), (x, y)| {
-                    let cmp1 = a.cmp(x);
-                    let cmp2 = b.cmp(y);
-
-                    let cmp1 = if rev1 { cmp1.reverse() } else { cmp1 };
-                    let cmp2 = if rev2 { cmp2.reverse() } else { cmp2 };
-
-                    if swap {
-                        cmp1.then(cmp2)
-                    } else {
-                        cmp2.then(cmp1)
-                    }
-                })
-                .unwrap()
-        })
-        .collect();
-        let [r_u, r_d, d_r, d_l, l_d, l_u, u_l, u_r] = l[..] else {
-            panic!()
-        };
-
-        let abi = ABI {
-            r_u,
-            r_d,
-            d_r,
-            d_l,
-            l_d,
-            l_u,
-            u_l,
-            u_r,
-            bs: blob.len(),
-            c,
-        };
-
-        all_blobs_indexed.push(abi);
-
-        for (y, x) in blob {
-            pix_to_blob.insert((y, x), i);
-        }
-    }
-
-    let mut runner = PietExecution {
-        cursor: PietCursor {
-            cx: 0,
-            cy: 0,
-            dp: 0,
-            cc: 0,
-            last_color: ValidColor::from("⚪"),
-            last_bs: 0,
-        },
-        map: &PietImageData {
-            width: w as usize,
-            height: h as usize,
-            blobs,
-            pix_to_blob,
-            all_blobs_indexed,
-        },
-        stack: Vec::new(),
-        //
-    };
-
-    // let mut total_steps = 0;
-    // runner
     if !runner.continue_step(
         (0, 0),
         (0, 0),
@@ -368,10 +389,101 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
         input,
         output,
     ) {
-        while !runner.step(input, output) {
-            // total_steps += 1;
+        let mut canvas = window.into_canvas().build().unwrap();
+        let rgb_img = img.clone().into_rgb8();
+        canvas.present();
+
+        let mut event_pump = sdl_context.event_pump().unwrap();
+        let mut frame: u32 = 0;
+        'running: loop {
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::Quit { .. }
+                    | Event::KeyDown {
+                        keycode: Some(Keycode::Escape),
+                        ..
+                    } => break 'running,
+                    _ => {}
+                }
+            }
+            // The rest of the game loop goes here...
+
+            if frame >= 30 {
+                if runner.step(input, output) {
+                    break;
+                }
+            }
+
+            canvas.set_draw_color(Color::RGB(0, 0, 0));
+            canvas.clear();
+
+            for y in 0..frame_size * scale {
+                for x in 0..frame_size * scale {
+                    let px = (runner.cursor.cx as u32 - frame_size / 2) * scale + x;
+                    let py = (runner.cursor.cy as u32 - frame_size / 2) * scale + y;
+
+                    if !(px / scale < img.width() &&
+                         py / scale < img.height()) {
+                        continue;
+                    }
+
+                    canvas.set_draw_color(Color::RGB(
+                        rgb_img[(px / scale, py / scale)][0],
+                        rgb_img[(px / scale, py / scale)][1],
+                        rgb_img[(px / scale, py / scale)][2],
+                    ));
+                    canvas.draw_point((x as i32, y as i32)).unwrap();
+                }
+            }
+
+            canvas.set_draw_color(Color::RGB(255, 0, 0));
+            for i in 0..scale {
+                for j in 0..scale {
+                    canvas
+                        .draw_point((
+                            ((frame_size / 2 * scale + i) as i32),
+                            ((frame_size / 2 * scale + j) as i32),
+                        ))
+                        .unwrap();
+                }
+            }
+
+            canvas.present();
+            frame += 1;
+
+            // ::std::thread::sleep(std::time::Duration::new(20, 1_000_000_000u32 / 60));
         }
     }
+
+    // let mut runner = PietExecution::new(img.clone());
+    // if !runner.continue_step(
+    //     (0, 0),
+    //     (0, 0),
+    //     runner.check_valid_pixel((0, 0)),
+    //     input,
+    //     output,
+    // ) {
+    //     while !runner.step(input, output) {}
+    // }
+}
+
+pub fn interpret<I: std::io::Read, O: std::io::Write>(
+    img: DynamicImage,
+    input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
+    output: &mut Option<O>,
+) {
+    interpret_window(img.clone(), input, output);
+
+    // let mut runner = PietExecution::new(img.clone());
+    // if !runner.continue_step(
+    //     (0, 0),
+    //     (0, 0),
+    //     runner.check_valid_pixel((0, 0)),
+    //     input,
+    //     output,
+    // ) {
+    //     while !runner.step(input, output) {}
+    // }
 }
 
 pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool) {

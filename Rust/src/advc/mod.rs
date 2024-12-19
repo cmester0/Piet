@@ -509,7 +509,7 @@ pub fn parse_string(
     let unparsed =
         fs::read_to_string(filepath).expect(format!("cannot read file: {}", filepath).as_str());
     let document = AdvcParser::parse(Rule::Document, unparsed.as_str())
-        .expect(format!("unsuccessful parse of {}", filepath).as_str())
+        .expect(format!("unsuccessful parse of\n{}", filepath).as_str())
         .next()
         .unwrap();
 
@@ -707,9 +707,17 @@ impl AdvcExecutor {
                     println!();
                 }
                 Set(v) => {
+                    if !self.variables.contains_key(&v) {
+                        panic!("Set for variable {} does not exists", v);
+                    }
                     self.variables.get_mut(&v).unwrap().value = self.stack.pop().unwrap();
                 }
-                Get(v) => self.stack.push(self.variables[&v].value),
+                Get(v) => {
+                    if !self.variables.contains_key(&v) {
+                        panic!("Get for variable {} does not exists", v);
+                    }
+                    self.stack.push(self.variables[&v].value)
+                }
                 For(_, _, l) => {
                     self.label = l.clone().get_label_name();
                     return self.label != "term";
@@ -830,8 +838,8 @@ impl AdvcExecutor {
                         }
                     }
 
-                    lines.push(self.heap.len() as isize);
-                    add_line(&mut self.heap, line);
+                    // lines.push(self.heap.len() as isize);
+                    // add_line(&mut self.heap, line);
 
                     self.stack.push(self.heap.len() as isize);
                     add_line(&mut self.heap, lines);

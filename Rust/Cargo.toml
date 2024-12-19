@@ -27,6 +27,7 @@ name = "lib"
 
 [dependencies]
 image = "*"
+
 clap = { version = "*", features = ["derive"] }
 phf = { version = "0.11", features = ["macros"] }
 itertools = "*"
@@ -34,3 +35,9 @@ ndarray = "*"
 
 pest = "*"
 pest_derive = "*"
+
+sdl2 = "*"
+
+[dependencies.druid]
+version = "*"
+features = ["image"]
