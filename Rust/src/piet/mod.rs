@@ -3,7 +3,6 @@ use crate::piet_interpreter::*;
 use image::DynamicImage;
 use itertools::Itertools;
 use ndarray::ArrayView;
-use ndarray::AssignElem;
 use ndarray::Ix2;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -54,7 +53,6 @@ struct PietCursor {
 
 #[derive(Clone)]
 struct PietExecution {
-    img: DynamicImage,
     map: PietImageData,
     cursor: PietCursor,
     stack: Vec<isize>, /* TODO: needs bigint math? */
@@ -341,7 +339,6 @@ impl PietExecution {
         }
 
         PietExecution {
-            img,
             cursor: PietCursor {
                 cx: 0,
                 cy: 0,
@@ -374,13 +371,18 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     let video_subsystem = sdl_context.video().unwrap();
 
     let scale = 7;
-    let frame_size = 180;
+    let frame_size = 149;
 
-    let window = video_subsystem
+    let mut window = video_subsystem
         .window("rust-sdl2 demo", frame_size * scale, frame_size * scale)
         .position_centered()
         .build()
         .unwrap();
+    window.set_bordered(false);
+    // window.set_position(
+    //     video::WindowPos::Positioned(0),
+    //     video::WindowPos::Positioned(0),
+    // );
 
     if !runner.continue_step(
         (0, 0),
@@ -390,6 +392,11 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
         output,
     ) {
         let mut canvas = window.into_canvas().build().unwrap();
+        canvas.window_mut().set_position(
+            video::WindowPos::Positioned(0),
+            video::WindowPos::Positioned(0),
+        );
+
         let rgb_img = img.clone().into_rgb8();
         canvas.present();
 
@@ -408,7 +415,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
             }
             // The rest of the game loop goes here...
 
-            if frame >= 0 {
+            if frame >= 1 {
                 if runner.step(input, output) {
                     break;
                 }
@@ -423,8 +430,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
                     let px = (runner.cursor.cx as u32 - frame_size / 2) * scale + x;
                     let py = (runner.cursor.cy as u32 - frame_size / 2) * scale + y;
 
-                    if !(px / scale < img.width() &&
-                         py / scale < img.height()) {
+                    if !(px / scale < img.width() && py / scale < img.height()) {
                         continue;
                     }
 
@@ -437,23 +443,23 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
                 }
             }
 
-            canvas.set_draw_color(
-                {let rgb : image::Rgb<u8> = match (runner.cursor.dp, runner.cursor.cc) {
-                (0, 0) => ALL_COLORS[2].into(),
-                (0, 1) => ALL_COLORS[3].into(),
-                (1, 0) => ALL_COLORS[4].into(),
-                (1, 1) => ALL_COLORS[5].into(),
-                (2, 0) => ALL_COLORS[6].into(),
-                (2, 1) => ALL_COLORS[7].into(),
-                (3, 0) => ALL_COLORS[8].into(),
-                (3, 1) => ALL_COLORS[9].into(),
-                _ => panic!(),
+            canvas.set_draw_color({
+                let rgb: image::Rgb<u8> = match (runner.cursor.dp, runner.cursor.cc) {
+                    (0, 0) => ALL_COLORS[2].into(),
+                    (0, 1) => ALL_COLORS[3].into(),
+                    (1, 0) => ALL_COLORS[4].into(),
+                    (1, 1) => ALL_COLORS[5].into(),
+                    (2, 0) => ALL_COLORS[6].into(),
+                    (2, 1) => ALL_COLORS[7].into(),
+                    (3, 0) => ALL_COLORS[8].into(),
+                    (3, 1) => ALL_COLORS[9].into(),
+                    _ => panic!(),
                 };
-                 Color::RGB(rgb[0] / 2,rgb[1] / 2,rgb[2] / 2)
-                });
+                Color::RGB(rgb[0] / 2, rgb[1] / 2, rgb[2] / 2)
+            });
 
-            for i in 1..scale-1 {
-                for j in 1..scale-1 {
+            for i in 1..scale - 1 {
+                for j in 1..scale - 1 {
                     canvas
                         .draw_point((
                             ((frame_size / 2 * scale + i) as i32),

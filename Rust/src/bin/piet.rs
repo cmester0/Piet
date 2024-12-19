@@ -1,6 +1,5 @@
 use clap::Parser;
 use piet::piet::*;
-use std::io::Read;
 use image::open;
 
 #[derive(Parser, Debug)]
