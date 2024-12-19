@@ -15,6 +15,8 @@ struct Args {
     #[arg(short, long)]
     run_piet: bool,
     #[arg(short, long)]
+    gui_piet: bool,
+    #[arg(short, long)]
     to_piet: Option<String>,
 }
 
@@ -29,5 +31,6 @@ fn main() {
         args.run,
         args.to_piet,
         args.run_piet,
+        args.gui_piet,
     );
 }

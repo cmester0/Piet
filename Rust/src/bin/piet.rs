@@ -8,13 +8,12 @@ use image::open;
 struct Args {
     #[arg(short, long)]
     filepath: String,
+    #[arg(short, long)]
+    gui: bool,
 }
 
 fn main() {
     let args = Args::parse();
 
-    let input = std::io::stdin().bytes().peekable();
-    let output = std::io::stdout();
-
-    interpret(open(args.filepath).unwrap(), &mut Some(input), &mut Some(output));
+    handle_piet(open(args.filepath).unwrap(), None, true, args.gui);
 }

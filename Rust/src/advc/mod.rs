@@ -880,6 +880,7 @@ impl AdvcExecutor {
         run_stk: bool,
         to_piet: Option<String>,
         run_piet: bool,
+        gui_piet: bool,
     ) {
         if run {
             let input = std::io::stdin().bytes().peekable();
@@ -893,6 +894,6 @@ impl AdvcExecutor {
         }
 
         let smpl_executor = AdvcToSmpl::to_smpl(self.clone());
-        smpl_executor.handle_smpl(output, to_stk, optimize_stk, run_stk, to_piet, run_piet);
+        smpl_executor.handle_smpl(output, to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet);
     }
 }

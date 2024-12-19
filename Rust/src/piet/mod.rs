@@ -408,10 +408,11 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
             }
             // The rest of the game loop goes here...
 
-            if frame >= 30 {
+            if frame >= 0 {
                 if runner.step(input, output) {
                     break;
                 }
+                frame = 0;
             }
 
             canvas.set_draw_color(Color::RGB(0, 0, 0));
@@ -472,21 +473,19 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
     output: &mut Option<O>,
 ) {
-    interpret_window(img.clone(), input, output);
-
-    // let mut runner = PietExecution::new(img.clone());
-    // if !runner.continue_step(
-    //     (0, 0),
-    //     (0, 0),
-    //     runner.check_valid_pixel((0, 0)),
-    //     input,
-    //     output,
-    // ) {
-    //     while !runner.step(input, output) {}
-    // }
+    let mut runner = PietExecution::new(img.clone());
+    if !runner.continue_step(
+        (0, 0),
+        (0, 0),
+        runner.check_valid_pixel((0, 0)),
+        input,
+        output,
+    ) {
+        while !runner.step(input, output) {}
+    }
 }
 
-pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool) {
+pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool, gui: bool) {
     if output.is_some() {
         let _ = img.save_with_format(output.clone().unwrap(), image::ImageFormat::Png);
     }
@@ -495,6 +494,10 @@ pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool) {
         let input = std::io::stdin().bytes().peekable();
         let output = std::io::stdout();
 
-        crate::piet::interpret(img, &mut Some(input), &mut Some(output));
+        if gui {
+            crate::piet::interpret_window(img, &mut Some(input), &mut Some(output));
+        } else {
+            crate::piet::interpret(img, &mut Some(input), &mut Some(output));
+        }
     }
 }

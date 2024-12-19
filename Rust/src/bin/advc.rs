@@ -21,6 +21,8 @@ struct Args {
     #[arg(short, long)]
     run_piet: bool,
     #[arg(short, long)]
+    gui_piet: bool,
+    #[arg(short, long)]
     registers: Option<usize>,
 }
 
@@ -39,5 +41,6 @@ fn main() {
         args.run_stk,
         args.to_piet,
         args.run_piet,
+        args.gui_piet,
     )
 }

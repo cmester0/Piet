@@ -153,6 +153,7 @@ impl PietStackExecutor {
         run_stk: bool,
         to_piet: Option<String>,
         run_piet: bool,
+        gui_piet: bool,
     ) {
         if optimize_stk {
             self.optimize()
@@ -179,6 +180,6 @@ impl PietStackExecutor {
         let img: image::RgbImage = self.to_png(&mut optimizer);
         let dyn_img = DynamicImage::ImageRgb8(img);
 
-        crate::piet::handle_piet(dyn_img, to_piet, run_piet);
+        crate::piet::handle_piet(dyn_img, to_piet, run_piet, gui_piet);
     }
 }

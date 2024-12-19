@@ -549,6 +549,7 @@ impl SmplExecutor {
         run_stk: bool,
         to_piet: Option<String>,
         run_piet: bool,
+        gui_piet: bool,
     ) {
         if output.is_some() {
             let file_str = self.to_file_string();
@@ -561,6 +562,6 @@ impl SmplExecutor {
         }
 
         let stk_executor = SmplToStk::to_stk(self);
-        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet);
+        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet);
     }
 }
