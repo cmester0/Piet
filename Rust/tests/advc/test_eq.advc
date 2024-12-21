@@ -1,0 +1,17 @@
+var t num
+var n list
+
+goto get_input
+
+label get_input
+inN
+set t
+
+get t
+push -1
+eq
+
+outN
+
+
+goto term

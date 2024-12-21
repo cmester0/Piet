@@ -4,14 +4,14 @@ use image::DynamicImage;
 use itertools::Itertools;
 use ndarray::ArrayView;
 use ndarray::Ix2;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::io::Read;
-
+use num::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::*;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::io::Read;
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {
@@ -55,7 +55,7 @@ struct PietCursor {
 struct PietExecution {
     map: PietImageData,
     cursor: PietCursor,
-    stack: Vec<isize>, /* TODO: needs bigint math? */
+    stack: Vec<BigInt>, /* TODO: needs bigint math? */
 }
 
 impl PietExecution {
@@ -82,10 +82,18 @@ impl PietExecution {
         &mut self,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
+        skip_whitespace: bool,
     ) -> bool {
         let curr_pos = (self.cursor.cx, self.cursor.cy);
         let (next_pos, valid_pix) = self.next_step_from_dp(curr_pos);
-        self.continue_step(curr_pos, next_pos, valid_pix, input, output)
+        self.continue_step(
+            curr_pos,
+            next_pos,
+            valid_pix,
+            input,
+            output,
+            skip_whitespace,
+        )
     }
 
     fn continue_step<I: std::io::Read, O: std::io::Write>(
@@ -95,6 +103,7 @@ impl PietExecution {
         mut valid_pix: bool,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
+        skip_whitespace: bool,
     ) -> bool {
         if !valid_pix {
             let mut block = 0;
@@ -139,6 +148,9 @@ impl PietExecution {
             while self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
                 last_pos = next_pos;
                 (next_pos, _) = self.next_step_from_dp(next_pos);
+                if skip_whitespace {
+                    break;
+                }
             }
             (self.cursor.cx, self.cursor.cy) = last_pos;
             return false;
@@ -151,7 +163,7 @@ impl PietExecution {
                 let (cc_c, cc_r) = REV_MAP[abi.c.into()];
 
                 if let Some(cmd) = match ((cc_c + 6 - lc_c) % 6, (cc_r + 3 - lc_r) % 3) {
-                    (0, 1) => Some(CMD::Push(self.cursor.last_bs as isize)),
+                    (0, 1) => Some(CMD::Push(self.cursor.last_bs.into())),
                     (0, 2) => Some(CMD::Pop),
                     (1, 0) => Some(CMD::Add),
                     (1, 1) => Some(CMD::Sub),
@@ -164,16 +176,16 @@ impl PietExecution {
                         if !(self.stack.len() >= 1) {
                             panic!()
                         }
-                        let a = self.stack.pop().unwrap();
-                        self.cursor.dp = (self.cursor.dp + (a.rem_euclid(4) as usize)) % 4;
+                        let a : isize = self.stack.pop().unwrap().to_isize().unwrap();
+                        self.cursor.dp = (self.cursor.dp + (a.rem_euclid(4)) as usize) % 4;
                         None // Pointer
                     }
                     (3, 2) => {
                         if !(self.stack.len() >= 1) {
                             panic!()
                         }
-                        let a = self.stack.pop().unwrap();
-                        self.cursor.cc = (self.cursor.cc + (a.abs() as usize)) % 2;
+                        let a : usize = self.stack.pop().unwrap().abs().to_usize().unwrap() % 2;
+                        self.cursor.cc = (self.cursor.cc + a) % 2;
                         None // Switch
                     }
                     (4, 0) => Some(CMD::Dup),
@@ -364,6 +376,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     img: DynamicImage,
     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
     output: &mut Option<O>,
+    steps_per_frame: usize,
 ) {
     let mut runner = PietExecution::new(img.clone());
 
@@ -390,6 +403,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
         runner.check_valid_pixel((0, 0)),
         input,
         output,
+        true,
     ) {
         let mut canvas = window.into_canvas().build().unwrap();
         canvas.window_mut().set_position(
@@ -416,8 +430,10 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
             // The rest of the game loop goes here...
 
             if frame >= 1 {
-                if runner.step(input, output) {
-                    break;
+                for _ in 0..steps_per_frame {
+                    if runner.step(input, output, true) {
+                        break 'running;
+                    }
                 }
                 frame = 0;
             }
@@ -494,18 +510,29 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
     output: &mut Option<O>,
 ) {
     let mut runner = PietExecution::new(img.clone());
+    let mut total_steps = 0;
     if !runner.continue_step(
         (0, 0),
         (0, 0),
         runner.check_valid_pixel((0, 0)),
         input,
         output,
+        false,
     ) {
-        while !runner.step(input, output) {}
+        while !runner.step(input, output, false) {
+            total_steps += 1;
+        }
     }
+    println!("total steps: {}", total_steps);
 }
 
-pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool, gui: bool) {
+pub fn handle_piet(
+    img: DynamicImage,
+    output: Option<String>,
+    run: bool,
+    gui: bool,
+    steps_per_frame: usize,
+) {
     if output.is_some() {
         let _ = img.save_with_format(output.clone().unwrap(), image::ImageFormat::Png);
     }
@@ -515,7 +542,12 @@ pub fn handle_piet(img: DynamicImage, output: Option<String>, run: bool, gui: bo
         let output = std::io::stdout();
 
         if gui {
-            crate::piet::interpret_window(img, &mut Some(input), &mut Some(output));
+            crate::piet::interpret_window(
+                img,
+                &mut Some(input),
+                &mut Some(output),
+                steps_per_frame,
+            );
         } else {
             crate::piet::interpret(img, &mut Some(input), &mut Some(output));
         }

@@ -64,7 +64,7 @@ pub fn parse_expr(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Expr {
             let n = e.next().unwrap();
             match n.as_rule() {
                 Rule::Number => Instr(CMD::Push(n.as_str().parse().unwrap())),
-                Rule::Char => Instr(CMD::Push(n.as_str().chars().next().unwrap() as isize)),
+                Rule::Char => Instr(CMD::Push((n.as_str().chars().next().unwrap() as isize).into())),
                 _ => panic!("Trying to push non-number"),
             }
         }

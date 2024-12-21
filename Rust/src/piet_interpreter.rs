@@ -1,8 +1,12 @@
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+use num::BigInt;
+use num::ToPrimitive;
+use num::traits::Euclid;
+
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum CMD {
     Nop,
 
-    Push(isize),
+    Push(BigInt),
     Pop,
     Add,
     Sub,
@@ -53,7 +57,7 @@ impl CMD {
 
     pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut Vec<isize>,
+        stack: &mut Vec<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> Option<()> {
@@ -86,49 +90,52 @@ impl CMD {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
-                if b == 0 { return None }
+                if b == 0.into() { return None }
                 stack.push(b / a);
             }
             CMD::Mod => {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
-                if a == 0 { return None }
-                stack.push(b.rem_euclid(a));
+                if a == 0.into() { return None }
+                stack.push(b.rem_euclid(&a));
             }
             CMD::Not => {
                 if stack.len() < 1 { return None }
                 let a = stack.pop()?;
-                stack.push(if a == 0 { 1 } else { 0 });
+                stack.push(if a == 0.into() { 1.into() } else { 0.into() });
             }
             CMD::Greater => {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
 
-                stack.push(if b > a { 1 } else { 0 });
+                stack.push(if b > a { 1.into() } else { 0.into() });
             }
             CMD::Dup => {
                 let a = stack.pop()?;
-                stack.push(a);
+                stack.push(a.clone());
                 stack.push(a);
             }
             CMD::Roll => {
-                if stack.len() < 2 || stack[stack.len()-2] < 0 { return None }
+                if stack.len() < 2 || stack[stack.len()-2] < 0.into() { return None }
+
                 let mut a = stack.pop()?;
                 let b = stack.pop()?;
+
+                // let b = stack.pop()?;
                 // if b == 0 { return None }
-                a = a.rem_euclid(b);
+                a = a.rem_euclid(&b);
 
                 // let a = a as usize;
-                let b = b as usize;
+                let b = b.to_usize().unwrap();
 
-                if a != 0 {
+                if a != 0.into() {
                     let s = stack.len().clone();
-                    if a > 0 {
-                        stack[s - b..s].rotate_right(a as usize);
+                    if a > 0.into() {
+                        stack[s - b..s].rotate_right(a.to_usize().unwrap());
                     } else {
-                        stack[s - b..s].rotate_left(-a as usize);
+                        stack[s - b..s].rotate_left((-a).to_usize().unwrap());
                     }
                 }
             }
@@ -149,14 +156,14 @@ impl CMD {
                 }
 
                 if char_vec.len() == 0 {
-                    stack.push(-1isize);
+                    stack.push((-1isize).into());
                 } else {
                     stack.push(
                         char_vec
                             .iter()
                             .cloned()
                             .collect::<String>()
-                            .parse::<isize>()
+                            .parse::<BigInt>()
                             .unwrap(),
                     );
                 }
@@ -164,9 +171,9 @@ impl CMD {
             CMD::InC => {
                 let input = input.as_mut().unwrap();
                 if let Some(Ok(c)) = input.next() {
-                    stack.push(c as isize)
+                    stack.push(c.into())
                 } else {
-                    stack.push(-1isize)
+                    stack.push((-1).into())
                 }
             }
             CMD::OutN => {
@@ -178,8 +185,8 @@ impl CMD {
             }
             CMD::OutC => {
                 if stack.len() < 1 { return None }
-                let a = stack.pop()?;
-                let c = char::from_u32(a as u32).unwrap();
+                let a = stack.pop()?.to_u32().unwrap();
+                let c = char::from_u32(a).unwrap();
                 let output = output.as_mut().unwrap();
                 write!(output,"{}", c).unwrap();
                 output.flush().unwrap();
@@ -197,7 +204,7 @@ impl CMD {
 
     pub fn interpret<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut Vec<isize>,
+        stack: &mut Vec<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) {

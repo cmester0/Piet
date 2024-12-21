@@ -3,6 +3,7 @@ pub mod advc_to_mid_smpl;
 use crate::advc::advc_to_mid_smpl::AdvcToSmpl;
 use crate::piet_interpreter::CMD::{self};
 use itertools::Itertools;
+use num::*;
 use pest::iterators::Pair;
 use pest::*;
 use pest_derive::Parser;
@@ -22,7 +23,7 @@ pub enum VariableType {
 #[allow(dead_code)]
 pub struct Variable {
     var_type: VariableType,
-    value: isize,
+    value: BigInt,
     var_index: usize,
 }
 
@@ -83,7 +84,7 @@ pub enum Expr {
     SetHeap,
     Readlines,
     Length,
-    Index(String, Vec<(String, isize)>),
+    Index(String, Vec<(String, BigInt)>),
 
     Comment(String),
 }
@@ -127,7 +128,7 @@ pub fn parse_expr(
             let n = e.next().unwrap();
             match n.as_rule() {
                 Rule::Number => Instr(CMD::Push(n.as_str().parse().unwrap())),
-                Rule::Char => Instr(CMD::Push(n.as_str().chars().next().unwrap() as isize)),
+                Rule::Char => Instr(CMD::Push((n.as_str().chars().next().unwrap() as isize).into())),
                 _ => panic!("Trying to push non-number"),
             }
         }
@@ -163,6 +164,7 @@ pub fn parse_expr(
         Rule::GetHeap => GetHeap,
         Rule::Malloc => Malloc,
         Rule::GetElem => GetElem,
+        Rule::SetElem => SetElem,
         Rule::Readlines => Readlines,
         Rule::Length => Length,
         Rule::Nop => Instr(CMD::Nop),
@@ -174,11 +176,11 @@ pub fn parse_expr(
             while let Some(nst) = indx_stmt.next() {
                 let mut nos = nst.into_inner();
                 let n = String::from(nos.next().unwrap().as_str());
-                let v = if let Some(v) = nos.next() {
-                    (if v.as_rule() == Rule::Negative { -1 } else { 1 })
+                let v : BigInt = if let Some(v) = nos.next() {
+                    (if v.as_rule() == Rule::Negative { Into::<BigInt>::into(-1) } else { 1.into() })
                         * (nos.next().unwrap().as_str().parse::<isize>().unwrap())
                 } else {
-                    0
+                    0.into()
                 };
 
                 index_vec.push((n, v));
@@ -246,7 +248,7 @@ pub fn parse_expr(
             // end of body
             blocks.get_mut(&block_name.clone()).unwrap().extend(vec![
                 Expr::Get(start.clone()),
-                Expr::Instr(CMD::Push(1)),
+                Expr::Instr(CMD::Push(1.into())),
                 Expr::Instr(CMD::Add),
                 Expr::Set(start.clone()),
                 Expr::Goto(start_label.clone()),
@@ -344,8 +346,8 @@ pub struct AdvcExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
     pub variables: HashMap<String, Variable>,
-    pub stack: Vec<isize>,
-    pub heap: Vec<isize>,
+    pub stack: Vec<BigInt>,
+    pub heap: Vec<BigInt>,
     pub label: String,
     pub registers: usize,
 }
@@ -553,7 +555,7 @@ pub fn parse_string(
                                                 String::from(name.as_str()),
                                                 Variable {
                                                     var_type: VariableType::NUM,
-                                                    value: 0isize,
+                                                    value: 0isize.into(),
                                                     var_index: variables.len(),
                                                 },
                                             );
@@ -563,7 +565,7 @@ pub fn parse_string(
                                                 String::from(name.as_str()),
                                                 Variable {
                                                     var_type: VariableType::LIST,
-                                                    value: -1isize,
+                                                    value: (-1isize).into(),
                                                     var_index: variables.len(),
                                                 },
                                             );
@@ -649,7 +651,7 @@ impl AdvcExecutor {
                 format!("__R{}__", variables.len()),
                 Variable {
                     var_type: VariableType::NUM,
-                    value: 0,
+                    value: 0.into(),
                     var_index: variables.len(),
                 },
             );
@@ -685,7 +687,7 @@ impl AdvcExecutor {
                 }
                 Branch(l_then, l_else) => {
                     let a = self.stack.pop().unwrap();
-                    if a == 0 {
+                    if a == 0.into() {
                         self.label = l_else.clone().get_label_name();
                     } else {
                         self.label = l_then.clone().get_label_name();
@@ -700,7 +702,7 @@ impl AdvcExecutor {
                         self.variables
                             .iter()
                             .sorted_by(|(_, v1), (_, v2)| v1.var_index.cmp(&v2.var_index))
-                            .map(|(x, v)| (x, v.value))
+                            .map(|(x, v)| (x, v.value.clone()))
                             .collect::<Vec<_>>()
                     );
                     println!("Stack: {:?}", self.stack);
@@ -716,14 +718,14 @@ impl AdvcExecutor {
                     if !self.variables.contains_key(&v) {
                         panic!("Get for variable {} does not exists", v);
                     }
-                    self.stack.push(self.variables[&v].value)
+                    self.stack.push(self.variables[&v].value.clone())
                 }
                 For(_, _, l) => {
                     self.label = l.clone().get_label_name();
                     return self.label != "term";
                 }
                 If(l_then, l_else) => {
-                    if self.stack.pop().unwrap() != 0 {
+                    if self.stack.pop().unwrap() != 0.into() {
                         self.label = l_then.clone().get_label_name();
                     } else {
                         self.label = l_else.clone().get_label_name();
@@ -733,42 +735,44 @@ impl AdvcExecutor {
                 Eq => {
                     let a = self.stack.pop();
                     let b = self.stack.pop();
-                    self.stack.push(if a == b { 1 } else { 0 });
+                    self.stack.push(if a == b { 1.into() } else { 0.into() });
                 }
                 Append => {
                     let ai = self.stack.pop().unwrap();
                     // Array doubling
 
-                    let mut a = if ai == -1 {
+                    let mut a = if ai == (-1).into() {
                         let na = self.heap.len();
-                        self.heap.push(1);
-                        self.heap.push(0);
-                        self.heap.push(0);
+                        self.heap.push(1.into());
+                        self.heap.push(0.into());
+                        self.heap.push(0.into());
                         na
                     } else {
-                        ai as usize
+                        ai.to_usize().unwrap()
                     };
 
                     if self.heap[a] == self.heap[a + 1] {
                         let na = self.heap.len();
-                        self.heap.push(self.heap[a] * 2);
-                        self.heap.push(self.heap[a + 1]);
+                        self.heap.push(self.heap[a].clone() * 2);
+                        self.heap.push(self.heap[a + 1].clone());
                         self.heap.extend(
-                            self.heap[(a + 2)..(a + 2 + (self.heap[a] as usize))]
+                            self.heap[(a + 2)..(a + 2 + (self.heap[a].to_usize().unwrap()))]
                                 .iter()
                                 .cloned()
                                 .collect::<Vec<_>>(),
                         );
 
-                        self.heap.extend([0].repeat(self.heap[a] as usize));
+                        for _ in 0..self.heap[a].to_usize().unwrap() {
+                            self.heap.push(0.into())
+                        }
                         a = na;
                     };
 
-                    let index = a + 2 + self.heap[a + 1] as usize;
+                    let index = a + 2 + self.heap[a + 1].to_usize().unwrap();
                     self.heap[index] = self.stack.pop().unwrap();
                     self.heap[a + 1] += 1;
 
-                    self.stack.push(a as isize);
+                    self.stack.push(a.into());
                 }
                 PrintCListOfList => {
                     todo!("print_c_list_of_list")
@@ -780,13 +784,13 @@ impl AdvcExecutor {
                     // a in l starting at z
                     let mut index: isize = -1;
 
-                    for i in z..self.heap[(l + 1) as usize] {
-                        if a == self.heap[(l + 2 + i) as usize] {
+                    for i in z.to_isize().unwrap()..self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone().to_isize().unwrap() {
+                        if a == self.heap[(l.clone() + Into::<BigInt>::into(2) + i).to_usize().unwrap()].clone() {
                             index = i as isize;
                             break;
                         }
                     }
-                    self.stack.push(index);
+                    self.stack.push(index.into());
                 }
                 Malloc => {
                     todo!("Malloc")
@@ -794,65 +798,67 @@ impl AdvcExecutor {
                 GetElem => {
                     let a = self.stack.pop().unwrap();
                     let b = self.stack.pop().unwrap();
-                    self.stack.push(self.heap[(a + 2 + b) as usize]);
+                    self.stack.push(self.heap[(a + Into::<BigInt>::into(2) + b).to_usize().unwrap()].clone());
                 }
                 SetElem => {
                     let a = self.stack.pop().unwrap();
                     let b = self.stack.pop().unwrap();
                     let c = self.stack.pop().unwrap();
-                    self.heap[(a + 2 + b) as usize] = c;
+                    self.heap[(a + Into::<BigInt>::into(2) + b).to_usize().unwrap()] = c;
                 }
                 GetHeap => {
                     let a = self.stack.pop().unwrap();
-                    self.stack.push(self.heap[a as usize]);
+                    self.stack.push(self.heap[a.to_usize().unwrap()].clone());
                 }
                 SetHeap => {
                     let a = self.stack.pop().unwrap();
                     let b = self.stack.pop().unwrap();
-                    self.heap[a as usize] = b;
+                    self.heap[a.to_usize().unwrap()] = b;
                 }
                 Readlines => {
                     let input = input.as_mut().unwrap();
-                    let mut lines: Vec<isize> = Vec::new();
-                    let mut line: Vec<isize> = Vec::new();
+                    let mut lines: Vec<BigInt> = Vec::new();
+                    let mut line: Vec<BigInt> = Vec::new();
 
-                    let add_line = &mut |heap: &mut Vec<isize>, line: Vec<isize>| {
+                    let add_line = &mut |heap: &mut Vec<BigInt>, line: Vec<BigInt>| {
                         let mut p = 1;
                         while p < line.len() {
                             p *= 2;
                         }
-                        heap.push(p as isize);
-                        heap.push(line.len() as isize);
+                        heap.push(p.into());
+                        heap.push(line.len().into());
                         heap.extend(line.clone());
-                        heap.extend([0].repeat(p - line.len()))
+                        for _ in 0..p - line.len() {
+                            heap.push(0.into())
+                        }
                     };
 
                     while let Some(Ok(c)) = input.next() {
                         if c == 10 {
                             // 10 = \n
-                            lines.push(self.heap.len() as isize);
+                            lines.push(self.heap.len().into());
                             add_line(&mut self.heap, line);
                             line = Vec::new();
                         } else {
-                            line.push(c as isize)
+                            line.push(c.into())
                         }
                     }
 
                     // lines.push(self.heap.len() as isize);
                     // add_line(&mut self.heap, line);
 
-                    self.stack.push(self.heap.len() as isize);
+                    self.stack.push(self.heap.len().into());
                     add_line(&mut self.heap, lines);
                 }
                 Length => {
-                    let a = self.stack.pop().unwrap() as usize;
-                    self.stack.push(self.heap[a + 1]);
+                    let a = self.stack.pop().unwrap().to_usize().unwrap();
+                    self.stack.push(self.heap[a + 1].clone());
                 }
                 Index(s, v) => {
-                    let mut curr = self.variables[&s].value;
+                    let mut curr = self.variables[&s].value.clone();
                     for (name, offset) in v {
-                        let index = self.variables[&name].value + offset;
-                        curr = self.heap[(curr + 2isize + index) as usize];
+                        let index = self.variables[&name].value.clone() + offset;
+                        curr = self.heap[(curr + Into::<BigInt>::into(2isize) + index).to_usize().unwrap()].clone();
                     }
                     self.stack.push(curr);
                 }
@@ -881,6 +887,7 @@ impl AdvcExecutor {
         to_piet: Option<String>,
         run_piet: bool,
         gui_piet: bool,
+        steps_per_frame: usize,
     ) {
         if run {
             let input = std::io::stdin().bytes().peekable();
@@ -894,6 +901,15 @@ impl AdvcExecutor {
         }
 
         let smpl_executor = AdvcToSmpl::to_smpl(self.clone());
-        smpl_executor.handle_smpl(output, to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet);
+        smpl_executor.handle_smpl(
+            output,
+            to_stk,
+            optimize_stk,
+            run_stk,
+            to_piet,
+            run_piet,
+            gui_piet,
+            steps_per_frame,
+        );
     }
 }

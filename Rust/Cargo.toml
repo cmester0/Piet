@@ -37,6 +37,7 @@ pest = "*"
 pest_derive = "*"
 
 sdl2 = "*"
+num = "*"
 
 [dependencies.druid]
 version = "*"

@@ -24,12 +24,15 @@ struct Args {
     gui_piet: bool,
     #[arg(short, long)]
     registers: Option<usize>,
+    #[arg(short, long)]
+    steps_per_frame: Option<usize>,
 }
 
 fn main() {
     let args = Args::parse();
 
     let registers = args.registers.unwrap_or(5);
+    let steps_per_frame = args.steps_per_frame.unwrap_or(1);
 
     let mut advc_executor = AdvcExecutor::new(args.filepath.as_str(), registers);
 
@@ -42,5 +45,6 @@ fn main() {
         args.to_piet,
         args.run_piet,
         args.gui_piet,
+        steps_per_frame,
     )
 }

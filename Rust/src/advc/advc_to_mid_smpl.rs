@@ -65,6 +65,12 @@ impl AdvcToSmpl {
         //     .imports
         //     .insert(lib.clone(), format!("./lib/{}.lib", lib));
 
+        self.smpl_executor
+            .blocks
+            .get_mut(&self.smpl_executor.label)
+            .unwrap()
+            .push(Expr::Comment(format!("+lib_{}",lib)));
+
         self.smpl_executor.label = crate::mid_smpl::handle_lib(
             self.smpl_executor.label.clone(),
             lib.clone(),
@@ -76,6 +82,12 @@ impl AdvcToSmpl {
             &mut self.smpl_executor.label_count,
             &mut self.smpl_executor.imports,
         );
+
+        self.smpl_executor
+            .blocks
+            .get_mut(&self.smpl_executor.label)
+            .unwrap()
+            .push(Expr::Comment(format!("-lib_{}",lib)));
 
         // // TODO:
         // self.smpl_executor
@@ -103,7 +115,7 @@ impl AdvcToSmpl {
         match e {
             AdvcExpr::Instr(Nop) => {}
             AdvcExpr::Instr(c @ Push(_)) => {
-                self.add_cmd(c);
+                self.add_cmd(c.clone());
                 self.add_lib(c.cmd_str());
             }
             AdvcExpr::Instr(c) => {
@@ -167,9 +179,9 @@ impl AdvcToSmpl {
                 ];
                 for (n, v) in indexes {
                     exprs.push(AdvcExpr::Get(n));
-                    if v == 0 {
+                    if v == 0.into() {
                     }
-                    else if v < 0 {
+                    else if v < 0.into() {
                         exprs.push(AdvcExpr::Instr(Push(-v)));
                         exprs.push(AdvcExpr::Instr(Sub));
                     } else {

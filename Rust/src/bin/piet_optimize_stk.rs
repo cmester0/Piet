@@ -17,7 +17,7 @@ fn main() {
 
     for i in 0..args.limit {
         if args.stack {
-            println!("{}: {:?}", i, optimizer.optimize_stack(vec![i as isize]))
+            println!("{}: {:?}", i, optimizer.optimize_stack(vec![i.into()]))
         } else {
             println!("{}: {:?}", i, optimizer.optimize_number(i))
         }

@@ -1,0 +1,120 @@
+use mod stdlib
+use print_listC stdlib
+use roll stdlib
+use get_heap stdlib
+use pre_branch stdlib
+use length stdlib
+use set_elem stdlib
+use in stdlib
+use dup stdlib
+use add stdlib
+use put_at_depth stdlib
+use swap_at_depth stdlib
+use malloc stdlib
+use print_listN stdlib
+use append stdlib
+use get_elem stdlib
+use inC stdlib
+use inN stdlib
+use get_list stdlib
+use not stdlib
+use dup_at_depth_smpl stdlib
+use push stdlib
+use stk_eq stdlib
+use swap stdlib
+use pop stdlib
+use swap_smpl stdlib
+use div stdlib
+use readlines stdlib
+use eq stdlib
+use get_at_depth stdlib
+use copy_memory stdlib
+use printC_list_of_list stdlib
+use dup_at_depth stdlib
+use set_heap stdlib
+use readC_until stdlib
+use outN stdlib
+use outC stdlib
+use mul stdlib
+use greater stdlib
+use sub stdlib
+
+var t num
+var n list
+
+goto get_input
+
+label get_input
+# +lib_inN
+goto l_ref_0
+
+label l_ref_0
+push -2
+push -3
+inN
+push 2
+push 1
+roll
+push -3
+sub
+dup
+mul
+push 0
+greater
+not
+branch l_ref_1 l_ref_2
+
+label l_ref_1
+push 3
+push 1
+roll
+pop
+push 1
+add
+goto l_ref_3
+
+label l_ref_2
+pop
+goto l_ref_3
+
+label l_ref_3
+# -lib_inN
+set t
+get t
+push -1
+# +lib_push
+push 2
+push 1
+roll
+push 1
+add
+# -lib_push
+# +lib_eq
+push 2
+push 1
+roll
+push 3
+push -1
+roll
+sub
+dup
+mul
+push 0
+greater
+not
+push 2
+push 1
+roll
+push 1
+sub
+# -lib_eq
+# +lib_outN
+push 2
+push 1
+roll
+outN
+push 1
+sub
+# -lib_outN
+goto term
+

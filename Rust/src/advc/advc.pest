@@ -75,6 +75,7 @@ If = { "if" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" ~ SEPARATOR
 For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
 
 GetElem = { "get_elem" }
+SetElem = { "set_elem" }
 Readlines = { "readlines" }
 Length = { "length" }
 Nop = { "nop" }
@@ -115,6 +116,7 @@ Expr = {
 
   | Append
   | GetElem
+  | SetElem
   | Readlines
   | Length
   | Nop

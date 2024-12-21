@@ -8,6 +8,8 @@ use ndarray::Array;
 use ndarray::Ix2;
 use std::cmp;
 use std::collections::HashMap;
+use num::ToPrimitive;
+use num::*;
 
 impl super::PietStackExecutor {
     fn index_and_command_to_color_and_next_index(cmd: CMD, output: &mut Vec<String>) {
@@ -19,7 +21,8 @@ impl super::PietStackExecutor {
                 return;
             }
             CMD::Push(i) => {
-                for _ in 0..(i - 1) {
+                let x : BigInt = i - Into::<BigInt>::into(1);
+                for _ in 0..(x.to_usize().unwrap()) {
                     output.push(String::from(COLORS[previous_r][previous_c]));
                 }
                 previous_r = (previous_r + 1) % 3
@@ -195,17 +198,17 @@ impl super::PietStackExecutor {
             let mut nb = vec![];
             for x in b {
                 match x {
-                    Instr(CMD::Push(0)) => {
-                        nb.push(Instr(CMD::Push(1)));
+                    Instr(CMD::Push(n)) if n == 0.into() => {
+                        nb.push(Instr(CMD::Push(1.into())));
                         nb.push(Instr(CMD::Not));
                     }
                     Instr(CMD::Push(n)) => {
-                        if n < 0 {
-                            nb.push(Instr(CMD::Push(1)));
+                        if n < 0.into() {
+                            nb.push(Instr(CMD::Push(1.into())));
                             nb.push(Instr(CMD::Not));
                             nb.extend(
                                 optimizer
-                                    .optimize_number(-n as usize)
+                                    .optimize_number((-n).to_usize().unwrap())
                                     .into_iter()
                                     .map(Instr)
                                     .collect::<Vec<Expr>>(),
@@ -214,7 +217,7 @@ impl super::PietStackExecutor {
                         } else {
                             nb.extend(
                                 optimizer
-                                    .optimize_number(n as usize)
+                                    .optimize_number(n.to_usize().unwrap())
                                     .into_iter()
                                     .map(Instr)
                                     .collect::<Vec<Expr>>(),
@@ -397,12 +400,12 @@ impl super::PietStackExecutor {
 
         let prepare_pointer = vec![
             Instr(CMD::Dup),
-            Instr(CMD::Push(1)),
+            Instr(CMD::Push(1.into())),
             Instr(CMD::Not),
             Instr(CMD::Greater),
             Instr(CMD::Not),
             Instr(CMD::Pointer),
-            Instr(CMD::Push(1)),
+            Instr(CMD::Push(1.into())),
             Instr(CMD::Sub),
         ];
         let prepare_pointer_index = 5 + 1; // prepare_pointer.index("pointer")+1

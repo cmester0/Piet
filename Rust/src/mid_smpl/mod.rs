@@ -15,6 +15,7 @@ use std::fs::File;
 #[allow(unused_imports)]
 use std::io::Read;
 use std::io::Write;
+use num::*;
 
 #[derive(Clone, Debug)]
 // #[repr(isize)]
@@ -27,7 +28,7 @@ pub enum VariableType {
 #[allow(dead_code)]
 pub struct Variable {
     pub(crate) var_type: VariableType,
-    pub(crate) value: isize,
+    pub(crate) value: BigInt,
     pub(crate) var_index: usize,
 }
 
@@ -328,7 +329,7 @@ pub fn parse_string(
                                                 String::from(name.as_str()),
                                                 Variable {
                                                     var_type: VariableType::NUM,
-                                                    value: 0isize,
+                                                    value: 0isize.into(),
                                                     var_index: variables.len(),
                                                 },
                                             );
@@ -338,7 +339,7 @@ pub fn parse_string(
                                                 String::from(name.as_str()),
                                                 Variable {
                                                     var_type: VariableType::LIST,
-                                                    value: -1isize,
+                                                    value: (-1isize).into(),
                                                     var_index: variables.len(),
                                                 },
                                             );
@@ -492,7 +493,7 @@ impl SmplExecutor {
                 format!("__R{}__", variables.len()),
                 Variable {
                     var_type: VariableType::NUM,
-                    value: 0,
+                    value: 0.into(),
                     var_index: variables.len(),
                 },
             );
@@ -550,6 +551,7 @@ impl SmplExecutor {
         to_piet: Option<String>,
         run_piet: bool,
         gui_piet: bool,
+        steps_per_frame: usize,
     ) {
         if output.is_some() {
             let file_str = self.to_file_string();
@@ -562,6 +564,6 @@ impl SmplExecutor {
         }
 
         let stk_executor = SmplToStk::to_stk(self);
-        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet);
+        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet, steps_per_frame);
     }
 }

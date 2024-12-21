@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 use super::Expr::{self as SmplExpr};
 use super::SmplExecutor;
 use crate::mid_smpl::*;
@@ -8,7 +6,9 @@ use crate::{
     piet_interpreter::CMD::{self, *},
     piet_stack::PietStackExecutor,
 };
+use itertools::Itertools;
 use std::collections::HashMap;
+use num::*;
 
 pub struct SmplToStk {
     smpl_executor: SmplExecutor,
@@ -37,49 +37,49 @@ impl SmplToStk {
     }
 
     fn swap(&mut self) {
-        self.add_cmds(vec![Push(2), Push(1), Roll]);
+        self.add_cmds(vec![Push(2.into()), Push(1.into()), Roll]);
     }
 
     fn dup_at_depth(&mut self) {
         // Save / update depth
         self.add_cmd(Dup);
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Add);
 
         // Fetch the element
-        self.add_cmd(Push(-1));
+        self.add_cmd(Push((-1).into()));
         self.add_cmd(Roll);
 
         // dup and save element
         self.add_cmd(Dup);
-        self.add_cmd(Push(3));
-        self.add_cmd(Push(-1));
+        self.add_cmd(Push(3.into()));
+        self.add_cmd(Push((-1).into()));
         self.add_cmd(Roll);
 
         // Put back the new element
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Add);
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Roll);
     }
 
     fn swap_at_depth(&mut self) {
         // Save / update depth
         self.add_cmd(Dup);
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Add);
 
         // Fetch the element
-        self.add_cmd(Push(-1));
+        self.add_cmd(Push((-1).into()));
         self.add_cmd(Roll);
 
         // Do the swap
-        self.add_cmd(Push(3));
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(3.into()));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Roll);
 
         // Put back the new element
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Roll);
     }
 
@@ -89,7 +89,7 @@ impl SmplToStk {
         // self.smpl_executor.variables.insert(var_name, var.var_index);
 
         // Allocate empty variable
-        self.add_cmd(Push(var.value));
+        self.add_cmd(Push(var.value.into()));
 
         //////////////////////
         // Fetch stack size //
@@ -97,20 +97,20 @@ impl SmplToStk {
 
         self.swap();
 
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Add);
 
         self.add_cmd(Dup);
 
-        self.add_cmd(Push(3));
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(3.into()));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Roll);
 
         ////////////////////////
         // Rotate into bottom //
         ////////////////////////
 
-        self.add_cmd(Push(1));
+        self.add_cmd(Push(1.into()));
         self.add_cmd(Roll);
     }
 
@@ -136,34 +136,33 @@ impl SmplToStk {
                     panic!("No such variable {}!", var);
                 }
 
-                let var_index =
-                    self.smpl_executor.variables[&var].clone().var_index;
+                let var_index = self.smpl_executor.variables[&var].clone().var_index;
 
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
 
-                self.add_cmd(Push((var_index + 1) as isize));
+                self.add_cmd(Push((var_index + 1).into()));
 
                 self.swap();
                 self.add_cmd(Dup);
 
-                self.add_cmd(Push(3));
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(3.into()));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Roll);
                 self.swap();
                 self.add_cmd(Sub);
 
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Add);
 
-                self.add_cmd(Push(3));
-                self.add_cmd(Push(-1));
+                self.add_cmd(Push(3.into()));
+                self.add_cmd(Push((-1).into()));
                 self.add_cmd(Roll);
 
                 self.swap();
 
                 self.swap_at_depth();
                 self.add_cmd(Pop);
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Sub);
 
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
@@ -173,38 +172,39 @@ impl SmplToStk {
                     panic!("No such variable {}!", var);
                 }
 
-                let var_index =
-                    self.smpl_executor.variables[&var].clone().var_index;
+                let var_index = self.smpl_executor.variables[&var].clone().var_index;
 
                 self.add_expr(Expr::Comment(format!("+{:?}", var)));
 
-                self.add_cmd(Push((var_index + 1) as isize));
+                self.add_cmd(Push((var_index + 1).into()));
                 self.swap();
                 self.add_cmd(Dup);
 
-                self.add_cmd(Push(3));
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(3.into()));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Roll);
                 self.swap();
                 self.add_cmd(Sub);
 
                 // Add 1?
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Add);
 
                 self.dup_at_depth();
 
                 self.swap();
-                self.add_cmd(Push(1));
+                self.add_cmd(Push(1.into()));
                 self.add_cmd(Add);
 
                 self.add_expr(Expr::Comment(format!("-{:?}", var)));
-            },
+            }
             SmplExpr::Lib(s) => {
-                panic!("TODO: handle lib in direct translation. Does not include lib {}", s)
+                panic!(
+                    "TODO: handle lib in direct translation. Does not include lib {}",
+                    s
+                )
             }
         }
-
 
         //     case "print_listN":
         //         _, next_index = handle_smpl_instr(var_list, instrs, next_index, ["push",str(ord("["))])
@@ -243,8 +243,6 @@ impl SmplToStk {
         //         index = next_index
         //         next_index = next_index
 
-
-
         //     case default:
         //         print ("Did not find", l)
     }
@@ -263,10 +261,10 @@ impl SmplToStk {
         let mut bi = 0;
 
         // Setup stack invariants
-        smpl_to_stk
-            .stk_executor
-            .blocks
-            .insert(String::from("main"), vec![Instr(Push(0)), Instr(Push(1))]);
+        smpl_to_stk.stk_executor.blocks.insert(
+            String::from("main"),
+            vec![Instr(Push(0.into())), Instr(Push(1.into()))],
+        );
         smpl_to_stk
             .stk_executor
             .block_index
@@ -313,8 +311,14 @@ impl SmplToStk {
             }
         }
 
-        smpl_to_stk.stk_executor.blocks.insert(String::from("term"), vec![]);
-        smpl_to_stk.stk_executor.block_index.insert(String::from("term"), bi);
+        smpl_to_stk
+            .stk_executor
+            .blocks
+            .insert(String::from("term"), vec![]);
+        smpl_to_stk
+            .stk_executor
+            .block_index
+            .insert(String::from("term"), bi);
 
         smpl_to_stk.stk_executor.label = String::from("main");
 

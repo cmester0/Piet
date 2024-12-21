@@ -9,6 +9,7 @@ use expr::{
     Expr::{self, *},
 };
 use image::DynamicImage;
+use num::BigInt;
 use pest::*;
 use pest_derive::Parser;
 use std::collections::HashMap;
@@ -20,7 +21,7 @@ use std::io::Write;
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
-    pub stack: Vec<isize>,
+    pub stack: Vec<BigInt>,
     pub label: String,
 }
 
@@ -85,7 +86,7 @@ impl PietStackExecutor {
             }
             Branch(thn, els) => {
                 let a = self.stack.pop().unwrap();
-                if a == 0 {
+                if a == 0.into() {
                     self.label = els;
                 } else {
                     self.label = thn;
@@ -154,6 +155,7 @@ impl PietStackExecutor {
         to_piet: Option<String>,
         run_piet: bool,
         gui_piet: bool,
+        steps_per_frame: usize,
     ) {
         if optimize_stk {
             self.optimize()
@@ -180,6 +182,6 @@ impl PietStackExecutor {
         let img: image::RgbImage = self.to_png(&mut optimizer);
         let dyn_img = DynamicImage::ImageRgb8(img);
 
-        crate::piet::handle_piet(dyn_img, to_piet, run_piet, gui_piet);
+        crate::piet::handle_piet(dyn_img, to_piet, run_piet, gui_piet, steps_per_frame);
     }
 }
