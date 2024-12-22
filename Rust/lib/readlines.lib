@@ -1,3 +1,6 @@
+push -1
+lib_push
+
 !readlines_label
 goto .readlines_label
 
