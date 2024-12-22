@@ -782,11 +782,11 @@ impl AdvcExecutor {
                     let l = self.stack.pop().unwrap();
                     let a = self.stack.pop().unwrap();
                     // a in l starting at z
-                    let mut index: isize = -1;
+                    let mut index : BigInt = (-1).into();
 
                     for i in z.to_isize().unwrap()..self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone().to_isize().unwrap() {
                         if a == self.heap[(l.clone() + Into::<BigInt>::into(2) + i).to_usize().unwrap()].clone() {
-                            index = i as isize;
+                            index = i.into();
                             break;
                         }
                     }
@@ -816,6 +816,7 @@ impl AdvcExecutor {
                     self.heap[a.to_usize().unwrap()] = b;
                 }
                 Readlines => {
+                    // Read lines into
                     let input = input.as_mut().unwrap();
                     let mut lines: Vec<BigInt> = Vec::new();
                     let mut line: Vec<BigInt> = Vec::new();
@@ -851,8 +852,12 @@ impl AdvcExecutor {
                     add_line(&mut self.heap, lines);
                 }
                 Length => {
-                    let a = self.stack.pop().unwrap().to_usize().unwrap();
-                    self.stack.push(self.heap[a + 1].clone());
+                    let a = self.stack.pop().unwrap();
+                    if a == (-1).into() {
+                        self.stack.push(0.into())
+                    } else {
+                        self.stack.push(self.heap[a.to_usize().unwrap() + 1].clone());
+                    }
                 }
                 Index(s, v) => {
                     let mut curr = self.variables[&s].value.clone();

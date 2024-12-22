@@ -35,9 +35,6 @@ use print_listC ./lib/print_listC.lib
 use readlines ./lib/readlines.lib
 use printC_list_of_list ./lib/printC_list_of_list.lib
 
-push -1
-lib_push
-
 lib_readlines
 lib_printC_list_of_list
 

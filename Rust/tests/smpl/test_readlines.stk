@@ -13,15 +13,13 @@ push 1
 roll
 push 1
 roll
+# +readlines
 push -1
-# +push
 push 2
 push 1
 roll
 push 1
 add
-# -push
-# +readlines
 goto l_ref_0
 
 label l_ref_0

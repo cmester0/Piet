@@ -53,3 +53,6 @@ this is given as
 - variables: -1
 - elements:  [110, 115, 113, 3, 119, 2, 3, 0, 1, 0]
 - size       12
+
+# Readlines
+Read input into list of characters per line and push the final (pointer to a) list of lists onto the stack
