@@ -22,6 +22,8 @@ struct Args {
     steps_per_frame: Option<usize>,
     #[arg(short, long)]
     start_frame: Option<usize>,
+    #[arg(short, long, action)]
+    skip_whitespace: bool,
 }
 
 fn main() {
@@ -40,5 +42,6 @@ fn main() {
         args.gui_piet,
         steps_per_frame,
         start_frame,
+        args.skip_whitespace,
     );
 }

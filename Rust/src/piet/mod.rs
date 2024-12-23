@@ -56,6 +56,7 @@ struct PietExecution {
     map: PietImageData,
     cursor: PietCursor,
     stack: Vec<BigInt>, /* TODO: needs bigint math? */
+    whitespace_jump : HashMap<(usize,usize,usize),(usize,usize,usize)>,
 }
 
 impl PietExecution {
@@ -144,15 +145,23 @@ impl PietExecution {
             return false;
         } else if self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
             self.cursor.last_color = ValidColor::from("⚪");
-            let mut last_pos = next_pos;
-            while self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
-                last_pos = next_pos;
-                (next_pos, _) = self.next_step_from_dp(next_pos);
-                if skip_whitespace {
-                    break;
+
+            if !self.whitespace_jump.contains_key(&(self.cursor.cx, self.cursor.cy, self.cursor.dp)) {
+                let hash_start = (self.cursor.cx, self.cursor.cy, self.cursor.dp);
+                let mut last_pos = next_pos;
+                while self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
+                    last_pos = next_pos;
+                    (next_pos, _) = self.next_step_from_dp(next_pos);
+                    if skip_whitespace {
+                        break;
+                    }
                 }
-            }
-            (self.cursor.cx, self.cursor.cy) = last_pos;
+
+                (self.cursor.cx, self.cursor.cy) = last_pos;
+                self.whitespace_jump.insert(hash_start, (self.cursor.cx, self.cursor.cy, self.cursor.dp));
+            } else {
+                (self.cursor.cx, self.cursor.cy, self.cursor.dp) = self.whitespace_jump[&(self.cursor.cx, self.cursor.cy, self.cursor.dp)];
+                }
             return false;
         } else {
             //     r_u, r_d, d_r, d_l, l_d, l_u, u_l, u_r, bs, c = all_blobs_indexed[pix_to_blob[next_pos[1]][next_pos[0]]]
@@ -367,6 +376,7 @@ impl PietExecution {
                 all_blobs_indexed,
             },
             stack: Vec::new(),
+            whitespace_jump: HashMap::new(),
             //
         }
     }
@@ -378,6 +388,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     output: &mut Option<O>,
     steps_per_frame: usize,
     start_frame: usize,
+    skip_whitespace: bool,
 ) {
     let mut runner = PietExecution::new(img.clone());
 
@@ -404,11 +415,10 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
         runner.check_valid_pixel((0, 0)),
         input,
         output,
-        true,
+        skip_whitespace,
     ) {
-        println!("!!START FRAME!! {}", start_frame);
         for _ in 0..start_frame {
-            if runner.step(input, output, true) {
+            if runner.step(input, output, skip_whitespace) {
                 return;
             }
         }
@@ -441,7 +451,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
 
             if frame >= 1 {
                 for _ in 0..steps_per_frame {
-                    if runner.step(input, output, true) {
+                    if runner.step(input, output, skip_whitespace) {
                         break 'running;
                     }
                 }
@@ -543,6 +553,7 @@ pub fn handle_piet(
     gui: bool,
     steps_per_frame: usize,
     start_frame: usize,
+    skip_whitespace: bool,
 ) {
     if output.is_some() {
         let _ = img.save_with_format(output.clone().unwrap(), image::ImageFormat::Png);
@@ -559,6 +570,7 @@ pub fn handle_piet(
                 &mut Some(output),
                 steps_per_frame,
                 start_frame,
+                skip_whitespace,
             );
         } else {
             crate::piet::interpret(img, &mut Some(input), &mut Some(output));

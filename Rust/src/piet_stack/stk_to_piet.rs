@@ -534,20 +534,16 @@ impl super::PietStackExecutor {
             let mut success = true;
             for x in 0..w {
                 if arr[(x, y)] != String::from("⚪") || arr[(x, y + 1)] != String::from("⚪") {
-                    println!("{},{}: '{}'", x, y, arr[(x, y)]);
                     success = false;
                     break;
                 }
             }
             if success {
-                println!("!!REMOVED!!");
                 remove_indexes.push(y);
             } else {
                 new_h += 1;
             }
         }
-
-        println!("new_h {} vs {}", new_h, h);
 
         let mut fin_arr: Array<String, Ix2> = Array::default((w, new_h));
         let mut h_ = 0;
