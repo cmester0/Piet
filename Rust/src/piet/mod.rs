@@ -377,6 +377,7 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
     input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
     output: &mut Option<O>,
     steps_per_frame: usize,
+    start_frame: usize,
 ) {
     let mut runner = PietExecution::new(img.clone());
 
@@ -405,6 +406,15 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
         output,
         true,
     ) {
+        println!("!!START FRAME!! {}", start_frame);
+        for _ in 0..start_frame {
+            if runner.step(input, output, true) {
+                return;
+            }
+        }
+
+
+
         let mut canvas = window.into_canvas().build().unwrap();
         canvas.window_mut().set_position(
             video::WindowPos::Positioned(0),
@@ -437,58 +447,58 @@ pub fn interpret_window<I: std::io::Read, O: std::io::Write>(
                 }
                 frame = 0;
             }
+            // if frame == 0 {
+                canvas.set_draw_color(Color::RGB(0, 0, 0));
+                canvas.clear();
 
-            canvas.set_draw_color(Color::RGB(0, 0, 0));
-            canvas.clear();
+                for y in 0..frame_size * scale {
+                    for x in 0..frame_size * scale {
+                        let px = (runner.cursor.cx as u32 - frame_size / 2) * scale + x;
+                        let py = (runner.cursor.cy as u32 - frame_size / 2) * scale + y;
 
-            for y in 0..frame_size * scale {
-                for x in 0..frame_size * scale {
-                    let px = (runner.cursor.cx as u32 - frame_size / 2) * scale + x;
-                    let py = (runner.cursor.cy as u32 - frame_size / 2) * scale + y;
+                        if !(px / scale < img.width() && py / scale < img.height()) {
+                            continue;
+                        }
 
-                    if !(px / scale < img.width() && py / scale < img.height()) {
-                        continue;
+                        canvas.set_draw_color(Color::RGB(
+                            rgb_img[(px / scale, py / scale)][0],
+                            rgb_img[(px / scale, py / scale)][1],
+                            rgb_img[(px / scale, py / scale)][2],
+                        ));
+                        canvas.draw_point((x as i32, y as i32)).unwrap();
                     }
-
-                    canvas.set_draw_color(Color::RGB(
-                        rgb_img[(px / scale, py / scale)][0],
-                        rgb_img[(px / scale, py / scale)][1],
-                        rgb_img[(px / scale, py / scale)][2],
-                    ));
-                    canvas.draw_point((x as i32, y as i32)).unwrap();
                 }
-            }
 
-            canvas.set_draw_color({
-                let rgb: image::Rgb<u8> = match (runner.cursor.dp, runner.cursor.cc) {
-                    (0, 0) => ALL_COLORS[2].into(),
-                    (0, 1) => ALL_COLORS[3].into(),
-                    (1, 0) => ALL_COLORS[4].into(),
-                    (1, 1) => ALL_COLORS[5].into(),
-                    (2, 0) => ALL_COLORS[6].into(),
-                    (2, 1) => ALL_COLORS[7].into(),
-                    (3, 0) => ALL_COLORS[8].into(),
-                    (3, 1) => ALL_COLORS[9].into(),
-                    _ => panic!(),
-                };
-                Color::RGB(rgb[0] / 2, rgb[1] / 2, rgb[2] / 2)
-            });
+                canvas.set_draw_color({
+                    let rgb: image::Rgb<u8> = match (runner.cursor.dp, runner.cursor.cc) {
+                        (0, 0) => ALL_COLORS[9].into(),
+                        (0, 1) => ALL_COLORS[10].into(),
+                        (1, 0) => ALL_COLORS[11].into(),
+                        (1, 1) => ALL_COLORS[12].into(),
+                        (2, 0) => ALL_COLORS[13].into(),
+                        (2, 1) => ALL_COLORS[14].into(),
+                        (3, 0) => ALL_COLORS[15].into(),
+                        (3, 1) => ALL_COLORS[16].into(),
+                        _ => panic!(),
+                    };
+                    Color::RGB(rgb[0], rgb[1], rgb[2])
+                });
 
-            for i in 1..scale - 1 {
-                for j in 1..scale - 1 {
-                    canvas
-                        .draw_point((
-                            ((frame_size / 2 * scale + i) as i32),
-                            ((frame_size / 2 * scale + j) as i32),
-                        ))
-                        .unwrap();
+                for i in 1..scale - 1 {
+                    for j in 1..scale - 1 {
+                        canvas
+                            .draw_point((
+                                ((frame_size / 2 * scale + i) as i32),
+                                ((frame_size / 2 * scale + j) as i32),
+                            ))
+                            .unwrap();
+                    }
                 }
-            }
-
+            // }
             canvas.present();
             frame += 1;
 
-            // ::std::thread::sleep(std::time::Duration::new(20, 1_000_000_000u32 / 60));
+            // ::std::thread::sleep(std::time::Duration::new(1, 1_000_000_000u32 / 60));
         }
     }
 
@@ -532,6 +542,7 @@ pub fn handle_piet(
     run: bool,
     gui: bool,
     steps_per_frame: usize,
+    start_frame: usize,
 ) {
     if output.is_some() {
         let _ = img.save_with_format(output.clone().unwrap(), image::ImageFormat::Png);
@@ -547,6 +558,7 @@ pub fn handle_piet(
                 &mut Some(input),
                 &mut Some(output),
                 steps_per_frame,
+                start_frame,
             );
         } else {
             crate::piet::interpret(img, &mut Some(input), &mut Some(output));

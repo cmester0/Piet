@@ -893,6 +893,7 @@ impl AdvcExecutor {
         run_piet: bool,
         gui_piet: bool,
         steps_per_frame: usize,
+        start_frame: usize,
     ) {
         if run {
             let input = std::io::stdin().bytes().peekable();
@@ -915,6 +916,7 @@ impl AdvcExecutor {
             run_piet,
             gui_piet,
             steps_per_frame,
+            start_frame,
         );
     }
 }

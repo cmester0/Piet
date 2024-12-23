@@ -6,10 +6,10 @@ use image::Rgb;
 use image::RgbImage;
 use ndarray::Array;
 use ndarray::Ix2;
-use std::cmp;
-use std::collections::HashMap;
 use num::ToPrimitive;
 use num::*;
+use std::cmp;
+use std::collections::HashMap;
 
 impl super::PietStackExecutor {
     fn index_and_command_to_color_and_next_index(cmd: CMD, output: &mut Vec<String>) {
@@ -21,7 +21,7 @@ impl super::PietStackExecutor {
                 return;
             }
             CMD::Push(i) => {
-                let x : BigInt = i - Into::<BigInt>::into(1);
+                let x: BigInt = i - Into::<BigInt>::into(1);
                 for _ in 0..(x.to_usize().unwrap()) {
                     output.push(String::from(COLORS[previous_r][previous_c]));
                 }
@@ -240,7 +240,6 @@ impl super::PietStackExecutor {
 
         for (x, (x_vec, (x_t, x_e))) in blocks {
             if x_t.is_some() && x_e.is_none() {
-
                 if !block_index.contains_key(&x_t.clone().unwrap()) {
                     panic!("no block with name: {}", &x_t.unwrap());
                 }
@@ -348,6 +347,12 @@ impl super::PietStackExecutor {
         let h = 2 + 1 + total_block_height * b_height + 2;
 
         let mut arr: Array<String, Ix2> = Array::default((w, h));
+        for y in 0..h {
+            for x in 0..w {
+                arr[(x,y)] = String::from("⚪");
+            }
+        }
+
         fn set_range(arr: &mut Array<String, Ix2>, h: usize, i: usize, j: usize, c: String) {
             for x in i..(i + j) {
                 arr[(x, h)] = c.clone();
@@ -523,11 +528,44 @@ impl super::PietStackExecutor {
             }
         }
 
-        let mut img = RgbImage::new(w as u32, h as u32);
-
-        for y in 0..h {
+        let mut new_h = 1;
+        let mut remove_indexes = vec![];
+        for y in 0..h - 1 {
+            let mut success = true;
             for x in 0..w {
-                let c: ValidColor = arr[(x, y)].as_str().into();
+                if arr[(x, y)] != String::from("⚪") || arr[(x, y + 1)] != String::from("⚪") {
+                    println!("{},{}: '{}'", x, y, arr[(x, y)]);
+                    success = false;
+                    break;
+                }
+            }
+            if success {
+                println!("!!REMOVED!!");
+                remove_indexes.push(y);
+            } else {
+                new_h += 1;
+            }
+        }
+
+        println!("new_h {} vs {}", new_h, h);
+
+        let mut fin_arr: Array<String, Ix2> = Array::default((w, new_h));
+        let mut h_ = 0;
+        for y in 0..h {
+            if remove_indexes.contains(&y) {
+                h_ += 1;
+                continue;
+            }
+            for x in 0..w {
+                fin_arr[(x, y - h_)] = arr[(x, y)].clone();
+            }
+        }
+
+        let mut img = RgbImage::new(w as u32, new_h as u32);
+
+        for y in 0..new_h {
+            for x in 0..w {
+                let c: ValidColor = fin_arr[(x, y)].as_str().into();
                 let r: Rgb<u8> = c.into();
                 img[(x as u32, y as u32)] = r;
             }

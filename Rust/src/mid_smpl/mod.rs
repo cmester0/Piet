@@ -552,6 +552,7 @@ impl SmplExecutor {
         run_piet: bool,
         gui_piet: bool,
         steps_per_frame: usize,
+        start_frame: usize,
     ) {
         if output.is_some() {
             let file_str = self.to_file_string();
@@ -564,6 +565,6 @@ impl SmplExecutor {
         }
 
         let stk_executor = SmplToStk::to_stk(self);
-        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet, steps_per_frame);
+        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet, steps_per_frame, start_frame);
     }
 }

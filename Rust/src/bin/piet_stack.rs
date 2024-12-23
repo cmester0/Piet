@@ -20,6 +20,8 @@ struct Args {
     to_piet: Option<String>,
     #[arg(short, long)]
     steps_per_frame: Option<usize>,
+    #[arg(short, long)]
+    start_frame: Option<usize>,
 }
 
 fn main() {
@@ -27,6 +29,7 @@ fn main() {
 
     let stk_executor = PietStackExecutor::new(args.filepath.as_str());
     let steps_per_frame = args.steps_per_frame.unwrap_or(1);
+    let start_frame = args.start_frame.unwrap_or(0);
 
     stk_executor.handle_stk(
         args.output,
@@ -36,5 +39,6 @@ fn main() {
         args.run_piet,
         args.gui_piet,
         steps_per_frame,
+        start_frame,
     );
 }
