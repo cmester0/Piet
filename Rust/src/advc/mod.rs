@@ -203,8 +203,10 @@ pub fn parse_expr(
             Goto(start_label.clone())
         }
         Rule::Break => {
-            let (_,done_label,_) = loop_breaks.last().unwrap();
-            Goto(done_label.clone())
+            let mut break_stmt = ne.into_inner();
+
+            let (_,done_label,_) = loop_breaks[loop_breaks.len()-1-break_stmt.next().unwrap().as_str().parse::<usize>().unwrap()].clone();
+            Goto(done_label)
         }
         Rule::For => {
             let mut for_stmt = ne.into_inner();
@@ -220,6 +222,94 @@ pub fn parse_expr(
             );
 
             // Go to condition check
+            blocks
+                .get_mut(&block_name.clone())
+                .unwrap()
+                .push(Expr::Goto(start_label.clone()));
+
+            let body_label = new_label(
+                String::from("for_body"),
+                blocks,
+                block_index,
+                label_map,
+                label_count,
+            );
+
+            let done_label = new_label(
+                String::from("for_done"),
+                blocks,
+                block_index,
+                label_map,
+                label_count,
+            );
+
+            // Go to condition check
+            blocks
+                .get_mut(&start_label.clone().get_label_name())
+                .unwrap()
+                .extend(vec![
+                    Expr::Get(start.clone()),
+                    Expr::Get(end.clone()),
+                    Expr::Eq,
+                    Expr::Branch(done_label.clone(), body_label.clone()),
+                ]);
+
+            let mut sub_loop_breaks = loop_breaks.clone();
+            sub_loop_breaks.push((start_label.clone(), done_label.clone(), start.clone()));
+            block_name = parse_subblocks(
+                body_label.clone().get_label_name(),
+                for_stmt.next().unwrap(),
+                blocks,
+                block_index,
+                variables,
+                label_map,
+                label_count,
+                imports,
+                &sub_loop_breaks
+            );
+
+            // end of body
+            blocks.get_mut(&block_name.clone()).unwrap().extend(vec![
+                Expr::Get(start.clone()),
+                Expr::Instr(CMD::Push(1.into())),
+                Expr::Instr(CMD::Add),
+                Expr::Set(start.clone()),
+                Expr::Goto(start_label.clone()),
+            ]);
+
+            block_name = done_label.get_label_name();
+
+            For(start, end, start_label)
+        }
+        Rule::ForStart => {
+            let mut for_stmt = ne.into_inner();
+            let start = String::from(for_stmt.next().unwrap().as_str());
+
+            let n = for_stmt.next().unwrap();
+            let initial : BigInt = match n.as_rule() {
+                Rule::Number => n.as_str().parse().unwrap(),
+                Rule::Char => (n.as_str().chars().next().unwrap() as isize).into(),
+                _ => panic!("Trying to push non-number"),
+            };
+            let end = String::from(for_stmt.next().unwrap().as_str());
+
+            let start_label = new_label(
+                String::from("for_start"),
+                blocks,
+                block_index,
+                label_map,
+                label_count,
+            );
+
+            // Go to condition check
+            blocks
+                .get_mut(&block_name.clone())
+                .unwrap()
+                .push(Expr::Instr(CMD::Push(initial)));
+            blocks
+                .get_mut(&block_name.clone())
+                .unwrap()
+                .push(Expr::Set(start.clone()));
             blocks
                 .get_mut(&block_name.clone())
                 .unwrap()

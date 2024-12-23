@@ -73,6 +73,7 @@ SetHeap = { "set_heap" }
 
 If = { "if" ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" ~ SEPARATOR* ~ "else"  ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" }
 For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" }
+ForStart = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "="  ~ SEPARATOR ~ (Number | Char) ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" }
 
 GetElem = { "get_elem" }
 SetElem = { "set_elem" }
@@ -81,8 +82,8 @@ Length = { "length" }
 Nop = { "nop" }
 Malloc = { "malloc" }
 
-Continue = { "continue" ~ SEPARATOR ~ Name }
-Break = { "break" }
+Continue = { "continue" }
+Break = { "break" ~ SEPARATOR ~ Number }
 
 Positive = { "+" }
 Negative = { "-" }
@@ -115,6 +116,7 @@ Expr = {
   | Eq
 
   | For
+  | ForStart
   | If
 
   | Append
