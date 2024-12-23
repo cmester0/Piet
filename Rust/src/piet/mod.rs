@@ -530,7 +530,7 @@ pub fn interpret<I: std::io::Read, O: std::io::Write>(
     output: &mut Option<O>,
 ) {
     let mut runner = PietExecution::new(img.clone());
-    let mut total_steps = 0;
+    let mut total_steps : usize = 0;
     if !runner.continue_step(
         (0, 0),
         (0, 0),
@@ -577,3 +577,7 @@ pub fn handle_piet(
         }
     }
 }
+
+// 2727766807
+// 2728147427
+// 

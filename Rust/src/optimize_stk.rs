@@ -1,9 +1,9 @@
 use crate::piet_interpreter::CMD::*;
 use crate::piet_interpreter::*;
-use std::collections::HashMap;
+use num::BigInt;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
-use num::BigInt;
+use std::collections::HashMap;
 
 pub struct StackOptimizer {
     results: HashMap<String, (usize, Vec<CMD>)>,
@@ -12,8 +12,7 @@ pub struct StackOptimizer {
 }
 
 impl StackOptimizer {
-    pub fn new(
-    ) -> Self {
+    pub fn new() -> Self {
         StackOptimizer {
             results: HashMap::from([(String::from("0"), (2, vec![Push(1.into()), Not]))]),
             heap: BinaryHeap::from([
@@ -57,10 +56,9 @@ fn vec_to_str(v: Vec<BigInt>) -> String {
 impl StackOptimizer {
     fn evaluate(&mut self, cmd: CMD, stack: &mut Vec<BigInt>) -> () {
         match cmd {
-            Push(c) if c == 1.into() => stack.push(c),
-            Push(c) if c == 2.into() => stack.push(c),
-            Push(c) if c == 3.into() => stack.push(c),
-            Push(c) if c == 5.into() => stack.push(c),
+            Push(c) if c == 1.into() || c == 2.into() || c == 3.into() || c == 5.into() => {
+                stack.push(c)
+            }
             _ => cmd.interpret::<std::io::Stdin, std::io::Stdout>(stack, &mut None, &mut None),
         }
     }
