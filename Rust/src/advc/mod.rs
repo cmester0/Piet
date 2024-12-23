@@ -117,6 +117,7 @@ pub fn parse_expr(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
+    loop_breaks: &Vec<(Label,Label, String)>,
 ) -> (String, Expr) {
     if e.as_rule() != Rule::Expr {
         panic!()
@@ -189,10 +190,21 @@ pub fn parse_expr(
         }
 
         Rule::Continue => {
-            Goto(Label::Ref(label_map["for_start"].clone()))
+            let (start_label,_,loop_var) = loop_breaks.last().unwrap();
+
+            // end of body
+            blocks.get_mut(&block_name.clone()).unwrap().extend(vec![
+                Expr::Get(loop_var.clone()),
+                Expr::Instr(CMD::Push(1.into())),
+                Expr::Instr(CMD::Add),
+                Expr::Set(loop_var.clone()),
+            ]);
+
+            Goto(start_label.clone())
         }
         Rule::Break => {
-            Goto(Label::Ref(label_map["for_done"].clone()))
+            let (_,done_label,_) = loop_breaks.last().unwrap();
+            Goto(done_label.clone())
         }
         Rule::For => {
             let mut for_stmt = ne.into_inner();
@@ -240,6 +252,8 @@ pub fn parse_expr(
                     Expr::Branch(done_label.clone(), body_label.clone()),
                 ]);
 
+            let mut sub_loop_breaks = loop_breaks.clone();
+            sub_loop_breaks.push((start_label.clone(), done_label.clone(), start.clone()));
             block_name = parse_subblocks(
                 body_label.clone().get_label_name(),
                 for_stmt.next().unwrap(),
@@ -249,6 +263,7 @@ pub fn parse_expr(
                 label_map,
                 label_count,
                 imports,
+                &sub_loop_breaks
             );
 
             // end of body
@@ -307,6 +322,7 @@ pub fn parse_expr(
                 label_map,
                 label_count,
                 imports,
+                loop_breaks,
             );
 
             // Go to condition check
@@ -325,6 +341,7 @@ pub fn parse_expr(
                 label_map,
                 label_count,
                 imports,
+                loop_breaks,
             );
 
             // Go to condition check
@@ -372,6 +389,7 @@ pub fn parse_subblocks(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
+    loop_breaks: &Vec<(Label,Label, String)>,
 ) -> String {
     if sub_block.as_rule() != Rule::SubBlock {
         panic!()
@@ -417,6 +435,7 @@ pub fn parse_subblocks(
                             label_map,
                             label_count,
                             imports,
+                            loop_breaks,
                         );
                     }
                     _ => panic!("INITIAL not subblock?"),
@@ -444,6 +463,7 @@ pub fn parse_subblocks(
                         label_map,
                         label_count,
                         imports,
+                        loop_breaks,
                     );
                 }
             }
@@ -458,6 +478,7 @@ pub fn parse_subblocks(
                     label_map,
                     label_count,
                     imports,
+                    loop_breaks,
                 );
                 block_name = name;
                 blocks.get_mut(&curr_name).unwrap().push(expr);
@@ -478,6 +499,7 @@ pub fn parse_block(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
+    loop_breaks: &Vec<(Label,Label, String)>,
 ) -> String {
     if b.as_rule() != Rule::Block {
         panic!();
@@ -505,6 +527,7 @@ pub fn parse_block(
         label_map,
         label_count,
         imports,
+        loop_breaks,
     )
 }
 
@@ -608,6 +631,7 @@ pub fn parse_string(
                         &mut label_map,
                         &mut label_count,
                         &imports,
+                        &vec![],
                     );
                 }
                 _ => panic!("MAIN not subblock?"),
@@ -635,6 +659,7 @@ pub fn parse_string(
                     &mut label_map,
                     &mut label_count,
                     &imports,
+                    &vec![],
                 );
             }
 

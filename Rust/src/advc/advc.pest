@@ -81,7 +81,7 @@ Length = { "length" }
 Nop = { "nop" }
 Malloc = { "malloc" }
 
-Continue = { "continue" }
+Continue = { "continue" ~ SEPARATOR ~ Name }
 Break = { "break" }
 
 Positive = { "+" }
