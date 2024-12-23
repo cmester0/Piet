@@ -8,7 +8,6 @@ use crate::{
 };
 use itertools::Itertools;
 use std::collections::HashMap;
-use num::*;
 
 pub struct SmplToStk {
     smpl_executor: SmplExecutor,

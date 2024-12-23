@@ -188,6 +188,12 @@ pub fn parse_expr(
             Index(name, index_vec)
         }
 
+        Rule::Continue => {
+            Goto(Label::Ref(label_map["for_start"].clone()))
+        }
+        Rule::Break => {
+            Goto(Label::Ref(label_map["for_done"].clone()))
+        }
         Rule::For => {
             let mut for_stmt = ne.into_inner();
             let start = String::from(for_stmt.next().unwrap().as_str());

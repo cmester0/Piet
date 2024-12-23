@@ -39,7 +39,7 @@ LibBlocks = {
 }
 Blocks = { Block* }
 Block = { "label" ~ SEPARATOR ~ Label ~ NEWLINE* ~ SubBlock } // +
-SubBlock = { ((Expr | NewLabel | LibFun) ~ NEWLINE*)* }
+SubBlock = { (SEPARATOR* ~ (Expr | NewLabel | LibFun) ~ NEWLINE*)* }
 
 Push = { "push" }
 Pop = { "pop" }
@@ -71,8 +71,8 @@ PrintCListOfList = { "printC_list_of_list" }
 GetHeap = { "get_heap" }
 SetHeap = { "set_heap" }
 
-If = { "if" ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" ~ SEPARATOR ~ "else"  ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
-For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ "}" }
+If = { "if" ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" ~ SEPARATOR* ~ "else"  ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" }
+For = { "for" ~ SEPARATOR ~ Name ~ SEPARATOR ~ "to" ~ SEPARATOR ~ Name ~ SEPARATOR* ~ "{" ~ NEWLINE* ~ SubBlock ~ NEWLINE* ~ SEPARATOR* ~ "}" }
 
 GetElem = { "get_elem" }
 SetElem = { "set_elem" }
@@ -81,10 +81,13 @@ Length = { "length" }
 Nop = { "nop" }
 Malloc = { "malloc" }
 
+Continue = { "continue" }
+Break = { "break" }
+
 Positive = { "+" }
 Negative = { "-" }
 IndexNameOffset = { Name ~ ((Positive | Negative) ~ Number)? }
-Index = { "index" ~ SEPARATOR~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
+Index = { "index" ~ SEPARATOR ~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
 
 Expr = {
   | In
@@ -126,6 +129,9 @@ Expr = {
 
   | GetHeap
   | SetHeap
+
+  | Continue
+  | Break
 
   | PrintCListOfList
 }

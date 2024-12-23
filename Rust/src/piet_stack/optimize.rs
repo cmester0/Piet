@@ -1,7 +1,6 @@
 use super::expr::Expr::*;
 use crate::piet_interpreter::CMD::*;
 use num::traits::Euclid;
-use num::BigInt;
 use num::ToPrimitive;
 
 impl super::PietStackExecutor {
