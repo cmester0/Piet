@@ -12,7 +12,6 @@ use sdl2::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Read;
-use std::os::windows::thread;
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {

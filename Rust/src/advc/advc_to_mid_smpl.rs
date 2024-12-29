@@ -325,7 +325,6 @@ impl AdvcToSmpl {
             .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
         {
             if x.clone() != "main" {
-                println!("{}: {}", x, bi);
                 advc_to_smpl.smpl_executor.block_index.insert(x.clone(), bi);
                 bi += 1;
             }

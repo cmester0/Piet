@@ -934,7 +934,16 @@ impl AdvcExecutor {
                     self.stack_frames.last_mut().unwrap().stack.push(a.into());
                 }
                 PrintCListOfList => {
-                    todo!("print_c_list_of_list")
+                    let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
+                    for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                        let ll_len = self.heap[(ll.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
+                        for c in self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(ll.clone() + ll_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                            print!("{}", c.to_u8().unwrap() as char)
+                        }
+                        println!()
+                    }
+                    // todo!("print_c_list_of_list")
                 }
                 In => {
                     let z = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
