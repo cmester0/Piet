@@ -6,11 +6,8 @@ use crate::advc::{
     VariableType as AdvcVariableType,
 };
 use crate::mid_smpl::{
-    expr::{
-        Expr::{self, *},
-        Label,
-    },
-    SmplExecutor, Variable, VariableType,
+    Expr::{self, *},
+    Label, SmplExecutor, Variable, VariableType,
 };
 use crate::piet_interpreter::CMD::{self, *};
 use std::collections::HashMap;
@@ -69,7 +66,7 @@ impl AdvcToSmpl {
             .blocks
             .get_mut(&self.smpl_executor.label)
             .unwrap()
-            .push(Expr::Comment(format!("+lib_{}",lib)));
+            .push(Expr::Comment(format!("+lib_{}", lib)));
 
         self.smpl_executor.label = crate::mid_smpl::handle_lib(
             self.smpl_executor.label.clone(),
@@ -77,7 +74,6 @@ impl AdvcToSmpl {
             &mut self.smpl_executor.blocks,
             &mut self.smpl_executor.block_index,
             &mut self.smpl_executor.variables,
-
             &mut self.smpl_executor.label_map,
             &mut self.smpl_executor.label_count,
             &mut self.smpl_executor.imports,
@@ -87,7 +83,7 @@ impl AdvcToSmpl {
             .blocks
             .get_mut(&self.smpl_executor.label)
             .unwrap()
-            .push(Expr::Comment(format!("-lib_{}",lib)));
+            .push(Expr::Comment(format!("-lib_{}", lib)));
 
         // // TODO:
         // self.smpl_executor
@@ -174,14 +170,11 @@ impl AdvcToSmpl {
                 self.add_lib(String::from("length"));
             }
             AdvcExpr::Index(name, indexes) => {
-                let mut exprs = vec![
-                    AdvcExpr::Get(name),
-                ];
+                let mut exprs = vec![AdvcExpr::Get(name)];
                 for (n, v) in indexes {
                     exprs.push(AdvcExpr::Get(n));
                     if v == 0.into() {
-                    }
-                    else if v < 0.into() {
+                    } else if v < 0.into() {
                         exprs.push(AdvcExpr::Instr(Push(-v)));
                         exprs.push(AdvcExpr::Instr(Sub));
                     } else {
@@ -203,6 +196,34 @@ impl AdvcToSmpl {
             }
             AdvcExpr::If(_, _) => {
                 // NOP
+            }
+            AdvcExpr::Call(a, r) => {
+                if !self
+                    .smpl_executor
+                    .block_index
+                    .contains_key(&r.clone().get_label_name())
+                {
+                    panic!("smpl executor: {}", r.clone().get_label_name());
+                }
+
+                self.add_expr(Instr(CMD::Push(
+                    self.smpl_executor.block_index[&r.clone().get_label_name()]
+                        .clone()
+                        .into(),
+                )));
+                self.add_lib(String::from("push"));
+
+                self.add_expr(Instr(CMD::Push(1.into())));
+                self.add_lib(String::from("push"));
+
+                self.add_expr(Goto(handle_label(a)));
+
+                self.smpl_executor.label = r.get_label_name();
+            }
+            AdvcExpr::Return => {
+                // TODO: assumes stack must be empty ..
+                self.add_lib(String::from("pop"));
+                self.add_expr(GotoStk);
             }
         }
     }
@@ -284,17 +305,42 @@ impl AdvcToSmpl {
 
         let mut bi = 0;
 
-        // Setup stack invariants
-        advc_to_smpl
-            .smpl_executor
-            .blocks
-            .insert(String::from("main"), vec![]);
+        // Frame
+
+        // Setup main
         advc_to_smpl
             .smpl_executor
             .block_index
             .insert(String::from("main"), bi);
         bi += 1;
 
+        // Add labels (Parse 1)
+        for (x, _) in advc_to_smpl
+            .advc_executor
+            .block_index
+            .clone()
+            .into_iter()
+            .collect_vec()
+            .into_iter()
+            .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
+        {
+            if x.clone() != "main" {
+                println!("{}: {}", x, bi);
+                advc_to_smpl.smpl_executor.block_index.insert(x.clone(), bi);
+                bi += 1;
+            }
+        }
+
+        // Setup stack frame
+        advc_to_smpl
+            .smpl_executor
+            .blocks
+            .insert(String::from("main"), vec![]);
+        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(advc_to_smpl.smpl_executor.block_index["term"].into())));
+        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(1.into())));
+
+
+        // Add code (Parse 2)
         for (x, _) in advc_to_smpl
             .advc_executor
             .block_index
@@ -313,8 +359,6 @@ impl AdvcToSmpl {
             if x.clone() != "main" {
                 advc_to_smpl.smpl_executor.label = x.clone();
                 advc_to_smpl.smpl_executor.blocks.insert(x.clone(), vec![]);
-                advc_to_smpl.smpl_executor.block_index.insert(x.clone(), bi);
-                bi += 1;
             }
 
             for e in v.clone() {

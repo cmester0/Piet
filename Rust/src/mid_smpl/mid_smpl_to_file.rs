@@ -91,6 +91,8 @@ impl super::SmplExecutor {
                         Set(x) => writeln!(smpl_output, "set {}", x).unwrap(),
                         Get(x) => writeln!(smpl_output, "get {}", x).unwrap(),
                         Lib(x) => writeln!(smpl_output, "lib_{}", x).unwrap(),
+
+                        GotoStk => writeln!(smpl_output, "goto_stk").unwrap(),
                     }
                 }
                 writeln!(smpl_output, "").unwrap();

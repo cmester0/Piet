@@ -103,6 +103,10 @@ impl super::PietStackExecutor {
                 }
                 Debug => {}
                 Comment(_) => {}
+                GotoStk => {
+                    // NOP?
+                    // todo!("goto_stk")
+                }
             }
         }
         return (output, (None, None));
@@ -165,18 +169,11 @@ impl super::PietStackExecutor {
         return (block_blocks, going_right);
     }
 
-    fn goto_block_coord(optimizer: &mut StackOptimizer, (b_x, b_y): (usize, usize)) -> Vec<Expr> {
+    fn goto_block_coord(optimizer: &mut StackOptimizer, id: usize) -> Vec<Expr> {
         let mut goto_exprs: Vec<Expr> = vec![];
         goto_exprs.extend(
             optimizer
-                .optimize_number(b_x)
-                .into_iter()
-                .map(Instr)
-                .collect::<Vec<Expr>>(),
-        );
-        goto_exprs.extend(
-            optimizer
-                .optimize_number(b_y)
+                .optimize_number(id)
                 .into_iter()
                 .map(Instr)
                 .collect::<Vec<Expr>>(),
@@ -247,7 +244,7 @@ impl super::PietStackExecutor {
                 // is goto
                 let goto_statement = Self::make_block(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[&x_t.unwrap()]),
+                    block_index[&x_t.unwrap()],
                 ))
                 .0;
 
@@ -259,7 +256,7 @@ impl super::PietStackExecutor {
                 goto_exprs_1.push(Instr(CMD::Nop));
                 goto_exprs_1.extend(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[&x_t.unwrap()]),
+                    block_index[&x_t.unwrap()],
                 ));
 
                 // output.push("🔴")
@@ -270,7 +267,7 @@ impl super::PietStackExecutor {
                 goto_exprs_2.push(Instr(CMD::Nop));
                 goto_exprs_2.extend(Self::goto_block_coord(
                     optimizer,
-                    id_to_coord(block_index[&x_e.unwrap()]),
+                    block_index[&x_e.unwrap()],
                 ));
 
                 let goto_statement_2: Vec<_> = Self::make_block(goto_exprs_2).0;
@@ -349,7 +346,7 @@ impl super::PietStackExecutor {
         let mut arr: Array<String, Ix2> = Array::default((w, h));
         for y in 0..h {
             for x in 0..w {
-                arr[(x,y)] = String::from("⚪");
+                arr[(x, y)] = String::from("⚪");
             }
         }
 
@@ -391,14 +388,36 @@ impl super::PietStackExecutor {
             );
         }
 
-        let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
-        for (i, branch_instr) in Self::make_block(Self::goto_block_coord(
-            optimizer,
-            id_to_coord(block_index["main"]),
-        ))
+        // Goto converter to a pair of numbers
+        let converter_x_offset = 8;
+        for (i, v) in Self::make_block(vec![
+            Instr(CMD::Dup),
+            Instr(CMD::Push(b_width.into())),
+            Instr(CMD::Dup),
+            Instr(CMD::Push(3.into())),
+            Instr(CMD::Push(1.into())),
+            Instr(CMD::Roll),
+            Instr(CMD::Mod),
+            Instr(CMD::Push(3.into())),
+            Instr(CMD::Push(1.into())),
+            Instr(CMD::Roll),
+            Instr(CMD::Div),
+        ])
         .0
         .into_iter()
         .enumerate()
+        {
+            arr[(converter_x_offset + i, 0)] = v.clone();
+            arr[(converter_x_offset + i, 2)] = v;
+        }
+        // arr[(4, 2)] = String::from("❤");
+
+        let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
+        for (i, branch_instr) in
+            Self::make_block(Self::goto_block_coord(optimizer, block_index["main"]))
+                .0
+                .into_iter()
+                .enumerate()
         {
             arr[(i, 0)] = branch_instr;
         }

@@ -1,22 +1,62 @@
-pub mod expr;
 pub mod optimize;
 mod stk_to_file;
 mod stk_to_piet;
 
 use crate::optimize_stk::StackOptimizer;
-use expr::{
-    parse_expr,
-    Expr::{self, *},
-};
+use crate::piet_interpreter::CMD;
 use image::DynamicImage;
 use num::BigInt;
+use pest::iterators::Pair;
 use pest::*;
 use pest_derive::Parser;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
-use std::io::Read;
-use std::io::Write;
+use std::io::{Read, Write};
+
+#[derive(Debug, Clone)]
+pub enum Expr {
+    Instr(CMD),
+    Goto(String),
+    Branch(String, String),
+    Debug,
+    Comment(String),
+    GotoStk,
+}
+pub use Expr::*;
+
+pub fn parse_expr(e: Pair<Rule>) -> Expr {
+    if e.as_rule() != Rule::Expr {
+        panic!()
+    }
+    let mut e = e.into_inner(); // .next().unwrap();
+    match e.next().unwrap().as_rule() {
+        Rule::Push => Instr(CMD::Push(e.next().unwrap().as_str().parse().unwrap())),
+        Rule::Pop => Instr(CMD::Pop),
+        Rule::Not => Instr(CMD::Not),
+        Rule::Add => Instr(CMD::Add),
+        Rule::Greater => Instr(CMD::Greater),
+        Rule::Sub => Instr(CMD::Sub),
+        Rule::Div => Instr(CMD::Div),
+        Rule::Mod => Instr(CMD::Mod),
+        Rule::Mul => Instr(CMD::Mul),
+        Rule::Dup => Instr(CMD::Dup),
+        Rule::InN => Instr(CMD::InN),
+        Rule::InC => Instr(CMD::InC),
+        Rule::Goto => Goto(String::from(e.next().unwrap().as_str())),
+        Rule::Branch => Branch(
+            String::from(e.next().unwrap().as_str()),
+            String::from(e.next().unwrap().as_str()),
+        ),
+        Rule::Debug => Debug,
+        // TODO: Parse comments and add them into AST?
+        Rule::OutC => Instr(CMD::OutC),
+        Rule::OutN => Instr(CMD::OutN),
+        Rule::Roll => Instr(CMD::Roll),
+        Rule::GotoStk => GotoStk,
+        _ => panic!("unmatched expression"),
+    }
+}
 
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
@@ -98,6 +138,22 @@ impl PietStackExecutor {
                 false
             }
             Comment(_) => false,
+            GotoStk => {
+                let new_label = self.stack.pop().unwrap();
+                let mut success = false;
+                for (k, v) in self.block_index.clone() {
+                    let label_int: BigInt = v.into();
+                    if label_int == new_label {
+                        self.label = k;
+                        success = true;
+                        break;
+                    }
+                }
+                if !success {
+                    panic!("No label");
+                }
+                true
+            }
         }
     }
 
@@ -184,6 +240,14 @@ impl PietStackExecutor {
         let img: image::RgbImage = self.to_png(&mut optimizer);
         let dyn_img = DynamicImage::ImageRgb8(img);
 
-        crate::piet::handle_piet(dyn_img, to_piet, run_piet, gui_piet, steps_per_frame, start_frame, skip_whitespace);
+        crate::piet::handle_piet(
+            dyn_img,
+            to_piet,
+            run_piet,
+            gui_piet,
+            steps_per_frame,
+            start_frame,
+            skip_whitespace,
+        );
     }
 }

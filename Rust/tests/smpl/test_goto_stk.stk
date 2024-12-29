@@ -1,0 +1,53 @@
+label main
+push 0
+push 1
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+push 0
+push 2
+push 1
+roll
+push 1
+add
+dup
+push 3
+push 1
+roll
+push 1
+roll
+goto l1
+
+label l1
+push 4
+goto_stk
+
+label l2
+push 4
+outN
+goto term
+
+label l3
+push 3
+outN
+goto term
+
+label l4
+push 2
+outN
+goto term
+
+label l5
+push 1
+outN
+goto term
+

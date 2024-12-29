@@ -1,12 +1,11 @@
-pub mod expr;
 pub mod mid_smpl_to_file;
 pub mod mid_smpl_to_stk;
 
 use crate::mid_smpl::mid_smpl_to_stk::SmplToStk;
 use crate::piet_interpreter::CMD;
-use expr::*;
-use pest::iterators::Pair;
+use num::*;
 use pest::*;
+use pest::iterators::Pair;
 use pest_derive::Parser;
 use phf::phf_map;
 use std::collections::HashMap;
@@ -15,7 +14,102 @@ use std::fs::File;
 #[allow(unused_imports)]
 use std::io::Read;
 use std::io::Write;
-use num::*;
+
+#[derive(Debug, Clone)]
+pub enum Label {
+    Name(String),
+    Ref(String),
+}
+
+impl Label {
+    pub fn parse_label(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Label {
+        if e.as_rule() != Rule::Label {
+            panic!("NOT LABEL {:?}\n{:?}", e.as_rule(), e)
+        }
+        let n = e.into_inner().next().unwrap();
+        match n.as_rule() {
+            Rule::LabelName => {
+                let name = n.as_str();
+                Label::Name(String::from(name))
+            }
+            Rule::LabelRef => {
+                let label_ref: &str = n.into_inner().next().unwrap().as_str();
+                let name = label_map[&String::from(label_ref)].clone();
+                Label::Ref(String::from(name))
+            }
+            _ => panic!(),
+        }
+    }
+
+    pub fn get_label_name(self) -> String {
+        match self {
+            Label::Name(n) | Label::Ref(n) => n,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum Expr {
+    Instr(CMD),
+    Goto(Label),
+    Branch(Label, Label),
+    Debug,
+
+    Set(String),
+    Get(String),
+
+    Comment(String),
+
+    Lib(String),
+    GotoStk,
+}
+use Expr::*;
+
+pub fn parse_expr(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Expr {
+    if e.as_rule() != Rule::Expr {
+        panic!()
+    }
+    let mut e = e.into_inner(); // .next().unwrap();
+    let ne = e.next().unwrap();
+    match ne.as_rule() {
+        Rule::Push => {
+            let n = e.next().unwrap();
+            match n.as_rule() {
+                Rule::Number => Instr(CMD::Push(n.as_str().parse().unwrap())),
+                Rule::Char => Instr(CMD::Push(
+                    (n.as_str().chars().next().unwrap() as isize).into(),
+                )),
+                _ => panic!("Trying to push non-number"),
+            }
+        }
+        Rule::Pop => Instr(CMD::Pop),
+        Rule::Not => Instr(CMD::Not),
+        Rule::Add => Instr(CMD::Add),
+        Rule::Greater => Instr(CMD::Greater),
+        Rule::Sub => Instr(CMD::Sub),
+        Rule::Div => Instr(CMD::Div),
+        Rule::Mod => Instr(CMD::Mod),
+        Rule::Mul => Instr(CMD::Mul),
+        Rule::Dup => Instr(CMD::Dup),
+        Rule::InN => Instr(CMD::InN),
+        Rule::InC => Instr(CMD::InC),
+        Rule::Goto => Goto(Label::parse_label(e.next().unwrap(), label_map)),
+        Rule::GotoStk => GotoStk,
+        Rule::Branch => Branch(
+            Label::parse_label(e.next().unwrap(), label_map),
+            Label::parse_label(e.next().unwrap(), label_map),
+        ),
+        Rule::Debug => Debug,
+        Rule::OutC => Instr(CMD::OutC),
+        Rule::OutN => Instr(CMD::OutN),
+        Rule::Roll => Instr(CMD::Roll),
+
+        Rule::Set => Set(String::from(e.next().unwrap().as_str())),
+        Rule::Get => Get(String::from(e.next().unwrap().as_str())),
+
+        x => panic!("unmatched expression {:?}", x),
+    }
+}
 
 #[derive(Clone, Debug)]
 // #[repr(isize)]
@@ -566,6 +660,16 @@ impl SmplExecutor {
         }
 
         let stk_executor = SmplToStk::to_stk(self);
-        stk_executor.handle_stk(to_stk, optimize_stk, run_stk, to_piet, run_piet, gui_piet, steps_per_frame, start_frame, skip_whitespace);
+        stk_executor.handle_stk(
+            to_stk,
+            optimize_stk,
+            run_stk,
+            to_piet,
+            run_piet,
+            gui_piet,
+            steps_per_frame,
+            start_frame,
+            skip_whitespace,
+        );
     }
 }

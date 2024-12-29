@@ -9,7 +9,7 @@ inN
 set end
 
 for i to end {
-goto print10
+  goto print10
 }
 
 push 12

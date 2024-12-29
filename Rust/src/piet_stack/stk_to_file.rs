@@ -55,6 +55,7 @@ impl super::PietStackExecutor {
                         Branch(a, b) => writeln!(stk_output, "branch {} {}", a, b).unwrap(),
                         Debug => writeln!(stk_output, "debug").unwrap(),
                         Comment(s) => writeln!(stk_output, "# {}", s).unwrap(),
+                        GotoStk => writeln!(stk_output, "goto_stk").unwrap(),
                     }
                 }
                 writeln!(stk_output, "").unwrap();

@@ -82,6 +82,9 @@ Length = { "length" }
 Nop = { "nop" }
 Malloc = { "malloc" }
 
+Call = { "call" ~ SEPARATOR ~ Label }
+Return = { "return" }
+
 Continue = { "continue" }
 Break = { "break" ~ SEPARATOR ~ Number }
 
@@ -118,6 +121,9 @@ Expr = {
   | For
   | ForStart
   | If
+
+  | Call
+  | Return
 
   | Append
   | GetElem

@@ -1,7 +1,6 @@
-use super::Expr::{self as SmplExpr};
 use super::SmplExecutor;
-use crate::mid_smpl::*;
-use crate::piet_stack::expr::Expr::{self, *};
+use crate::mid_smpl::{Expr as SmplExpr, Variable};
+use crate::piet_stack::{Expr::{self}, *};
 use crate::{
     piet_interpreter::CMD::{self, *},
     piet_stack::PietStackExecutor,
@@ -202,6 +201,9 @@ impl SmplToStk {
                     "TODO: handle lib in direct translation. Does not include lib {}",
                     s
                 )
+            }
+            SmplExpr::GotoStk => {
+                self.add_expr(GotoStk);
             }
         }
 

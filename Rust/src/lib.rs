@@ -1,5 +1,3 @@
-#![feature(isqrt)]
-
 pub mod piet;
 pub mod piet_color;
 pub mod piet_interpreter;

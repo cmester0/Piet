@@ -58,6 +58,8 @@ Set = { "set" }
 
 Eq = { "eq" }
 
+GotoStk = { "goto_stk" }
+
 Expr = {
   | Push ~ SEPARATOR ~ Number
   | Push ~ SEPARATOR ~ Char
@@ -78,6 +80,8 @@ Expr = {
 
   | Set ~ SEPARATOR ~ Name
   | Get ~ SEPARATOR ~ Name
+
+  | GotoStk
 
   | Eq
 }

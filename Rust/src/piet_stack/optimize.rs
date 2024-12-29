@@ -1,4 +1,4 @@
-use super::expr::Expr::*;
+use super::Expr::*;
 use crate::piet_interpreter::CMD::*;
 use num::traits::Euclid;
 use num::ToPrimitive;

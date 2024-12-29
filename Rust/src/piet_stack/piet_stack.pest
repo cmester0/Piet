@@ -35,6 +35,8 @@ OutC = { "outC" }
 OutN = { "outN" }
 Roll = { "roll" }
 
+GotoStk = { "goto_stk" }
+
 Expr = {
   | Push ~ SEPARATOR ~ Number
   | Pop
@@ -50,4 +52,5 @@ Expr = {
   | OutC
   | OutN
   | Roll
+  | GotoStk
 }

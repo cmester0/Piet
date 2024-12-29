@@ -90,7 +90,7 @@ impl CMD {
                 if stack.len() < 2 { return None }
                 let a = stack.pop()?;
                 let b = stack.pop()?;
-                if b == 0.into() { return None }
+                if a == 0.into() { return None }
                 stack.push(b / a);
             }
             CMD::Mod => {
@@ -124,7 +124,7 @@ impl CMD {
                 let b = stack.pop()?;
 
                 // let b = stack.pop()?;
-                // if b == 0 { return None }
+                if b == 0.into() { panic!("roll with zero") } // return None
                 a = a.rem_euclid(&b);
 
                 // let a = a as usize;
