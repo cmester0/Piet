@@ -213,8 +213,8 @@ impl AdvcToSmpl {
                 )));
                 self.add_lib(String::from("push"));
 
-                self.add_expr(Instr(CMD::Push(1.into())));
-                self.add_lib(String::from("push"));
+                // self.add_expr(Instr(CMD::Push(1.into())));
+                // self.add_lib(String::from("push"));
 
                 self.add_expr(Goto(handle_label(a)));
 
@@ -222,7 +222,11 @@ impl AdvcToSmpl {
             }
             AdvcExpr::Return => {
                 // TODO: assumes stack must be empty ..
-                self.add_lib(String::from("pop"));
+                // self.add_lib(String::from("pop"));
+                self.add_expr(Instr(CMD::Push(1.into())));
+                self.add_expr(Instr(CMD::Sub));
+
+                self.add_lib(String::from("swap"));
                 self.add_expr(GotoStk);
             }
         }
@@ -349,9 +353,9 @@ impl AdvcToSmpl {
             .into_iter()
             .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
         {
-            if x.clone() == "term" {
-                continue;
-            }
+            // if x.clone() == "term" {
+            //     continue;
+            // }
 
             let v = advc_to_smpl.advc_executor.blocks[&x.clone()].clone();
 

@@ -888,6 +888,7 @@ impl AdvcExecutor {
                     return self.label != "term";
                 }
                 Return => {
+                    assert_eq!(self.stack_frames.last().unwrap().stack.len(), 0);
                     self.label = self.stack_frames.pop().unwrap().label.get_label_name();
                     return self.label != "term";
                 }

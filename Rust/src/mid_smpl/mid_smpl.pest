@@ -59,10 +59,12 @@ Set = { "set" }
 Eq = { "eq" }
 
 GotoStk = { "goto_stk" }
+// PushLabel = { "push_label" }
 
 Expr = {
   | Push ~ SEPARATOR ~ Number
   | Push ~ SEPARATOR ~ Char
+  // | PushLabel ~ SEPARATOR ~ Label
 
   | Pop
   | Not

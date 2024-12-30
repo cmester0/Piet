@@ -292,9 +292,9 @@ impl SmplToStk {
             .into_iter()
             .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
         {
-            if x.clone() == "term" {
-                continue;
-            }
+            // if x.clone() == "term" {
+            //     continue;
+            // }
 
             let v = smpl_to_stk.smpl_executor.blocks[&x.clone()].clone();
 
@@ -312,17 +312,16 @@ impl SmplToStk {
             }
         }
 
-        smpl_to_stk
-            .stk_executor
-            .blocks
-            .insert(String::from("term"), vec![]);
-        smpl_to_stk
-            .stk_executor
-            .block_index
-            .insert(String::from("term"), bi);
+        // smpl_to_stk
+        //     .stk_executor
+        //     .blocks
+        //     .insert(String::from("term"), vec![]);
+        // smpl_to_stk
+        //     .stk_executor
+        //     .block_index
+        //     .insert(String::from("term"), bi);
 
         smpl_to_stk.stk_executor.label = String::from("main");
-
         smpl_to_stk.stk_executor
     }
 }
