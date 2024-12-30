@@ -229,6 +229,15 @@ impl AdvcToSmpl {
                 self.add_lib(String::from("swap"));
                 self.add_expr(GotoStk);
             }
+            AdvcExpr::ClearList(l) => {
+                self.add_expr(Instr(CMD::Push(0.into())));
+                self.add_lib(String::from("push"));
+                self.add_expr(Expr::Get(l));
+                self.add_expr(Instr(CMD::Push(1.into())));
+                self.add_lib(String::from("push"));
+                self.add_lib(String::from("add"));
+                self.add_lib(String::from("set_heap"));
+            }
         }
     }
 

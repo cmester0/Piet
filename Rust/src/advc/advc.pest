@@ -93,6 +93,8 @@ Negative = { "-" }
 IndexNameOffset = { Name ~ ((Positive | Negative) ~ Number)? }
 Index = { "index" ~ SEPARATOR ~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
 
+ClearList = {"clear_list" ~ SEPARATOR ~ Name}
+
 Expr = {
   | In
 
@@ -142,4 +144,6 @@ Expr = {
   | Break
 
   | PrintCListOfList
+
+  | ClearList
 }

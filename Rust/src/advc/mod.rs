@@ -88,6 +88,7 @@ pub enum Expr {
     Readlines,
     Length,
     Index(String, Vec<(String, BigInt)>),
+    ClearList(String),
 
     Comment(String),
 }
@@ -467,6 +468,12 @@ pub fn parse_expr(
         }
         Rule::Return => {
             Return
+        }
+
+        Rule::ClearList => {
+            let mut clear_list_stmt = ne.into_inner();
+            let list = String::from(clear_list_stmt.next().unwrap().as_str());
+            ClearList(list)
         }
 
         x => panic!("unmatched expression {:?}", x),
@@ -1036,6 +1043,10 @@ impl AdvcExecutor {
                     }
                     self.stack_frames.last_mut().unwrap().stack.push(curr);
                 }
+		ClearList(l) => {
+		    let index = self.variables[&l].value.clone();
+		    self.heap[(index + Into::<BigInt>::into(1isize)).to_usize().unwrap()] = 0.into();
+		}
                 Comment(_) => {}
             }
         }
