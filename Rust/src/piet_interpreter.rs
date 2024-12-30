@@ -143,9 +143,11 @@ impl CMD {
                 let mut char_vec: Vec<char> = Vec::new();
 
                 let input = input.as_mut().unwrap();
+		let mut first = true;
                 while let Some(Ok(c)) = input.peek() {
                     if let Some(a) = char::from_u32(*c as u32) {
-                        if a.is_digit(10) {
+                        if a.is_digit(10) || (a == '-' && first) {
+			    first = false;
                             char_vec.push(a);
                             input.next();
                             continue;
