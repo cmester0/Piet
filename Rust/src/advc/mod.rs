@@ -78,6 +78,8 @@ pub enum Expr {
 
     Eq,
     Append,
+    PrintListC,
+    PrintListN,
     PrintCListOfList,
     In,
     Malloc,
@@ -163,6 +165,8 @@ pub fn parse_expr(
 
         Rule::Eq => Eq,
         Rule::Append => Append,
+        Rule::PrintListC => PrintListC,
+        Rule::PrintListN => PrintListN,
         Rule::PrintCListOfList => PrintCListOfList,
         Rule::In => In,
         Rule::SetHeap => SetHeap,
@@ -852,7 +856,7 @@ impl AdvcExecutor {
                 }
                 Debug => {
                     println!();
-                    println!("Heap: {:?}", self.heap);
+                    // println!("Heap: {:?}", self.heap);
                     println!(
                         "Variables: {:?}",
                         self.variables
@@ -941,15 +945,34 @@ impl AdvcExecutor {
 
                     self.stack_frames.last_mut().unwrap().stack.push(a.into());
                 }
+                PrintListC => {
+                    print!("[");
+                    let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
+                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                        print!("{},", c.to_u8().unwrap() as char);
+                    }
+                    println!("]");
+                    // todo!("print_c_list_of_list")
+                }
+                PrintListN => {
+                    print!("[");
+                    let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
+                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                        print!("{},", c);
+                    }
+                    println!("]");
+                }
                 PrintCListOfList => {
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                    for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                    for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
                         let ll_len = self.heap[(ll.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                        for c in self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(ll.clone() + ll_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                            print!("{}", c.to_u8().unwrap() as char)
+                        for c in self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(ll.clone() + Into::<BigInt>::into(2) + ll_len).clone().to_usize().unwrap()].into_iter().cloned() {
+                            print!("{}", c.to_u8().unwrap() as char);
                         }
-                        println!()
+                        println!();
                     }
                     // todo!("print_c_list_of_list")
                 }
@@ -1037,13 +1060,21 @@ impl AdvcExecutor {
                 }
                 Index(s, v) => {
                     let mut curr = self.variables[&s].value.clone();
+                    let mut debug_print = format!("{}", s);
                     for (name, offset) in v {
-                        let index = self.variables[&name].value.clone() + offset;
+                        let index = self.variables[&name].value.clone() + offset.clone();
+                        debug_print = format!("{}[{}(={})+{}]",debug_print,name,index,offset);
+                        if self.heap.len() <= (curr.clone() + Into::<BigInt>::into(2isize) + index.clone()).to_usize().unwrap() {
+                            panic!("{}", debug_print);
+                        }
                         curr = self.heap[(curr + Into::<BigInt>::into(2isize) + index).to_usize().unwrap()].clone();
                     }
                     self.stack_frames.last_mut().unwrap().stack.push(curr);
                 }
 		ClearList(l) => {
+                    if !self.variables.contains_key(&l) {
+                        panic!("Cannot clear variable {} does not exists", l);
+                    }
 		    let index = self.variables[&l].value.clone();
 		    self.heap[(index + Into::<BigInt>::into(1isize)).to_usize().unwrap()] = 0.into();
 		}

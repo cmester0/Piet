@@ -142,6 +142,12 @@ impl AdvcToSmpl {
             AdvcExpr::Append => {
                 self.add_lib(String::from("append"));
             }
+            AdvcExpr::PrintListC => {
+                self.add_lib(String::from("print_listC"));
+            }
+            AdvcExpr::PrintListN => {
+                self.add_lib(String::from("print_listN"));
+            }
             AdvcExpr::PrintCListOfList => {
                 self.add_lib(String::from("printC_list_of_list"));
             }

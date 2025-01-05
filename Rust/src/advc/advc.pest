@@ -66,6 +66,8 @@ Set = { "set" }
 Eq = { "eq" }
 Append = { "append" }
 In = { "in_list" }
+PrintListC = { "print_listC" }
+PrintListN = { "print_listN" }
 PrintCListOfList = { "printC_list_of_list" }
 
 GetHeap = { "get_heap" }
@@ -143,6 +145,8 @@ Expr = {
   | Continue
   | Break
 
+  | PrintListC
+  | PrintListN
   | PrintCListOfList
 
   | ClearList
