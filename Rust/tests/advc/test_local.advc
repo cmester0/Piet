@@ -1,0 +1,24 @@
+goto start
+
+label start
+call my_test_function
+goto term
+
+label my_test_function
+
+add_var i num
+add_var end_i num
+
+push 100
+set end_i
+
+for i = 0 to end_i {
+  get i
+  outN
+  push 10
+  outC
+}
+
+# # local variable
+
+return

@@ -97,7 +97,11 @@ Index = { "index" ~ SEPARATOR ~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
 
 ClearList = {"clear_list" ~ SEPARATOR ~ Name}
 
+AddVar = { "add_var" }
+
 Expr = {
+  | AddVar ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType
+
   | In
 
   | Push ~ SEPARATOR ~ Number
