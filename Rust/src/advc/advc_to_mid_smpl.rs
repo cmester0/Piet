@@ -15,7 +15,6 @@ use std::collections::HashMap;
 pub struct AdvcToSmpl {
     advc_executor: AdvcExecutor,
     smpl_executor: SmplExecutor,
-    local_variables: HashMap<String, HashMap<String, Variable>>,
 }
 
 fn handle_label(l: AdvcLabel) -> Label {
@@ -108,7 +107,7 @@ impl AdvcToSmpl {
         new_block_label
     }
 
-    fn handle_advc_instr(&mut self, label: String, e: AdvcExpr) {
+    fn handle_advc_instr(&mut self, e: AdvcExpr) {
         match e {
             AdvcExpr::Instr(Nop) => {}
             AdvcExpr::Instr(c @ Push(_)) => {
@@ -132,20 +131,7 @@ impl AdvcToSmpl {
                 self.add_expr(Comment(s));
             }
             AdvcExpr::Set(var) => {
-                if self.advc_executor.variables.contains_key(&var) {
-                    self.add_expr(Expr::Set(var));
-                } else {
-                    let a = self.local_variables[&label].get(&var).unwrap();
-
-                    // Get variable from stack frame
-                    self.add_expr(Instr(CMD::Push(a.value.clone())));
-                    self.add_lib(String::from("push"));
-
-                    self.add_expr(Get(String::from("frame_size")));
-                    self.add_lib(String::from("add"));
-
-                    self.add_lib(String::from("dup_at_depth_smpl"));
-                }
+                self.add_expr(Expr::Set(var));
             }
             AdvcExpr::Get(var) => {
                 self.add_expr(Expr::Get(var));
@@ -205,11 +191,11 @@ impl AdvcToSmpl {
                     exprs.push(AdvcExpr::GetElem);
                 }
 
-                self.handle_advc_instr(label.clone(), AdvcExpr::Comment(String::from("+index")));
+                self.handle_advc_instr(AdvcExpr::Comment(String::from("+index")));
                 for x in exprs {
-                    self.handle_advc_instr(label.clone(), x);
+                    self.handle_advc_instr(x);
                 }
-                self.handle_advc_instr(label.clone(), AdvcExpr::Comment(String::from("-index")));
+                self.handle_advc_instr(AdvcExpr::Comment(String::from("-index")));
             }
             AdvcExpr::For(_, _, _) => {
                 // NOP
@@ -226,7 +212,6 @@ impl AdvcToSmpl {
                     panic!("smpl executor: {}", r.clone().get_label_name());
                 }
 
-                // Push return location/label
                 self.add_expr(Instr(CMD::Push(
                     self.smpl_executor.block_index[&r.clone().get_label_name()]
                         .clone()
@@ -234,23 +219,8 @@ impl AdvcToSmpl {
                 )));
                 self.add_lib(String::from("push"));
 
-                // Push the stack frame stack size
-                self.add_expr(Get(String::from("frame_size")));
-
-                // Push the stack frame local variable count
-                self.add_expr(Get(String::from("frame_var_count")));
-
-                // Update the new stack size
-                self.add_expr(Instr(CMD::Push(0.into())));
-                self.add_lib(String::from("push"));
-
-                self.add_expr(Set(String::from("frame_size")));
-
-                // Update the new frame variable count
-                self.add_expr(Instr(CMD::Push(0.into())));
-                self.add_lib(String::from("push"));
-
-                self.add_expr(Set(String::from("frame_var_count")));
+                // self.add_expr(Instr(CMD::Push(1.into())));
+                // self.add_lib(String::from("push"));
 
                 self.add_expr(Goto(handle_label(a)));
 
@@ -259,13 +229,6 @@ impl AdvcToSmpl {
             AdvcExpr::Return => {
                 // TODO: assumes stack must be empty ..
                 // self.add_lib(String::from("pop"));
-
-                // Reset stack size
-                self.add_expr(Set(String::from("frame_var_count")));
-
-                // Reset stack size
-                self.add_expr(Set(String::from("frame_size")));
-
                 self.add_expr(Instr(CMD::Push(1.into())));
                 self.add_expr(Instr(CMD::Sub));
 
@@ -280,47 +243,6 @@ impl AdvcToSmpl {
                 self.add_lib(String::from("push"));
                 self.add_lib(String::from("add"));
                 self.add_lib(String::from("set_heap"));
-            }
-            AdvcExpr::AddVar(v, t) => {
-                if !self.local_variables.contains_key(&label.clone()) {
-                    self.local_variables.insert(label.clone(), HashMap::new());
-                }
-                let label_index = self.local_variables.get_mut(&label.clone()).unwrap().len();
-                self.local_variables.get_mut(&label.clone()).unwrap().insert(
-                    v,
-                    handle_variable(AdvcVariable {
-                        var_index: label_index,
-                        var_type: t.clone(),
-                        value: t.clone().initial_value(),
-                    }),
-                );
-
-                self.add_expr(Instr(CMD::Push(t.initial_value())));
-                self.add_lib(String::from("push"));
-
-                self.add_expr(Get(String::from("frame_size")));
-                self.add_expr(Get(String::from("frame_var_count")));
-                self.add_lib(String::from("sub"));
-
-                self.add_expr(Instr(CMD::Push(1.into())));
-                self.add_lib(String::from("push"));
-
-                self.add_lib(String::from("roll"));
-
-                self.add_expr(Get(String::from("frame_size")));
-                self.add_expr(Instr(CMD::Push(1.into())));
-                self.add_lib(String::from("push"));
-                self.add_lib(String::from("add"));
-                self.add_expr(Set(String::from("frame_size")));
-
-                self.add_expr(Get(String::from("frame_var_count")));
-                self.add_expr(Instr(CMD::Push(1.into())));
-                self.add_lib(String::from("push"));
-                self.add_lib(String::from("add"));
-                self.add_expr(Set(String::from("frame_var_count")));
-
-                // // Add variable to bottom of stack frame
-                // self.add_expr(Instr());
             }
         }
     }
@@ -339,7 +261,6 @@ impl AdvcToSmpl {
                 imports: HashMap::new(),
             },
             advc_executor: executor,
-            local_variables: HashMap::new(),
         };
 
         for s in vec![
@@ -401,26 +322,6 @@ impl AdvcToSmpl {
                 .insert(name, handle_variable(var));
         }
 
-        // Stack frame size
-        advc_to_smpl.smpl_executor.variables.insert(
-            String::from("frame_size"),
-            Variable {
-                var_type: VariableType::NUM,
-                value: 0.into(),
-                var_index: advc_to_smpl.advc_executor.variables.len() + 0,
-            },
-        );
-
-        // Stack frame var count
-        advc_to_smpl.smpl_executor.variables.insert(
-            String::from("frame_var_count"),
-            Variable {
-                var_type: VariableType::NUM,
-                value: 0.into(),
-                var_index: advc_to_smpl.advc_executor.variables.len() + 1,
-            },
-        );
-
         let mut bi = 0;
 
         // Frame
@@ -453,11 +354,9 @@ impl AdvcToSmpl {
             .smpl_executor
             .blocks
             .insert(String::from("main"), vec![]);
-        advc_to_smpl.handle_advc_instr(
-            String::from("main"),
-            AdvcExpr::Instr(Push(advc_to_smpl.smpl_executor.block_index["term"].into())),
-        );
-        advc_to_smpl.handle_advc_instr(String::from("main"), AdvcExpr::Instr(Push(1.into())));
+        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(advc_to_smpl.smpl_executor.block_index["term"].into())));
+        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(1.into())));
+
 
         // Add code (Parse 2)
         for (x, _) in advc_to_smpl
@@ -482,7 +381,7 @@ impl AdvcToSmpl {
 
             for e in v.clone() {
                 // advc_to_smpl.add_expr(Comment(format!("+{:?}", e.clone())));
-                advc_to_smpl.handle_advc_instr(x.clone(), e.clone());
+                advc_to_smpl.handle_advc_instr(e.clone());
                 // advc_to_smpl.add_expr(Comment(format!("-{:?}", e)));
             }
         }

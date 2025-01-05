@@ -19,15 +19,6 @@ pub enum VariableType {
     LIST = -1,
 }
 
-impl VariableType {
-    fn initial_value(self) -> BigInt {
-        match self {
-            VariableType::NUM => 0.into(),
-            VariableType::LIST => (-1).into(),
-        }
-    }
-}
-
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
 pub struct Variable {
@@ -101,8 +92,6 @@ pub enum Expr {
     Index(String, Vec<(String, BigInt)>),
     ClearList(String),
 
-    AddVar(String, VariableType),
-
     Comment(String),
 }
 use Expr::*;
@@ -173,12 +162,6 @@ pub fn parse_expr(
 
         Rule::Set => Set(String::from(e.next().unwrap().as_str())),
         Rule::Get => Get(String::from(e.next().unwrap().as_str())),
-
-        Rule::AddVar => AddVar(String::from(e.next().unwrap().as_str()), match e.next().unwrap().as_str() {
-            "num" => { VariableType::NUM }
-            "list" => { VariableType::LIST }
-            s => panic!("Not a variable type {}", s),
-        }),
 
         Rule::Eq => Eq,
         Rule::Append => Append,
@@ -507,7 +490,6 @@ pub fn parse_expr(
 pub struct StackFrame {
     pub stack: Vec<BigInt>, // Stack frames
     pub label: Label, // Return label
-    pub variables: HashMap<String, Variable>,
 }
 
 
@@ -723,25 +705,33 @@ pub fn parse_string(
                                 Rule::Variable => {
                                     let mut var = variable.into_inner();
                                     let name = var.next().unwrap();
-                                    let var_type = match var.next().unwrap().as_str() {
-                                        "num" => {
-                                            VariableType::NUM
-                                        },
-                                        "list" => {
-                                            VariableType::LIST
-                                        },
-                                        _ => todo!("Not a variable type!"),
-                                    };
+                                    let var_type = var.next().unwrap();
 
-                                    variables.insert(
-                                        String::from(name.as_str()),
-                                        Variable {
-                                            var_type: var_type.clone(),
-                                            value: var_type.initial_value(),
-                                            var_index: variables.len(),
-                                        });
+                                    match var_type.as_str() {
+                                        "num" => {
+                                            variables.insert(
+                                                String::from(name.as_str()),
+                                                Variable {
+                                                    var_type: VariableType::NUM,
+                                                    value: 0isize.into(),
+                                                    var_index: variables.len(),
+                                                },
+                                            );
+                                        }
+                                        "list" => {
+                                            variables.insert(
+                                                String::from(name.as_str()),
+                                                Variable {
+                                                    var_type: VariableType::LIST,
+                                                    value: (-1isize).into(),
+                                                    var_index: variables.len(),
+                                                },
+                                            );
+                                        }
+                                        _ => (),
+                                    }
                                 }
-                                _ => todo!("Not a variable!"),
+                                _ => todo!("Not variable!"),
                             }
                         }
                     }
@@ -833,7 +823,7 @@ impl AdvcExecutor {
             blocks,
             block_index,
             variables,
-            stack_frames: vec![StackFrame { stack: Vec::new(), label: Label::Name(String::from("term")), variables: HashMap::new() }], // Default for "main"?
+            stack_frames: vec![StackFrame { stack: Vec::new(), label: Label::Name(String::from("term")) }], // Default for "main"?
             heap: Vec::new(),
             label: String::from("main"),
             registers,
@@ -879,27 +869,16 @@ impl AdvcExecutor {
                     println!();
                 }
                 Set(v) => {
-                    if self.stack_frames.last_mut().unwrap().variables.contains_key(&v) {
-                        // Set local variable
-                        self.stack_frames.last_mut().unwrap().variables.get_mut(&v.clone()).unwrap().value = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    } else {
-                        if !self.variables.contains_key(&v) {
-                            panic!("Set for variable {} does not exists", v);
-                        }
-                        self.variables.get_mut(&v).unwrap().value = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    if !self.variables.contains_key(&v) {
+                        panic!("Set for variable {} does not exists", v);
                     }
+                    self.variables.get_mut(&v).unwrap().value = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                 }
                 Get(v) => {
-                    if self.stack_frames.last_mut().unwrap().variables.contains_key(&v) {
-                        // Get local variable
-                        let a = self.stack_frames.last_mut().unwrap().variables.get(&v.clone()).unwrap().value.clone();
-                        self.stack_frames.last_mut().unwrap().stack.push(a);
-                    } else {
-                        if !self.variables.contains_key(&v) {
-                            panic!("Get for variable {} does not exists", v);
-                        }
-                        self.stack_frames.last_mut().unwrap().stack.push(self.variables[&v].value.clone())
+                    if !self.variables.contains_key(&v) {
+                        panic!("Get for variable {} does not exists", v);
                     }
+                    self.stack_frames.last_mut().unwrap().stack.push(self.variables[&v].value.clone())
                 }
                 For(_, _, l) => {
                     self.label = l.clone().get_label_name();
@@ -914,7 +893,7 @@ impl AdvcExecutor {
                     return self.label != "term";
                 }
                 Call(fun, ret) => {
-                    self.stack_frames.push(StackFrame { stack: Vec::new(), label: ret, variables: HashMap::new() });
+                    self.stack_frames.push(StackFrame { stack: Vec::new(), label: ret });
                     // Goto function
                     self.label = fun.clone().get_label_name();
                     return self.label != "term";
@@ -1099,14 +1078,6 @@ impl AdvcExecutor {
 		    let index = self.variables[&l].value.clone();
 		    self.heap[(index + Into::<BigInt>::into(1isize)).to_usize().unwrap()] = 0.into();
 		}
-                AddVar(v,t) => {
-                    let frame_variable_count = self.stack_frames.last().unwrap().variables.len();
-                    self.stack_frames.last_mut().unwrap().variables.insert(v, Variable {
-                        var_type: t.clone(),
-                        value: t.initial_value(),
-                        var_index: frame_variable_count,
-                    });
-                }
                 Comment(_) => {}
             }
         }
