@@ -1,0 +1,16 @@
+call fun
+goto term
+
+label fun
+  push 1
+
+goto repeat
+label repeat
+
+push 12345678
+pop
+
+pop
+return
+
+goto repeat

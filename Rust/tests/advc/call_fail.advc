@@ -1,0 +1,13 @@
+call fun
+goto term
+
+label fun
+  push 1
+
+goto repeat
+label repeat
+
+pop
+return
+
+goto repeat

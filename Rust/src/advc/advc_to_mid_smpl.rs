@@ -151,11 +151,21 @@ impl AdvcToSmpl {
             AdvcExpr::PrintCListOfList => {
                 self.add_lib(String::from("printC_list_of_list"));
             }
+            AdvcExpr::Print(s) => {
+                for c in s.chars() {
+                    self.add_expr(Instr(CMD::Push((c as isize).into())));
+                    self.add_lib(String::from("push"));
+                    self.add_lib(String::from("outC"));
+                }
+            }
             AdvcExpr::In => {
                 self.add_lib(String::from("in"));
             }
             AdvcExpr::Malloc => {
                 self.add_lib(String::from("malloc"));
+            }
+            AdvcExpr::DupAtDepth => {
+                self.add_lib(String::from("dup_at_depth_smpl"));
             }
             AdvcExpr::GetElem => {
                 self.add_lib(String::from("get_elem"));

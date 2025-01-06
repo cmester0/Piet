@@ -83,6 +83,8 @@ pub enum Expr {
     PrintCListOfList,
     In,
     Malloc,
+    DupAtDepth,
+
     GetElem,
     SetElem,
     GetHeap,
@@ -91,6 +93,8 @@ pub enum Expr {
     Length,
     Index(String, Vec<(String, BigInt)>),
     ClearList(String),
+
+    Print(String),
 
     Comment(String),
 }
@@ -168,10 +172,12 @@ pub fn parse_expr(
         Rule::PrintListC => PrintListC,
         Rule::PrintListN => PrintListN,
         Rule::PrintCListOfList => PrintCListOfList,
+        Rule::Print => Print(String::from(e.next().unwrap().as_str())),
         Rule::In => In,
         Rule::SetHeap => SetHeap,
         Rule::GetHeap => GetHeap,
         Rule::Malloc => Malloc,
+        Rule::DupAtDepth => DupAtDepth,
         Rule::GetElem => GetElem,
         Rule::SetElem => SetElem,
         Rule::Readlines => Readlines,
@@ -946,35 +952,42 @@ impl AdvcExecutor {
                     self.stack_frames.last_mut().unwrap().stack.push(a.into());
                 }
                 PrintListC => {
-                    print!("[");
+                    let output = output.as_mut().unwrap();
+                    write!(output,"[").unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
                     for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                        print!("{},", c.to_u8().unwrap() as char);
+                        write!(output,"{},", c.to_u8().unwrap() as char).unwrap();
                     }
-                    println!("]");
+                    writeln!(output,"]").unwrap();
                     // todo!("print_c_list_of_list")
                 }
                 PrintListN => {
-                    print!("[");
+                    let output = output.as_mut().unwrap();
+                    write!(output,"[").unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
                     for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                        print!("{},", c);
+                        write!(output,"{},", c).unwrap();
                     }
-                    println!("]");
+                    writeln!(output,"]").unwrap();
                 }
                 PrintCListOfList => {
+                    let output = output.as_mut().unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
                     for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
                         let ll_len = self.heap[(ll.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
                         for c in self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(ll.clone() + Into::<BigInt>::into(2) + ll_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                            print!("{}", c.to_u8().unwrap() as char);
+                            write!(output,"{}", c.to_u8().unwrap() as char).unwrap();
                         }
-                        println!();
+                        writeln!(output).unwrap();
                     }
                     // todo!("print_c_list_of_list")
+                }
+                Print(s) => {
+                    let output = output.as_mut().unwrap();
+                    write!(output,"{}", s).unwrap();
                 }
                 In => {
                     let z = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
@@ -993,6 +1006,12 @@ impl AdvcExecutor {
                 }
                 Malloc => {
                     todo!("Malloc")
+                }
+                DupAtDepth => {
+                    let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    let len = self.stack_frames.last_mut().unwrap().stack.len();
+                    let b = self.stack_frames.last_mut().unwrap().stack.get(len-a.to_usize().unwrap()).unwrap().clone();
+                    self.stack_frames.last_mut().unwrap().stack.push(b.clone());
                 }
                 GetElem => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();

@@ -83,6 +83,7 @@ Readlines = { "readlines" }
 Length = { "length" }
 Nop = { "nop" }
 Malloc = { "malloc" }
+DupAtDepth = { "dup_at_depth" }
 
 Call = { "call" ~ SEPARATOR ~ Label }
 Return = { "return" }
@@ -97,8 +98,11 @@ Index = { "index" ~ SEPARATOR ~ Name ~ ("[" ~ IndexNameOffset ~ "]")* }
 
 ClearList = {"clear_list" ~ SEPARATOR ~ Name}
 
+Print = { "print" }
+
 Expr = {
   | In
+  | DupAtDepth
 
   | Push ~ SEPARATOR ~ Number
   | Push ~ SEPARATOR ~ Char
@@ -148,6 +152,8 @@ Expr = {
   | PrintListC
   | PrintListN
   | PrintCListOfList
+
+  | Print ~ SEPARATOR ~ Name
 
   | ClearList
 }

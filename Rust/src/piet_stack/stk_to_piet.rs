@@ -89,13 +89,13 @@ impl super::PietStackExecutor {
         output.push(String::from(COLORS[previous_r][previous_c]))
     }
 
-    fn make_block(block: Vec<Expr>) -> (Vec<String>, (Option<String>, Option<String>)) {
+    fn make_block(block: Vec<Expr>) -> (Vec<String>, (Option<String>, Option<String>, bool)) {
         let mut output = Vec::new();
         output.push(String::from("🔴"));
         for inp in block {
             match inp {
-                Branch(t, e) => return (output, (Some(t), Some(e))),
-                Goto(l) => return (output, (Some(l), None)),
+                Branch(t, e) => return (output, (Some(t), Some(e), false)),
+                Goto(l) => return (output, (Some(l), None, false)),
                 // Term =>
                 //     return (output, (Some("term"), None)),
                 Instr(cmd) => {
@@ -104,12 +104,15 @@ impl super::PietStackExecutor {
                 Debug => {}
                 Comment(_) => {}
                 GotoStk => {
+                    return (output, (None, None, true))
+                    // output.push(String::from("⚫"));
+                    // return (output, (Some(String::from("term")), None));
                     // NOP?
                     // todo!("goto_stk")
                 }
             }
         }
-        return (output, (None, None));
+        return (output, (None, None, false));
     }
 
     fn split_in_blocks(
@@ -188,7 +191,7 @@ impl super::PietStackExecutor {
         let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
-        let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>))> =
+        let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>, bool))> =
             HashMap::new();
 
         for (k, b) in parsed_blocks {
@@ -235,8 +238,10 @@ impl super::PietStackExecutor {
             (Vec<String>, (Option<Vec<String>>, Option<Vec<String>>)),
         > = HashMap::new();
 
-        for (x, (x_vec, (x_t, x_e))) in blocks {
-            if x_t.is_some() && x_e.is_none() {
+        for (x, (x_vec, (x_t, x_e, x_g))) in blocks {
+            if x_g {
+                mid_blocks.insert(x, (x_vec.clone(), (Some(vec![]), None)));
+            } else if x_t.is_some() && x_e.is_none() {
                 if !block_index.contains_key(&x_t.clone().unwrap()) {
                     panic!("no block with name: {}", &x_t.unwrap());
                 }
