@@ -83,12 +83,17 @@ pub fn test_simpl_vs_stk_vs_piet(path: &str, input: &str, output: &str, register
 pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: usize) {
     let mut advc_executor = AdvcExecutor::new(filepath, registers);
     let smpl_executor = AdvcToSmpl::to_smpl(advc_executor.clone());
+    println!("FROM ADVC DONE");
     let mut stk_executor = SmplToStk::to_stk(smpl_executor);
+    println!("FROM SMPL DONE");
     stk_executor.optimize();
+    println!("OPTIMIZE STK");
     let mut optimizer = StackOptimizer::new();
     let img: image::RgbImage = stk_executor.to_png(&mut optimizer);
+    println!("TO PIET DONE");
     let dyn_img: DynamicImage = DynamicImage::ImageRgb8(img);
 
+    println!("RUN ADVC");
     assert_eq!(
         output,
         test_io_string(input, &mut |read, write| {
@@ -97,6 +102,7 @@ pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: u
         "ADVC FAILED"
     );
 
+    println!("RUN STK");
     assert_eq!(
         output,
         test_io_string(input, &mut |read, write| {
@@ -105,6 +111,7 @@ pub fn test_advc_no_file(filepath: &str, input: &str, output: &str, registers: u
         "STACK FAILED"
     );
 
+    println!("RUN PIET");
     assert_eq!(
         output,
         test_io_string(input, &mut |read, write| {
