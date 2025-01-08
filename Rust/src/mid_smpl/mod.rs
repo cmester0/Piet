@@ -16,6 +16,7 @@ use std::io::Read;
 use std::io::Write;
 
 #[derive(Debug, Clone)]
+#[derive(Eq, Hash, PartialEq)]
 pub enum Label {
     Name(String),
     Ref(String),
@@ -116,6 +117,23 @@ pub fn parse_expr(e: Pair<Rule>, label_map: &HashMap<String, String>) -> Expr {
 pub enum VariableType {
     NUM = 0,
     LIST = -1,
+}
+
+impl VariableType {
+    pub(crate) fn initial_value(self) -> BigInt {
+        match self {
+            VariableType::NUM => 0.into(),
+            VariableType::LIST => (-1).into(),
+        }
+    }
+
+    pub(crate) fn initialize_var(self, var_index: usize) -> Variable {
+        Variable {
+            var_type: self.clone(),
+            value: self.initial_value(),
+            var_index,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

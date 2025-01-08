@@ -25,15 +25,16 @@ impl StackOptimizer {
     }
 }
 
-fn int_root(x: usize, n: u32) -> usize {
-    if x <= 0 || n <= 1 {
+fn int_root(x: BigInt, n: u32) -> BigInt {
+    if x <= 0.into() || n <= 1 {
         return x;
     }
 
-    let mut l = 0;
-    let mut r = x;
-    while l <= r {
-        let m = (l + r) / 2;
+    let mut l : BigInt = 0.into();
+    let mut r : BigInt = x.clone();
+    while l.clone() <= r.clone() {
+        let two : BigInt = 2.into();
+        let m : BigInt = (l.clone() + r.clone()) / two;
         if m.pow(n) < x {
             l = m + 1
         } else if m.pow(n) > x {
@@ -119,22 +120,22 @@ impl StackOptimizer {
     }
 
     // TODO: Handle negative numbers!
-    pub fn optimize_number(&mut self, n: usize) -> Vec<CMD> {
+    pub fn optimize_number(&mut self, n: BigInt) -> Vec<CMD> {
         let mut instrs = vec![];
         let mut root = 1;
         // print ("Calculate int root", N)
-        while int_root(n, root) > 173 {
+        while int_root(n.clone(), root) > 173.into() {
             root += 1;
         }
-        instrs.extend(self.optimize_stack(vec![int_root(n, root).into()]));
+        instrs.extend(self.optimize_stack(vec![int_root(n.clone(), root).into()]));
         for _ in 0..(root - 1) {
             instrs.push(CMD::Dup);
         }
         for _ in 0..(root - 1) {
             instrs.push(CMD::Mul);
         }
-        if n - int_root(n, root).pow(root as u32) > 0 {
-            instrs.extend(self.optimize_number(n - int_root(n, root).pow(root as u32)));
+        if n.clone() - int_root(n.clone(), root).pow(root as u32) > 0.into() {
+            instrs.extend(self.optimize_number(n.clone() - int_root(n.clone(), root).pow(root as u32)));
             instrs.push(CMD::Add);
         }
         instrs

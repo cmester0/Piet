@@ -176,7 +176,7 @@ impl super::PietStackExecutor {
         let mut goto_exprs: Vec<Expr> = vec![];
         goto_exprs.extend(
             optimizer
-                .optimize_number(id)
+                .optimize_number(id.into())
                 .into_iter()
                 .map(Instr)
                 .collect::<Vec<Expr>>(),
@@ -191,12 +191,17 @@ impl super::PietStackExecutor {
         let b_width = (pbl as f32).sqrt().ceil() as usize; // (pbl).isqrt();
         let b_height = (pbl - 1) / b_width + 1;
 
+        println!("Blocks");
+
         let mut blocks: HashMap<String, (Vec<String>, (Option<String>, Option<String>, bool))> =
             HashMap::new();
 
         for (k, b) in parsed_blocks {
+            println!("Blocks: {}, {:?}", k, b);
+
             let mut nb = vec![];
             for x in b {
+                println!("      : -> {:?}", x);
                 match x {
                     Instr(CMD::Push(n)) if n == 0.into() => {
                         nb.push(Instr(CMD::Push(1.into())));
@@ -208,7 +213,7 @@ impl super::PietStackExecutor {
                             nb.push(Instr(CMD::Not));
                             nb.extend(
                                 optimizer
-                                    .optimize_number((-n).to_usize().unwrap())
+                                    .optimize_number(-n)
                                     .into_iter()
                                     .map(Instr)
                                     .collect::<Vec<Expr>>(),
@@ -217,7 +222,7 @@ impl super::PietStackExecutor {
                         } else {
                             nb.extend(
                                 optimizer
-                                    .optimize_number(n.to_usize().unwrap())
+                                    .optimize_number(n)
                                     .into_iter()
                                     .map(Instr)
                                     .collect::<Vec<Expr>>(),
@@ -231,12 +236,14 @@ impl super::PietStackExecutor {
             blocks.insert(String::from(k), Self::make_block(nb));
         }
 
-        let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
+        println!("Parsed blocks");
 
         let mut mid_blocks: HashMap<
             String,
             (Vec<String>, (Option<Vec<String>>, Option<Vec<String>>)),
         > = HashMap::new();
+
+        println!("Mid blocks");
 
         for (x, (x_vec, (x_t, x_e, x_g))) in blocks {
             if x_g {
@@ -289,11 +296,15 @@ impl super::PietStackExecutor {
             }
         }
 
+        println!("J width");
+
         // // # Split blocks
         let j_width = cmp::max(70, cmp::max(b_width, b_height) / 5);
         // let j_width = cmp::max(30, cmp::max(b_width, b_height) / 5);
 
         let mut final_blocks: HashMap<String, (Vec<Vec<String>>, Vec<String>)> = HashMap::new();
+
+        println!("Final blocks");
 
         for (x, (bx, (bx_t, bx_e))) in mid_blocks {
             let (mut splits, going_right) = Self::split_in_blocks(bx, j_width, true);
@@ -311,6 +322,8 @@ impl super::PietStackExecutor {
             }
             final_blocks.insert(x, (splits, branch_blocks));
         }
+
+        println!("Draw?");
 
         Self::to_png_draw(
             optimizer,
@@ -417,7 +430,6 @@ impl super::PietStackExecutor {
         }
         // arr[(4, 2)] = String::from("❤");
 
-        let id_to_coord = |b_id: usize| return (b_id % b_width, b_id / b_width);
         for (i, branch_instr) in
             Self::make_block(Self::goto_block_coord(optimizer, block_index["main"]))
                 .0

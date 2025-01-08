@@ -27,6 +27,23 @@ pub struct Variable {
     var_index: usize,
 }
 
+impl VariableType {
+    fn initial_value(self) -> BigInt {
+        match self {
+            VariableType::NUM => 0.into(),
+            VariableType::LIST => (-1).into(),
+        }
+    }
+
+    fn initialize_var(self, var_index: usize) -> Variable {
+        Variable {
+            var_type: self.clone(),
+            value: self.initial_value(),
+            var_index,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Label {
     Name(String),
@@ -95,6 +112,7 @@ pub enum Expr {
     ClearList(String),
 
     Print(String),
+    LocalVar(String, VariableType),
 
     Comment(String),
 }
@@ -127,7 +145,7 @@ pub fn parse_expr(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
-    loop_breaks: &Vec<(Label,Label, String)>,
+    loop_breaks: &Vec<(Label, Label, String)>,
 ) -> (String, Expr) {
     if e.as_rule() != Rule::Expr {
         panic!()
@@ -139,7 +157,9 @@ pub fn parse_expr(
             let n = e.next().unwrap();
             match n.as_rule() {
                 Rule::Number => Instr(CMD::Push(n.as_str().parse().unwrap())),
-                Rule::Char => Instr(CMD::Push((n.as_str().chars().next().unwrap() as isize).into())),
+                Rule::Char => Instr(CMD::Push(
+                    (n.as_str().chars().next().unwrap() as isize).into(),
+                )),
                 _ => panic!("Trying to push non-number"),
             }
         }
@@ -167,6 +187,15 @@ pub fn parse_expr(
         Rule::Set => Set(String::from(e.next().unwrap().as_str())),
         Rule::Get => Get(String::from(e.next().unwrap().as_str())),
 
+        Rule::LocalVar => {
+            let name = String::from(e.next().unwrap().as_str());
+            let var_type = match e.next().unwrap().as_str() {
+                "num" => VariableType::NUM,
+                "list" => VariableType::LIST,
+                _ => panic!("Incorrect var type for {}", name),
+            };
+            LocalVar(name, var_type)
+        }
         Rule::Eq => Eq,
         Rule::Append => Append,
         Rule::PrintListC => PrintListC,
@@ -191,9 +220,12 @@ pub fn parse_expr(
             while let Some(nst) = indx_stmt.next() {
                 let mut nos = nst.into_inner();
                 let n = String::from(nos.next().unwrap().as_str());
-                let v : BigInt = if let Some(v) = nos.next() {
-                    (if v.as_rule() == Rule::Negative { Into::<BigInt>::into(-1) } else { 1.into() })
-                        * (nos.next().unwrap().as_str().parse::<isize>().unwrap())
+                let v: BigInt = if let Some(v) = nos.next() {
+                    (if v.as_rule() == Rule::Negative {
+                        Into::<BigInt>::into(-1)
+                    } else {
+                        1.into()
+                    }) * (nos.next().unwrap().as_str().parse::<isize>().unwrap())
                 } else {
                     0.into()
                 };
@@ -204,7 +236,7 @@ pub fn parse_expr(
         }
 
         Rule::Continue => {
-            let (start_label,_,loop_var) = loop_breaks.last().unwrap();
+            let (start_label, _, loop_var) = loop_breaks.last().unwrap();
 
             // end of body
             blocks.get_mut(&block_name.clone()).unwrap().extend(vec![
@@ -219,7 +251,15 @@ pub fn parse_expr(
         Rule::Break => {
             let mut break_stmt = ne.into_inner();
 
-            let (_,done_label,_) = loop_breaks[loop_breaks.len()-1-break_stmt.next().unwrap().as_str().parse::<usize>().unwrap()].clone();
+            let (_, done_label, _) = loop_breaks[loop_breaks.len()
+                - 1
+                - break_stmt
+                    .next()
+                    .unwrap()
+                    .as_str()
+                    .parse::<usize>()
+                    .unwrap()]
+            .clone();
             Goto(done_label)
         }
         Rule::For => {
@@ -279,7 +319,7 @@ pub fn parse_expr(
                 label_map,
                 label_count,
                 imports,
-                &sub_loop_breaks
+                &sub_loop_breaks,
             );
 
             // end of body
@@ -300,7 +340,7 @@ pub fn parse_expr(
             let start = String::from(for_stmt.next().unwrap().as_str());
 
             let n = for_stmt.next().unwrap();
-            let initial : BigInt = match n.as_rule() {
+            let initial: BigInt = match n.as_rule() {
                 Rule::Number => n.as_str().parse().unwrap(),
                 Rule::Char => (n.as_str().chars().next().unwrap() as isize).into(),
                 _ => panic!("Trying to push non-number"),
@@ -367,7 +407,7 @@ pub fn parse_expr(
                 label_map,
                 label_count,
                 imports,
-                &sub_loop_breaks
+                &sub_loop_breaks,
             );
 
             // end of body
@@ -476,9 +516,7 @@ pub fn parse_expr(
             block_name = return_label.clone().get_label_name();
             Call(function_label, return_label)
         }
-        Rule::Return => {
-            Return
-        }
+        Rule::Return => Return,
 
         Rule::ClearList => {
             let mut clear_list_stmt = ne.into_inner();
@@ -495,9 +533,9 @@ pub fn parse_expr(
 #[derive(Clone, Debug)]
 pub struct StackFrame {
     pub stack: Vec<BigInt>, // Stack frames
-    pub label: Label, // Return label
+    pub label: Label,       // Return label
+    pub variables: HashMap<String, Variable>,
 }
-
 
 #[derive(Clone)]
 pub struct AdvcExecutor {
@@ -524,7 +562,7 @@ pub fn parse_subblocks(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
-    loop_breaks: &Vec<(Label,Label, String)>,
+    loop_breaks: &Vec<(Label, Label, String)>,
 ) -> String {
     if sub_block.as_rule() != Rule::SubBlock {
         panic!()
@@ -634,7 +672,7 @@ pub fn parse_block(
     label_map: &mut HashMap<String, String>,
     label_count: &mut usize,
     imports: &HashMap<String, String>,
-    loop_breaks: &Vec<(Label,Label, String)>,
+    loop_breaks: &Vec<(Label, Label, String)>,
 ) -> String {
     if b.as_rule() != Rule::Block {
         panic!();
@@ -829,10 +867,44 @@ impl AdvcExecutor {
             blocks,
             block_index,
             variables,
-            stack_frames: vec![StackFrame { stack: Vec::new(), label: Label::Name(String::from("term")) }], // Default for "main"?
+            stack_frames: vec![StackFrame {
+                stack: Vec::new(),
+                label: Label::Name(String::from("term")),
+                variables: HashMap::new(),
+            }], // Default for "main"?
             heap: Vec::new(),
             label: String::from("main"),
             registers,
+        }
+    }
+
+    pub fn get_variable(&mut self, s: &String) -> BigInt {
+        if self.stack_frames.last().unwrap().variables.contains_key(s) {
+            self.stack_frames.last().unwrap().variables[s]
+                .value
+                .clone()
+        } else {
+            if !self.variables.contains_key(s) {
+                panic!("Get for variable {} does not exists", s);
+            }
+            self.variables[s].value.clone()
+        }
+    }
+
+    pub fn set_variable(&mut self, s: &String, v: BigInt) {
+        if self.stack_frames.last().unwrap().variables.contains_key(s) {
+            self.stack_frames
+                .last_mut()
+                .unwrap()
+                .variables
+                .get_mut(s)
+                .unwrap()
+                .value = v;
+        } else {
+            if !self.variables.contains_key(s) {
+                panic!("Set for variable {} does not exists", s);
+            }
+            self.variables.get_mut(s).unwrap().value = v;
         }
     }
 
@@ -845,7 +917,11 @@ impl AdvcExecutor {
         for e in self.blocks[&label].clone() {
             match e {
                 Instr(c) => {
-                    c.interpret(&mut self.stack_frames.last_mut().unwrap().stack, input, output);
+                    c.interpret(
+                        &mut self.stack_frames.last_mut().unwrap().stack,
+                        input,
+                        output,
+                    );
                 }
                 Goto(l) => {
                     self.label = l.clone().get_label_name();
@@ -871,20 +947,20 @@ impl AdvcExecutor {
                             .map(|(x, v)| (x, v.value.clone()))
                             .collect::<Vec<_>>()
                     );
-                    println!("Stack_frame {}, stack: {:?}", self.label, self.stack_frames.last().unwrap().stack);
+                    println!(
+                        "Stack_frame {}, stack: {:?}",
+                        self.label,
+                        self.stack_frames.last().unwrap().stack
+                    );
                     println!();
                 }
                 Set(v) => {
-                    if !self.variables.contains_key(&v) {
-                        panic!("Set for variable {} does not exists", v);
-                    }
-                    self.variables.get_mut(&v).unwrap().value = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
+                    self.set_variable(&v, a);
                 }
                 Get(v) => {
-                    if !self.variables.contains_key(&v) {
-                        panic!("Get for variable {} does not exists", v);
-                    }
-                    self.stack_frames.last_mut().unwrap().stack.push(self.variables[&v].value.clone())
+                    let a = self.get_variable(&v);
+                    self.stack_frames.last_mut().unwrap().stack.push(a);
                 }
                 For(_, _, l) => {
                     self.label = l.clone().get_label_name();
@@ -899,7 +975,11 @@ impl AdvcExecutor {
                     return self.label != "term";
                 }
                 Call(fun, ret) => {
-                    self.stack_frames.push(StackFrame { stack: Vec::new(), label: ret });
+                    self.stack_frames.push(StackFrame {
+                        stack: Vec::new(),
+                        label: ret,
+                        variables: HashMap::new(),
+                    });
                     // Goto function
                     self.label = fun.clone().get_label_name();
                     return self.label != "term";
@@ -912,7 +992,11 @@ impl AdvcExecutor {
                 Eq => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop();
                     let b = self.stack_frames.last_mut().unwrap().stack.pop();
-                    self.stack_frames.last_mut().unwrap().stack.push(if a == b { 1.into() } else { 0.into() });
+                    self.stack_frames.last_mut().unwrap().stack.push(if a == b {
+                        1.into()
+                    } else {
+                        0.into()
+                    });
                 }
                 Append => {
                     let ai = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
@@ -953,33 +1037,70 @@ impl AdvcExecutor {
                 }
                 PrintListC => {
                     let output = output.as_mut().unwrap();
-                    write!(output,"[").unwrap();
+                    write!(output, "[").unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                        write!(output,"{},", c.to_u8().unwrap() as char).unwrap();
+                    let l_len = self.heap
+                        [(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()]
+                    .clone();
+                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()
+                        ..(l.clone() + Into::<BigInt>::into(2) + l_len)
+                            .clone()
+                            .to_usize()
+                            .unwrap()]
+                        .into_iter()
+                        .cloned()
+                    {
+                        write!(output, "{},", c.to_u8().unwrap() as char).unwrap();
                     }
-                    writeln!(output,"]").unwrap();
+                    writeln!(output, "]").unwrap();
                     // todo!("print_c_list_of_list")
                 }
                 PrintListN => {
                     let output = output.as_mut().unwrap();
-                    write!(output,"[").unwrap();
+                    write!(output, "[").unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                        write!(output,"{},", c).unwrap();
+                    let l_len = self.heap
+                        [(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()]
+                    .clone();
+                    for c in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()
+                        ..(l.clone() + Into::<BigInt>::into(2) + l_len)
+                            .clone()
+                            .to_usize()
+                            .unwrap()]
+                        .into_iter()
+                        .cloned()
+                    {
+                        write!(output, "{},", c).unwrap();
                     }
-                    writeln!(output,"]").unwrap();
+                    writeln!(output, "]").unwrap();
                 }
                 PrintCListOfList => {
                     let output = output.as_mut().unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    let l_len = self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                    for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(l.clone() + Into::<BigInt>::into(2) + l_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                        let ll_len = self.heap[(ll.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone();
-                        for c in self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()..(ll.clone() + Into::<BigInt>::into(2) + ll_len).clone().to_usize().unwrap()].into_iter().cloned() {
-                            write!(output,"{}", c.to_u8().unwrap() as char).unwrap();
+                    let l_len = self.heap
+                        [(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()]
+                    .clone();
+                    for ll in self.heap[(l.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()
+                        ..(l.clone() + Into::<BigInt>::into(2) + l_len)
+                            .clone()
+                            .to_usize()
+                            .unwrap()]
+                        .into_iter()
+                        .cloned()
+                    {
+                        let ll_len = self.heap
+                            [(ll.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()]
+                        .clone();
+                        for c in
+                            self.heap[(ll.clone() + Into::<BigInt>::into(2)).to_usize().unwrap()
+                                ..(ll.clone() + Into::<BigInt>::into(2) + ll_len)
+                                    .clone()
+                                    .to_usize()
+                                    .unwrap()]
+                                .into_iter()
+                                .cloned()
+                        {
+                            write!(output, "{}", c.to_u8().unwrap() as char).unwrap();
                         }
                         writeln!(output).unwrap();
                     }
@@ -987,22 +1108,35 @@ impl AdvcExecutor {
                 }
                 Print(s) => {
                     let output = output.as_mut().unwrap();
-                    write!(output,"{}", s).unwrap();
+                    write!(output, "{}", s).unwrap();
                 }
                 In => {
                     let z = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let l = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     // a in l starting at z
-                    let mut index : BigInt = (-1).into();
+                    let mut index: BigInt = (-1).into();
 
-                    for i in z.to_isize().unwrap()..self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()].clone().to_isize().unwrap() {
-                        if a == self.heap[(l.clone() + Into::<BigInt>::into(2) + i).to_usize().unwrap()].clone() {
+                    for i in z.to_isize().unwrap()
+                        ..self.heap[(l.clone() + Into::<BigInt>::into(1)).to_usize().unwrap()]
+                            .clone()
+                            .to_isize()
+                            .unwrap()
+                    {
+                        if a == self.heap[(l.clone() + Into::<BigInt>::into(2) + i)
+                            .to_usize()
+                            .unwrap()]
+                        .clone()
+                        {
                             index = i.into();
                             break;
                         }
                     }
-                    self.stack_frames.last_mut().unwrap().stack.push(index.into());
+                    self.stack_frames
+                        .last_mut()
+                        .unwrap()
+                        .stack
+                        .push(index.into());
                 }
                 Malloc => {
                     todo!("Malloc")
@@ -1010,13 +1144,22 @@ impl AdvcExecutor {
                 DupAtDepth => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let len = self.stack_frames.last_mut().unwrap().stack.len();
-                    let b = self.stack_frames.last_mut().unwrap().stack.get(len-a.to_usize().unwrap()).unwrap().clone();
+                    let b = self
+                        .stack_frames
+                        .last_mut()
+                        .unwrap()
+                        .stack
+                        .get(len - a.to_usize().unwrap())
+                        .unwrap()
+                        .clone();
                     self.stack_frames.last_mut().unwrap().stack.push(b.clone());
                 }
                 GetElem => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let b = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    self.stack_frames.last_mut().unwrap().stack.push(self.heap[(a + Into::<BigInt>::into(2) + b).to_usize().unwrap()].clone());
+                    self.stack_frames.last_mut().unwrap().stack.push(
+                        self.heap[(a + Into::<BigInt>::into(2) + b).to_usize().unwrap()].clone(),
+                    );
                 }
                 SetElem => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
@@ -1026,12 +1169,24 @@ impl AdvcExecutor {
                 }
                 GetHeap => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
-                    self.stack_frames.last_mut().unwrap().stack.push(self.heap[a.to_usize().unwrap()].clone());
+                    self.stack_frames
+                        .last_mut()
+                        .unwrap()
+                        .stack
+                        .push(self.heap[a.to_usize().unwrap()].clone());
                 }
                 SetHeap => {
                     let a = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     let b = self.stack_frames.last_mut().unwrap().stack.pop().unwrap();
                     self.heap[a.to_usize().unwrap()] = b;
+                }
+                LocalVar(n, t) => {
+                    let var_index = self.stack_frames.last().unwrap().variables.len();
+                    self.stack_frames
+                        .last_mut()
+                        .unwrap()
+                        .variables
+                        .insert(n, t.initialize_var(var_index));
                 }
                 Readlines => {
                     // Read lines into
@@ -1066,7 +1221,11 @@ impl AdvcExecutor {
                     // lines.push(self.heap.len() as isize);
                     // add_line(&mut self.heap, line);
 
-                    self.stack_frames.last_mut().unwrap().stack.push(self.heap.len().into());
+                    self.stack_frames
+                        .last_mut()
+                        .unwrap()
+                        .stack
+                        .push(self.heap.len().into());
                     add_line(&mut self.heap, lines);
                 }
                 Length => {
@@ -1074,29 +1233,38 @@ impl AdvcExecutor {
                     if a == (-1).into() {
                         self.stack_frames.last_mut().unwrap().stack.push(0.into())
                     } else {
-                        self.stack_frames.last_mut().unwrap().stack.push(self.heap[a.to_usize().unwrap() + 1].clone());
+                        self.stack_frames
+                            .last_mut()
+                            .unwrap()
+                            .stack
+                            .push(self.heap[a.to_usize().unwrap() + 1].clone());
                     }
                 }
                 Index(s, v) => {
-                    let mut curr = self.variables[&s].value.clone();
+                    let mut curr = self.get_variable(&s).clone();
                     let mut debug_print = format!("{}", s);
                     for (name, offset) in v {
-                        let index = self.variables[&name].value.clone() + offset.clone();
-                        debug_print = format!("{}[{}(={})+{}]",debug_print,name,index,offset);
-                        if self.heap.len() <= (curr.clone() + Into::<BigInt>::into(2isize) + index.clone()).to_usize().unwrap() {
+                        let index = self.get_variable(&name).clone() + offset.clone();
+                        debug_print = format!("{}[{}(={})+{}]", debug_print, name, index, offset);
+                        if self.heap.len()
+                            <= (curr.clone() + Into::<BigInt>::into(2isize) + index.clone())
+                                .to_usize()
+                                .unwrap()
+                        {
                             panic!("{}", debug_print);
                         }
-                        curr = self.heap[(curr + Into::<BigInt>::into(2isize) + index).to_usize().unwrap()].clone();
+                        curr = self.heap[(curr + Into::<BigInt>::into(2isize) + index)
+                            .to_usize()
+                            .unwrap()]
+                        .clone();
                     }
                     self.stack_frames.last_mut().unwrap().stack.push(curr);
                 }
-		ClearList(l) => {
-                    if !self.variables.contains_key(&l) {
-                        panic!("Cannot clear variable {} does not exists", l);
-                    }
-		    let index = self.variables[&l].value.clone();
-		    self.heap[(index + Into::<BigInt>::into(1isize)).to_usize().unwrap()] = 0.into();
-		}
+                ClearList(l) => {
+                    let index = self.get_variable(&l).clone();
+                    self.heap[(index + Into::<BigInt>::into(1isize)).to_usize().unwrap()] =
+                        0.into();
+                }
                 Comment(_) => {}
             }
         }

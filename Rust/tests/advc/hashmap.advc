@@ -179,6 +179,11 @@ outC
 
 goto term
 
+
+# ################### #
+# Hash implementation #
+# ################### #
+
 # 0 = k, 1 = i, 2 = m
 label hash
 # (hash1(key) + i * hash2(key)) % TABLE_SIZE
@@ -212,216 +217,175 @@ return
 
 # 0 = T, 1 = k, 2 = m
 label hash_insert
-  get __R2__
+  local_var T list
+  local_var k num
+  local_var m num
+  local_var i num
+  local_var j num
+
+  local_var wl num
+  local_var end_wl list
+
   get __R0__
+  set T
+
   get __R1__
+  set k
+
+  get __R2__
+  set m
 
   # set i
   push 2
+  set i
 
   # set j
   push 1
+  set j
 
-goto repeat
-label repeat
+  for wl to end_wl {
 
-  # j = h(k,i)
-  push 3
-  dup_at_depth
-  set __R0__
-
-  push 2
-  dup_at_depth
-  set __R1__
-
-  push 5
-  dup_at_depth
-  set __R2__
-
-  call hash
-
-  pop
-  get __R0__
-  # /
-
-  # if T[j] == nil
-  dup
-  set __R1__
-
-  push 4
-  dup_at_depth
-  set __R0__
-
-  # is it nil ## Todo: handle -1 as key..
-  index __R0__[__R1__]
-  push -1
-  eq
-  if {
-    # T[j] = k
-    push 3
-    dup_at_depth
-
-    get __R0__
-    get __R1__
-    set_elem
-
-    # Return j
-    get __R1__
+    # j = h(k,i)
+    get k
     set __R0__
 
-    # pop stack until empty
-    pop
-    pop
-    pop
-    pop
-    pop
+    get i
+    set __R1__
 
-    return
-  } else {
-    # i += 1
-    push 2
-    push 1
-    roll
-    push 1
-    add
-    push 2
-    push 1
-    roll
+    get m
+    set __R2__
+
+    call hash
+
+    get __R0__
+    set j
+    # /
+
+    # if T[j] == nil
+    # is it nil ## Todo: handle -1 as key..
+    index T[j]
+    push -1
+    eq
+    if {
+      # T[j] = k
+      get k
+      get T
+      get j
+      set_elem
+
+      # Return j
+      get j
+      set __R0__
+
+      return
+    } else {
+      # i += 1
+      push 1
+      get i
+      add
+      set i
+    }
+
+    # i == m
+    get i
+    get m
+    eq
+    if {
+      break 0
+    } else {}
+
   }
 
-  # i == m
-  push 2
-  dup_at_depth
-  push 6
-  dup_at_depth
-  eq
-  if {
-    # break
-    goto repeat_done
-  } else {}
-
-goto repeat
-
-label repeat_done
-
-# Return error
-push -1
-set __R0__
-
-# pop stack until empty
-pop
-pop
-pop
-pop
-pop
+  # Return error
+  push -1
+  set __R0__
 
 return
 
 # 0 = T, 1 = k, 2 = m
 label hash_search
+  local_var T list
+  local_var k num
+  local_var m num
+  local_var i num
+  local_var j num
+
+  local_var wl num
+  local_var end_wl list
+
   get __R2__
+  set m
   get __R0__
+  set T
   get __R1__
+  set k
 
   # set i
   push 2
+  set i
 
   # set j
   push 1
+  set j
 
-goto repeat2
-label repeat2
+  for wl to end_wl {
 
-  # j = h(k,i)
-  push 3
-  dup_at_depth
-  set __R0__
-
-  push 2
-  dup_at_depth
-  set __R1__
-
-  call hash
-
-  pop
-  get __R0__
-  # /
-
-  # if T[j] == j
-  dup
-  set __R1__
-
-  push 4
-  dup_at_depth
-  set __R0__
-
-  # k
-  push 3
-  dup_at_depth
-
-  # T[j]
-  index __R0__[__R1__]
-
-  eq
-  if {
-    # Return j
-    get __R1__
+    # j = h(k,i)
+    get k
     set __R0__
 
-    # pop stack until empty
-    pop
-    pop
-    pop
-    pop
-    pop
+    get i
+    set __R1__
 
-    return
-  } else {
-    # i += 1
-    push 2
-    push 1
-    roll
-    push 1
+    get m
+    set __R2__
+
+    call hash
+
+    get __R0__
+    set j
+    # /
+
+    # if T[j] == k
+    index T[j]
+    get k
+    eq
+    if {
+      # Return j
+      get j
+      set __R0__
+
+      return
+    } else {
+      # i += 1
+      get i
+      push 1
+      add
+      set i
+    }
+
+    # T[j] is nil
+    index T[j]
+    push -1
+    eq
+
+    # i == m
+    get i
+    get m
+    eq
+
+    # or
     add
-    push 2
-    push 1
-    roll
+    not
+    not
+    if {
+      break 0
+    } else {}
+
   }
-
-  # T[j] is nil
-  index __R0__[__R1__]
-  push -1
-  eq
-
-  # i == m
-  push 2
-  dup_at_depth
-  push 6
-  dup_at_depth
-  eq
-
-  # or
-  add
-  not
-  not
-  if {
-    # break
-    goto repeat2_done
-  } else {}
-
-goto repeat2
-
-label repeat2_done
 
 # Return error
 push -1
 set __R0__
-
-# pop stack until empty
-pop
-pop
-pop
-pop
-pop
 
 return

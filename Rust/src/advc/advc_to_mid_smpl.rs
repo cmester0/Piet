@@ -10,11 +10,12 @@ use crate::mid_smpl::{
     Label, SmplExecutor, Variable, VariableType,
 };
 use crate::piet_interpreter::CMD::{self, *};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub struct AdvcToSmpl {
     advc_executor: AdvcExecutor,
     smpl_executor: SmplExecutor,
+    local_vars: HashMap<String, HashMap<String, Variable>>,
 }
 
 fn handle_label(l: AdvcLabel) -> Label {
@@ -107,7 +108,7 @@ impl AdvcToSmpl {
         new_block_label
     }
 
-    fn handle_advc_instr(&mut self, e: AdvcExpr) {
+    fn handle_advc_instr(&mut self, local_label: String, e: AdvcExpr) {
         match e {
             AdvcExpr::Instr(Nop) => {}
             AdvcExpr::Instr(c @ Push(_)) => {
@@ -131,10 +132,30 @@ impl AdvcToSmpl {
                 self.add_expr(Comment(s));
             }
             AdvcExpr::Set(var) => {
-                self.add_expr(Expr::Set(var));
+                if self.local_vars.contains_key(&local_label.clone())
+                    && self
+                        .local_vars
+                        .get(&local_label)
+                        .unwrap()
+                        .contains_key(&var)
+                {
+                    todo!("handle local variable {}", var);
+                } else {
+                    self.add_expr(Expr::Set(var));
+                }
             }
             AdvcExpr::Get(var) => {
-                self.add_expr(Expr::Get(var));
+                if self.local_vars.contains_key(&local_label.clone())
+                    && self
+                        .local_vars
+                        .get(&local_label)
+                        .unwrap()
+                        .contains_key(&var)
+                {
+                    todo!("handle local variable {}", var);
+                } else {
+                    self.add_expr(Expr::Get(var));
+                }
             }
             AdvcExpr::Eq => {
                 self.add_lib(String::from("eq"));
@@ -157,6 +178,9 @@ impl AdvcToSmpl {
                     self.add_lib(String::from("push"));
                     self.add_lib(String::from("outC"));
                 }
+            }
+            AdvcExpr::LocalVar(_, _) => {
+                // Already handled!
             }
             AdvcExpr::In => {
                 self.add_lib(String::from("in"));
@@ -201,11 +225,14 @@ impl AdvcToSmpl {
                     exprs.push(AdvcExpr::GetElem);
                 }
 
-                self.handle_advc_instr(AdvcExpr::Comment(String::from("+index")));
+                self.handle_advc_instr(
+                    local_label.clone(),
+                    AdvcExpr::Comment(String::from("+index")),
+                );
                 for x in exprs {
-                    self.handle_advc_instr(x);
+                    self.handle_advc_instr(local_label.clone(), x);
                 }
-                self.handle_advc_instr(AdvcExpr::Comment(String::from("-index")));
+                self.handle_advc_instr(local_label, AdvcExpr::Comment(String::from("-index")));
             }
             AdvcExpr::For(_, _, _) => {
                 // NOP
@@ -214,6 +241,30 @@ impl AdvcToSmpl {
                 // NOP
             }
             AdvcExpr::Call(a, r) => {
+                // Set base pointer of call frame (to something consistent)
+                self.add_expr(Get(String::from("base_pointer")));
+
+                self.add_expr(Instr(CMD::Dup));
+                self.add_expr(Instr(CMD::Push(1.into())));
+                self.add_expr(Instr(CMD::Add));
+
+                self.add_expr(Set(String::from("base_pointer")));
+
+                // Push all the local variables
+                let variable_map: HashMap<_, _> = self
+                    .local_vars
+                    .get(&a.clone().get_label_name())
+                    .unwrap()
+                    .clone();
+                for (_var_name, var_def) in variable_map
+                    .clone()
+                    .into_iter()
+                    .sorted_by(|(_, var1), (_, var2)| var1.var_index.cmp(&var2.var_index))
+                {
+                    self.add_expr(Instr(CMD::Push(var_def.value)));
+                    self.add_lib(String::from("push"));
+                }
+
                 if !self
                     .smpl_executor
                     .block_index
@@ -271,6 +322,7 @@ impl AdvcToSmpl {
                 imports: HashMap::new(),
             },
             advc_executor: executor,
+            local_vars: HashMap::new(),
         };
 
         for s in vec![
@@ -331,6 +383,10 @@ impl AdvcToSmpl {
                 .variables
                 .insert(name, handle_variable(var));
         }
+        advc_to_smpl.smpl_executor.variables.insert(
+            String::from("base_pointer"),
+            VariableType::NUM.initialize_var(advc_to_smpl.smpl_executor.variables.len()),
+        );
 
         let mut bi = 0;
 
@@ -359,14 +415,127 @@ impl AdvcToSmpl {
             }
         }
 
+        // Construct call graph
+
+        let mut functions: HashSet<String> = HashSet::new();
+
+        // What functions exists?
+        for (x, _) in advc_to_smpl
+            .advc_executor
+            .block_index
+            .clone()
+            .into_iter()
+            .collect_vec()
+            .into_iter()
+            .sorted_by(|(_, v1), (_, v2)| v1.cmp(v2))
+        {
+            let v = advc_to_smpl.advc_executor.blocks[&x.clone()].clone();
+            for e in v.clone() {
+                match e {
+                    AdvcExpr::Call(f, r) => {
+                        functions.insert(f.clone().get_label_name());
+                    }
+                    _ => (),
+                }
+            }
+        }
+
+        for f in functions {
+            let mut stack: Vec<(usize, String, Vec<String>)> = vec![(0, f.clone(), vec![])];
+            let mut local_variables: HashMap<String, Variable> = HashMap::new();
+            let mut visited: HashSet<String> = HashSet::new();
+            while stack.len() > 0 {
+                let (level, l, r) = stack.pop().unwrap();
+
+                if visited.contains(&l) {
+                    continue;
+                }
+                visited.insert(l.clone());
+
+                for expr in advc_to_smpl.advc_executor.blocks[&l].clone() {
+                    match expr {
+                        AdvcExpr::Goto(g) => stack.push((level + 1, g.get_label_name(), r.clone())),
+                        AdvcExpr::Branch(t, e) => {
+                            stack.push((level + 1, t.get_label_name(), r.clone()));
+                            stack.push((level + 1, e.get_label_name(), r.clone()));
+                        }
+                        AdvcExpr::If(t, e) => {
+                            stack.push((level + 1, t.get_label_name(), r.clone()));
+                            stack.push((level + 1, e.get_label_name(), r.clone()));
+                        }
+                        AdvcExpr::For(_, _, l) => {
+                            stack.push((level + 1, l.get_label_name(), r.clone()));
+                        }
+                        AdvcExpr::Return => {
+                            continue;
+                            // if r.len() > 0 {
+                            //     let mut nr = r.clone();
+                            //     let nf = nr.pop().unwrap();
+                            //     stack.push((level + 1, nf, nr));
+                            // }
+                        }
+                        AdvcExpr::Call(_cf, cr) => {
+                            stack.push((level, cr.get_label_name(), r.clone()))
+                            // let mut nr = r.clone();
+                            // nr.push(cr.get_label_name());
+                            // stack.push((level + 1, cf.get_label_name(), nr));
+                        }
+                        AdvcExpr::LocalVar(n, t) => {
+                            local_variables.insert(
+                                n,
+                                handle_variable(t.initialize_var(local_variables.len())),
+                            );
+                        }
+                        _ => (),
+                    }
+                }
+            }
+
+            for fl in visited {
+                advc_to_smpl.local_vars.insert(fl, local_variables.clone());
+            }
+        }
+
+        // // Walk call graph dfs:
+        // for (f,r) in functions {
+        //     println!("{} -> {}:", f, r);
+        //     let mut stack : Vec<(usize,String)> = vec![(0,f)];
+        //     let mut visited : HashSet<String> = HashSet::new();
+        //     while stack.len() > 0 {
+        //         let (level, l) = stack.pop().unwrap();
+        //         println!("-{}{}", " ".repeat(level), l);
+
+        //         if l == r {
+        //             continue
+        //         }
+
+        //         if visited.contains(&l) {
+        //             continue;
+        //         }
+        //         visited.insert(l.clone());
+
+        //         for n in call_graph[&l].clone() {
+        //             stack.push((level+1,n));
+        //         }
+        //     }
+        // }
+        // // println!("CALLGRAPH: {:?}", call_graph);
+        // // println!("Functions: {:?}", functions);
+
+        ////////////////////
+        // Translate code //
+        ////////////////////
+
         // Setup stack frame
         advc_to_smpl
             .smpl_executor
             .blocks
             .insert(String::from("main"), vec![]);
-        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(advc_to_smpl.smpl_executor.block_index["term"].into())));
-        advc_to_smpl.handle_advc_instr(AdvcExpr::Instr(Push(1.into())));
-
+        advc_to_smpl.handle_advc_instr(
+            String::from("main"),
+            AdvcExpr::Instr(Push(advc_to_smpl.smpl_executor.block_index["term"].into())),
+        );
+        advc_to_smpl.handle_advc_instr(String::from("main"), AdvcExpr::Instr(Push(1.into())));
 
         // Add code (Parse 2)
         for (x, _) in advc_to_smpl
@@ -391,7 +560,7 @@ impl AdvcToSmpl {
 
             for e in v.clone() {
                 // advc_to_smpl.add_expr(Comment(format!("+{:?}", e.clone())));
-                advc_to_smpl.handle_advc_instr(e.clone());
+                advc_to_smpl.handle_advc_instr(x.clone(), e.clone());
                 // advc_to_smpl.add_expr(Comment(format!("-{:?}", e)));
             }
         }
