@@ -1,0 +1,432 @@
+var i num
+var end_i num
+
+var T list
+var k num
+var m num
+
+push 100
+set m
+
+push 13
+set k
+
+get m
+set end_i
+# Fill map with negative values
+for i to end_i {
+  push -1
+  get T
+  append
+  set T
+}
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_insert
+
+## What is hash_insert(13) ?
+print initial
+push 32
+outC
+
+get __R0__
+outN
+push 10
+outC
+
+##
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_insert
+
+## What is it repeated?
+print repeat_
+push 32
+outC
+
+get __R0__
+outN
+push 10
+outC
+
+##
+
+## Update k
+push 3
+set k
+## /
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_insert
+
+print change_
+push 32
+outC
+get __R0__
+outN
+push 10
+outC
+
+print search
+push 10
+outC
+
+#####
+
+push 13
+set k
+
+#####
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_search
+
+print initial
+push 32
+outC
+get __R0__
+outN
+push 10
+outC
+
+####
+
+push 3
+set k
+
+#####
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_search
+
+print change_
+push 32
+outC
+get __R0__
+outN
+push 10
+outC
+
+####
+
+push 6
+set k
+
+#####
+
+get T
+set __R0__
+
+get k
+set __R1__
+
+push m
+set __R2__
+
+call hash_search
+
+print outside
+push 32
+outC
+get __R0__
+outN
+push 10
+outC
+
+
+
+#########
+
+goto term
+
+
+# ################### #
+# Hash implementation #
+# ################### #
+
+# 0 = k, 1 = i, 2 = m
+label hash
+# (hash1(key) + i * hash2(key)) % TABLE_SIZE
+
+# hash1(key) = key % TABLE_SIZE
+get __R0__
+get __R2__
+mod
+
+# hash2(key) = PRIME – (key % PRIME) ## PRIME < TABLE_SIZE
+# PRIME
+push 67
+
+# key % PRIME
+get __R0__
+push 67
+mod
+
+sub
+
+# (hash1(key) + i * hash2(key)) % TABLE_SIZE
+get __R1__
+mul
+add
+
+get __R2__
+mod
+
+set __R0__
+return
+
+# 0 = T, 1 = k, 2 = m
+label hash_insert
+  get __R2__
+  get __R0__
+  get __R1__
+
+  # set i
+  push 2
+
+  # set j
+  push 1
+
+goto repeat
+label repeat
+
+  # j = h(k,i)
+  push 3
+  dup_at_depth
+  set __R0__
+
+  push 2
+  dup_at_depth
+  set __R1__
+
+  push 5
+  dup_at_depth
+  set __R2__
+
+  call hash
+
+  pop
+  get __R0__
+  # /
+
+  # if T[j] == nil
+  dup
+  set __R1__
+
+  push 4
+  dup_at_depth
+  set __R0__
+
+  # is it nil ## Todo: handle -1 as key..
+  index __R0__[__R1__]
+  push -1
+  eq
+  if {
+    # T[j] = k
+    push 3
+    dup_at_depth
+
+    get __R0__
+    get __R1__
+    set_elem
+
+    # Return j
+    get __R1__
+    set __R0__
+
+    # pop stack until empty
+    pop
+    pop
+    pop
+    pop
+    pop
+
+    return
+  } else {
+    # i += 1
+    push 2
+    push 1
+    roll
+    push 1
+    add
+    push 2
+    push 1
+    roll
+  }
+
+  # i == m
+  push 2
+  dup_at_depth
+  push 6
+  dup_at_depth
+  eq
+  if {
+    # break
+    goto repeat_done
+  } else {}
+
+goto repeat
+
+label repeat_done
+
+# Return error
+push -1
+set __R0__
+
+# pop stack until empty
+pop
+pop
+pop
+pop
+pop
+
+return
+
+# 0 = T, 1 = k, 2 = m
+label hash_search
+  get __R2__
+  get __R0__
+  get __R1__
+
+  # set i
+  push 2
+
+  # set j
+  push 1
+
+goto repeat2
+label repeat2
+
+  # j = h(k,i)
+  push 3
+  dup_at_depth
+  set __R0__
+
+  push 2
+  dup_at_depth
+  set __R1__
+
+  call hash
+
+  pop
+  get __R0__
+  # /
+
+  # if T[j] == j
+  dup
+  set __R1__
+
+  push 4
+  dup_at_depth
+  set __R0__
+
+  # k
+  push 3
+  dup_at_depth
+
+  # T[j]
+  index __R0__[__R1__]
+
+  eq
+  if {
+    # Return j
+    get __R1__
+    set __R0__
+
+    # pop stack until empty
+    pop
+    pop
+    pop
+    pop
+    pop
+
+    return
+  } else {
+    # i += 1
+    push 2
+    push 1
+    roll
+    push 1
+    add
+    push 2
+    push 1
+    roll
+  }
+
+  # T[j] is nil
+  index __R0__[__R1__]
+  push -1
+  eq
+
+  # i == m
+  push 2
+  dup_at_depth
+  push 6
+  dup_at_depth
+  eq
+
+  # or
+  add
+  not
+  not
+  if {
+    # break
+    goto repeat2_done
+  } else {}
+
+goto repeat2
+
+label repeat2_done
+
+# Return error
+push -1
+set __R0__
+
+# pop stack until empty
+pop
+pop
+pop
+pop
+pop
+
+return

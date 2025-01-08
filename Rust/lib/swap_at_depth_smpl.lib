@@ -1,0 +1,22 @@
+# Save / update depth
+lib_dup
+push 1
+lib_push
+lib_add
+
+# Fetch the element
+push -1
+lib_push
+lib_roll
+
+# Do the swap
+push 3
+lib_push
+push 1
+lib_push
+lib_roll
+
+# Put back the new element
+push 1
+lib_push
+lib_roll

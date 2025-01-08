@@ -948,6 +948,14 @@ impl AdvcExecutor {
                             .collect::<Vec<_>>()
                     );
                     println!(
+                        "Local variables: {:?}",
+                        self.stack_frames.last().unwrap().variables
+                            .iter()
+                            .sorted_by(|(_, v1), (_, v2)| v1.var_index.cmp(&v2.var_index))
+                            .map(|(x, v)| (x, v.value.clone()))
+                            .collect::<Vec<_>>()
+                    );
+                    println!(
                         "Stack_frame {}, stack: {:?}",
                         self.label,
                         self.stack_frames.last().unwrap().stack

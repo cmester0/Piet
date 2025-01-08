@@ -201,6 +201,7 @@ static STDLIB: phf::Map<&str, &'static str> = phf_map! {
     "sub" => include_str!("../../lib/sub.lib"),
     "swap" => include_str!("../../lib/swap.lib"),
     "swap_at_depth" => include_str!("../../lib/swap_at_depth.lib"),
+    "swap_at_depth_smpl" => include_str!("../../lib/swap_at_depth_smpl.lib"),
     "swap_smpl" => include_str!("../../lib/swap_smpl.lib"),
 };
 

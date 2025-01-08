@@ -1,0 +1,43 @@
+call temp
+goto term
+
+label temp
+call temp2
+return
+
+label temp2
+call temp3
+return
+
+label temp3
+local_var i num
+local_var j num
+local_var a num
+local_var b num
+local_var c num
+
+push 121
+set i
+
+push 132
+set j
+
+push 151
+set c
+
+get i
+outN
+
+get j
+outN
+
+get a
+outN
+
+get b
+outN
+
+get c
+outN
+
+return
