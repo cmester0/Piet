@@ -128,13 +128,21 @@ impl PietExecution {
                         [self.map.pix_to_blob[&(self.cursor.cx, self.cursor.cy)]];
 
                     curr_pos = match (self.cursor.dp, self.cursor.cc) {
+                        // right, left => uppermost
                         (0, 0) => abi.r_u,
+                        // right, right => lowermost
                         (0, 1) => abi.r_d,
+                        // down, left => rightmost
                         (1, 0) => abi.d_r,
+                        // down, right => leftmost
                         (1, 1) => abi.d_l,
+                        // left, left => lowermost
                         (2, 0) => abi.l_d,
+                        // left, right => uppermost
                         (2, 1) => abi.l_u,
+                        // up, left => leftmost
                         (3, 0) => abi.u_l,
+                        // up, right => rightmost
                         (3, 1) => abi.u_r,
                         _ => panic!(),
                     };
@@ -182,20 +190,22 @@ impl PietExecution {
                     (2, 2) => Some(CMD::Not),
                     (3, 0) => Some(CMD::Greater),
                     (3, 1) => {
+                         // Pointer
                         if !(self.stack.len() >= 1) {
                             panic!()
                         }
                         let a : isize = self.stack.pop().unwrap().to_isize().unwrap();
                         self.cursor.dp = (self.cursor.dp + (a.rem_euclid(4)) as usize) % 4;
-                        None // Pointer
+                        None
                     }
                     (3, 2) => {
+                        // Switch
                         if !(self.stack.len() >= 1) {
                             panic!()
                         }
                         let a : usize = self.stack.pop().unwrap().abs().to_usize().unwrap() % 2;
                         self.cursor.cc = (self.cursor.cc + a) % 2;
-                        None // Switch
+                        None
                     }
                     (4, 0) => Some(CMD::Dup),
                     (4, 1) => Some(CMD::Roll),
@@ -203,7 +213,7 @@ impl PietExecution {
                     (5, 0) => Some(CMD::InC),
                     (5, 1) => Some(CMD::OutN),
                     (5, 2) => Some(CMD::OutC),
-                    _ => None,
+                    _ => panic!("NOP?"),
                 } {
                     cmd.interpret(&mut self.stack, input, output);
                 }
@@ -306,14 +316,15 @@ impl PietExecution {
         let mut pix_to_blob: HashMap<(usize, usize), usize> = HashMap::new();
         for (i, (c, blob)) in all_blobs.iter().cloned().enumerate() {
             let l: Vec<_> = vec![
-                (false, false, true),
-                (false, false, false),
-                (true, false, false),
-                (true, true, false),
-                (false, true, false),
-                (false, true, true),
-                (true, true, true),
-                (true, false, true),
+                // (x first, negative x, negative y)
+                (true, false, true), // (right) uppermost
+                (true, false, false), // (right) downmost
+                (false, false, false), // (down) rightmost
+                (false, true,  false), // (down) leftmost
+                (true,  true,  false), // (left) downmost
+                (true,  true,  true), // (right) uppermost
+                (false,  true,  true), // (up) leftmost
+                (false,  false, true), // (up) rightmost
             ]
             .into_iter()
             .map(|(swap, rev1, rev2)| {
