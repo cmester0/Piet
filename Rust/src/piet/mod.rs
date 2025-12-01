@@ -160,7 +160,7 @@ impl PietExecution {
                 while self.map.blobs[ValidColor::from("⚪") as usize].contains(&next_pos) {
                     last_pos = next_pos;
                     (next_pos, _) = self.next_step_from_dp(next_pos);
-                    if skip_whitespace {
+                    if !skip_whitespace {
                         break;
                     }
                 }

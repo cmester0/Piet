@@ -4,31 +4,31 @@ use piet::advc::AdvcExecutor;
 #[derive(CliParser, Clone, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(short, long)]
+    #[arg(long)]
     filepath: String,
-    #[arg(short, long)]
+    #[arg(long)]
     run: bool,
-    #[arg(short, long)]
+    #[arg(long)]
     output: Option<String>,
-    #[arg(short, long)]
+    #[arg(long)]
     to_stk: Option<String>,
-    #[arg(short, long)]
+    #[arg(long)]
     optimize_stk: bool,
-    #[arg(short, long)]
+    #[arg(long)]
     run_stk: bool,
-    #[arg(short, long)]
+    #[arg(long)]
     to_piet: Option<String>,
-    #[arg(short, long)]
+    #[arg(long)]
     run_piet: bool,
-    #[arg(short, long)]
+    #[arg(long)]
     gui_piet: bool,
-    #[arg(short, long)]
+    #[arg(long)]
     registers: Option<usize>,
-    #[arg(short, long)]
+    #[arg(long)]
     steps_per_frame: Option<usize>,
-    #[arg(short, long)]
+    #[arg(long)]
     start_frame: Option<usize>,
-    #[arg(short, long, action)]
+    #[arg(long, action)]
     skip_whitespace: bool,
 }
 
