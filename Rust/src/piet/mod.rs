@@ -168,8 +168,22 @@ impl PietExecution {
                 (self.cursor.cx, self.cursor.cy) = last_pos;
                 self.whitespace_jump.insert(hash_start, (self.cursor.cx, self.cursor.cy, self.cursor.dp));
             } else {
-                (self.cursor.cx, self.cursor.cy, self.cursor.dp) = self.whitespace_jump[&(self.cursor.cx, self.cursor.cy, self.cursor.dp)];
+                let (mut s_c_cx, mut s_c_cy, mut s_c_dp) = (self.cursor.cx, self.cursor.cy, self.cursor.dp);
+
+                let mut locations_goto : HashSet<(usize,usize,usize)> = HashSet::new();
+                locations_goto.insert((self.cursor.cx, self.cursor.cy, self.cursor.dp));
+
+                while self.whitespace_jump.contains_key(&(s_c_cx, s_c_cy, s_c_dp)) {
+                    locations_goto.insert((s_c_cx, s_c_cy, s_c_dp));
+                    (s_c_cx, s_c_cy, s_c_dp) = self.whitespace_jump[&(s_c_cx, s_c_cy, s_c_dp)];
                 }
+
+                for (cx, cy, dp) in locations_goto {
+                    self.whitespace_jump.insert((cx,cy,dp), (s_c_cx, s_c_cy, s_c_dp));
+                }
+
+                (self.cursor.cx, self.cursor.cy, self.cursor.dp) = (s_c_cx, s_c_cy, s_c_dp);
+            }
             return false;
         } else {
             //     r_u, r_d, d_r, d_l, l_d, l_u, u_l, u_r, bs, c = all_blobs_indexed[pix_to_blob[next_pos[1]][next_pos[0]]]
