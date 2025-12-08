@@ -254,7 +254,7 @@ impl SmplToStk {
             stk_executor: PietStackExecutor {
                 blocks: HashMap::new(),
                 block_index: HashMap::new(),
-                stack: vec![],
+                stack: Vec::new(),
                 label: String::from("main"),
             },
         };

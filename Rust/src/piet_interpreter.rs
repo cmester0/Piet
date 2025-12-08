@@ -118,7 +118,7 @@ impl CMD {
                 stack.push(a);
             }
             CMD::Roll => {
-                if stack.len() < 2 || stack[stack.len()-2] < 0.into() { return None }
+                if stack.len() < 2 || *stack.get(stack.len()-2).unwrap() < 0.into() { return None }
 
                 let mut a = stack.pop()?;
                 let b = stack.pop()?;

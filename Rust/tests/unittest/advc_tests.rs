@@ -63,3 +63,13 @@ pub fn test_call_fail2() {
 pub fn test_local_vars() {
     test_advc_no_file("./tests/advc/test_local_vars.advc", "", "12113200151", 5);
 }
+
+#[test]
+pub fn test_local_vars_2() {
+    test_advc_no_file("./tests/advc/test_local_vars_2.advc", "", "00000121132151", 5);
+}
+
+#[test]
+pub fn test_include() {
+    test_advc_no_file("./tests/advc/test_include.advc", "", "152", 5);
+}

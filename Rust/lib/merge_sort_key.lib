@@ -1,0 +1,247 @@
+label merge_sort
+local_var l_key num
+local_var l_val num
+
+local_var left_key num
+local_var left_val num
+
+local_var right_key num
+local_var right_val num
+
+local_var merge_i num
+local_var merge_end_i num
+
+  get __R0__
+  set l_key
+
+  get __R1__
+  set l_val
+
+  push -1
+  push -1
+  push -1
+  push -1
+
+  set left_key
+  set left_val
+
+  set right_key
+  set right_val
+
+  get l_key
+  length
+  push 1
+  greater
+  if {
+    get l_key
+    length
+    push 2
+    div
+    set merge_end_i
+
+    for merge_i = 0 to merge_end_i {
+      index l_key[merge_i]
+      get left_key
+      append
+      set left_key
+
+      index l_val[merge_i]
+      get left_val
+      append
+      set left_val
+    }
+
+    get l_key
+    length
+    set merge_end_i
+    for merge_i to merge_end_i {
+      index l_key[merge_i]
+      get right_key
+      append
+      set right_key
+
+      index l_val[merge_i]
+      get right_val
+      append
+      set right_val
+    }
+
+    get left_key
+    set __R0__
+    get left_val
+    set __R1__
+    call merge_sort
+    get __R0__
+    set left_key
+    get __R1__
+    set left_val
+
+    get right_key
+    set __R0__
+    get right_val
+    set __R1__
+    call merge_sort
+    get __R0__
+    set right_key
+    get __R1__
+    set right_val
+
+    get left_key
+    set __R0__
+
+    get left_val
+    set __R1__
+
+    get right_key
+    set __R2__
+
+    get right_val
+    set __R3__
+
+    call merge
+  } else {
+    get l_key
+    set __R0__
+    get l_val
+    set __R1__
+  }
+
+return
+
+label merge
+local_var zero num
+
+local_var left_key num
+local_var left_val num
+
+local_var right_key num
+local_var right_val num
+
+local_var result_key num
+local_var result_val num
+
+local_var merge_i num
+local_var merge_end_i num
+
+local_var merge_end_j num
+
+local_var li num
+local_var ri num
+
+  get __R0__
+  set left_key
+
+  get __R1__
+  set left_val
+
+  get __R2__
+  set right_key
+
+  get __R3__
+  set right_val
+
+  push -1
+  set result_key
+
+  push -1
+  set result_val
+
+  get left_key
+  length
+  get right_key
+  length
+  add
+  set merge_end_i
+
+  for merge_i = 0 to merge_end_i {
+    index left_key[li]
+    index right_key[ri]
+    greater
+    not
+    if {
+      index left_key[li]
+      get result_key
+      append
+      set result_key
+
+      index left_val[li]
+      get result_val
+      append
+      set result_val
+
+      get li
+      push 1
+      add
+      set li
+
+      get left_key
+      length
+      get li
+      greater
+      not
+      if {
+        get right_key
+        length
+        set merge_end_j
+        for ri to merge_end_j {
+          index right_key[ri]
+          get result_key
+          append
+          set result_key
+
+          index right_val[ri]
+          get result_val
+          append
+          set result_val
+        }
+        break 0
+      } else {}
+
+    } else {
+      index right_key[ri]
+      get result_key
+      append
+      set result_key
+
+      index right_val[ri]
+      get result_val
+      append
+      set result_val
+
+      get ri
+      push 1
+      add
+      set ri
+
+      get right_key
+      length
+      get ri
+      greater
+      not
+      if {
+        get left_key
+        length
+        set merge_end_j
+        for li to merge_end_j {
+          index left_key[li]
+          get result_key
+          append
+          set result_key
+
+          index left_val[li]
+          get result_val
+          append
+          set result_val
+        }
+        break 0
+      } else {}
+    }
+  }
+
+  get result_key
+  set __R0__
+
+  get result_val
+  set __R1__
+
+return

@@ -146,6 +146,7 @@ pub fn test_eq1() {
 // // }
 
 #[test]
+#[allow(non_snake_case)]
 pub fn test_inC() {
     test_simpl_vs_stk_vs_piet("./tests/smpl/test_inC", "abcd", "a", 0);
 }

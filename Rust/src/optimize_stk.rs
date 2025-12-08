@@ -16,10 +16,10 @@ impl StackOptimizer {
         StackOptimizer {
             results: HashMap::from([(String::from("0"), (2, vec![Push(1.into()), Not]))]),
             heap: BinaryHeap::from([
-                Reverse((1, Push(1.into()), vec![], vec![Push(1.into())])),
-                Reverse((2, Push(2.into()), vec![], vec![Push(2.into())])),
-                Reverse((3, Push(3.into()), vec![], vec![Push(3.into())])),
-                Reverse((5, Push(5.into()), vec![], vec![Push(5.into())])),
+                Reverse((1, Push(1.into()), Vec::new(), vec![Push(1.into())])),
+                Reverse((2, Push(2.into()), Vec::new(), vec![Push(2.into())])),
+                Reverse((3, Push(3.into()), Vec::new(), vec![Push(3.into())])),
+                Reverse((5, Push(5.into()), Vec::new(), vec![Push(5.into())])),
             ]),
         }
     }
@@ -88,8 +88,8 @@ impl StackOptimizer {
         add_next_instr(1, Mod);
         add_next_instr(1, Dup);
         if stack.len() >= 2
-            && <isize as Into<BigInt>>::into(stack.len() as isize - 2) >= stack[stack.len() - 2]
-            && stack[stack.len() - 2] > 0.into()
+            && <isize as Into<BigInt>>::into(stack.len() as isize - 2) >= *stack.get(stack.len() - 2).unwrap()
+            && *stack.get(stack.len() - 2).unwrap() > 0.into()
         {
             // only allow valid roll? (Otherwise is better pop, pop?)
             add_next_instr(1, Roll);
@@ -97,14 +97,14 @@ impl StackOptimizer {
     }
 
     pub fn optimize_stack(&mut self, search_stack: Vec<BigInt>) -> Vec<CMD> {
-        let search_stack = vec_to_str(search_stack);
+        let search_stack = vec_to_str(search_stack.clone());
         while !self.results.contains_key(&search_stack) {
             let Reverse((weight, instructions, mut stack, total_instructions)) =
                 self.heap.pop().unwrap();
 
             self.evaluate(instructions, &mut stack);
 
-            if stack.len() > 0 && stack[stack.len() - 1] == 0.into() {
+            if stack.len() > 0 && *stack.get(stack.len() - 1).unwrap() == 0.into() {
                 continue;
             }
 

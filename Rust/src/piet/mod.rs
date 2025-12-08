@@ -402,7 +402,6 @@ impl PietExecution {
             },
             stack: Vec::new(),
             whitespace_jump: HashMap::new(),
-            //
         }
     }
 }
