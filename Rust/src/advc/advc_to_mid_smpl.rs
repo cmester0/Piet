@@ -58,7 +58,7 @@ impl AdvcToSmpl {
             .extend(c.into_iter().map(Instr).collect::<Vec<_>>());
     }
 
-    fn add_lib(&mut self, lib: String) {
+    fn add_lib(&mut self, lib: &str) {
         // self.smpl_executor
         //     .imports
         //     .insert(lib.clone(), format!("./lib/{}.lib", lib));
@@ -67,11 +67,11 @@ impl AdvcToSmpl {
             .blocks
             .get_mut(&self.smpl_executor.label)
             .unwrap()
-            .push(Expr::Comment(format!("+lib_{}", lib)));
+            .push(Expr::Comment(format!("+lib_{}", String::from(lib))));
 
         self.smpl_executor.label = crate::mid_smpl::handle_lib(
             self.smpl_executor.label.clone(),
-            lib.clone(),
+            String::from(lib),
             &mut self.smpl_executor.blocks,
             &mut self.smpl_executor.block_index,
             &mut self.smpl_executor.variables,
@@ -84,7 +84,7 @@ impl AdvcToSmpl {
             .blocks
             .get_mut(&self.smpl_executor.label)
             .unwrap()
-            .push(Expr::Comment(format!("-lib_{}", lib)));
+            .push(Expr::Comment(format!("-lib_{}", String::from(lib))));
 
         // // TODO:
         // self.smpl_executor
@@ -113,16 +113,16 @@ impl AdvcToSmpl {
             AdvcExpr::Instr(Nop) => {}
             AdvcExpr::Instr(c @ Push(_)) => {
                 self.add_cmd(c.clone());
-                self.add_lib(c.cmd_str());
+                self.add_lib(&c.cmd_str());
             }
             AdvcExpr::Instr(c) => {
-                self.add_lib(c.cmd_str());
+                self.add_lib(&c.cmd_str());
             }
             AdvcExpr::Goto(l) => {
                 self.add_expr(Goto(handle_label(l)));
             }
             AdvcExpr::Branch(a, b) => {
-                self.add_lib(String::from("pre_branch"));
+                self.add_lib("pre_branch");
                 self.add_expr(Branch(handle_label(a), handle_label(b)));
             }
             AdvcExpr::Debug => {
@@ -139,7 +139,13 @@ impl AdvcToSmpl {
                         .unwrap()
                         .contains_key(&var)
                 {
-                    let local_var_index = self.local_vars.get(&local_label.clone()).unwrap().get(&var).unwrap().var_index;
+                    let local_var_index = self
+                        .local_vars
+                        .get(&local_label.clone())
+                        .unwrap()
+                        .get(&var)
+                        .unwrap()
+                        .var_index;
 
                     self.add_expr(Expr::Get(String::from("base_pointer")));
 
@@ -147,21 +153,20 @@ impl AdvcToSmpl {
                     self.add_cmd(Push(1.into()));
                     self.add_expr(Expr::Instr(Add));
 
-                    self.add_lib(String::from("swap_smpl"));
-                    self.add_lib(String::from("sub"));
+                    self.add_lib("swap_smpl");
+                    self.add_lib("sub");
 
                     self.add_cmd(Push(local_var_index.into()));
-                    self.add_lib(String::from("push"));
+                    self.add_lib("push");
                     self.add_cmd(Push(1.into()));
-                    self.add_lib(String::from("push"));
-                    self.add_lib(String::from("add"));
+                    self.add_lib("push");
+                    self.add_lib("add");
 
-                    self.add_lib(String::from("sub"));
+                    self.add_lib("sub");
 
-                    self.add_lib(String::from("swap_at_depth_smpl"));
+                    self.add_lib("swap_at_depth_smpl");
 
-                    self.add_lib(String::from("pop"));
-
+                    self.add_lib("pop");
                 } else {
                     self.add_expr(Expr::Set(var));
                 }
@@ -174,7 +179,13 @@ impl AdvcToSmpl {
                         .unwrap()
                         .contains_key(&var)
                 {
-                    let local_var_index = self.local_vars.get(&local_label.clone()).unwrap().get(&var).unwrap().var_index;
+                    let local_var_index = self
+                        .local_vars
+                        .get(&local_label.clone())
+                        .unwrap()
+                        .get(&var)
+                        .unwrap()
+                        .var_index;
 
                     self.add_expr(Expr::Get(String::from("base_pointer")));
 
@@ -182,17 +193,17 @@ impl AdvcToSmpl {
                     self.add_cmd(Push(1.into()));
                     self.add_expr(Expr::Instr(Add));
 
-                    self.add_lib(String::from("swap_smpl"));
-                    self.add_lib(String::from("sub"));
+                    self.add_lib("swap_smpl");
+                    self.add_lib("sub");
 
                     self.add_cmd(Push(local_var_index.into()));
-                    self.add_lib(String::from("push"));
+                    self.add_lib("push");
                     self.add_cmd(Push(1.into()));
-                    self.add_lib(String::from("push"));
-                    self.add_lib(String::from("add"));
-                    self.add_lib(String::from("sub"));
+                    self.add_lib("push");
+                    self.add_lib("add");
+                    self.add_lib("sub");
 
-                    self.add_lib(String::from("dup_at_depth_smpl"));
+                    self.add_lib("dup_at_depth_smpl");
 
                     // todo!("handle local variable {}", var);
                 } else {
@@ -200,56 +211,56 @@ impl AdvcToSmpl {
                 }
             }
             AdvcExpr::Eq => {
-                self.add_lib(String::from("eq"));
+                self.add_lib("eq");
             }
             AdvcExpr::Append => {
-                self.add_lib(String::from("append"));
+                self.add_lib("append");
             }
             AdvcExpr::PrintListC => {
-                self.add_lib(String::from("print_listC"));
+                self.add_lib("print_listC");
             }
             AdvcExpr::PrintListN => {
-                self.add_lib(String::from("print_listN"));
+                self.add_lib("print_listN");
             }
             AdvcExpr::PrintCListOfList => {
-                self.add_lib(String::from("printC_list_of_list"));
+                self.add_lib("printC_list_of_list");
             }
             AdvcExpr::Print(s) => {
                 for c in s.chars() {
                     self.add_expr(Instr(CMD::Push((c as isize).into())));
-                    self.add_lib(String::from("push"));
-                    self.add_lib(String::from("outC"));
+                    self.add_lib("push");
+                    self.add_lib("outC");
                 }
             }
             AdvcExpr::LocalVar(_, _) => {
                 // Already handled!
             }
             AdvcExpr::In => {
-                self.add_lib(String::from("in"));
+                self.add_lib("in");
             }
             AdvcExpr::Malloc => {
-                self.add_lib(String::from("malloc"));
+                self.add_lib("malloc");
             }
             AdvcExpr::DupAtDepth => {
-                self.add_lib(String::from("dup_at_depth_smpl"));
+                self.add_lib("dup_at_depth_smpl");
             }
             AdvcExpr::GetElem => {
-                self.add_lib(String::from("get_elem"));
+                self.add_lib("get_elem");
             }
             AdvcExpr::SetElem => {
-                self.add_lib(String::from("set_elem"));
+                self.add_lib("set_elem");
             }
             AdvcExpr::GetHeap => {
-                self.add_lib(String::from("get_heap"));
+                self.add_lib("get_heap");
             }
             AdvcExpr::SetHeap => {
-                self.add_lib(String::from("set_heap"));
+                self.add_lib("set_heap");
             }
             AdvcExpr::Readlines => {
-                self.add_lib(String::from("readlines"));
+                self.add_lib("readlines");
             }
             AdvcExpr::Length => {
-                self.add_lib(String::from("length"));
+                self.add_lib("length");
             }
             AdvcExpr::Index(name, indexes) => {
                 let mut exprs = vec![AdvcExpr::Get(name)];
@@ -297,7 +308,7 @@ impl AdvcToSmpl {
                         .clone()
                         .into(),
                 )));
-                self.add_lib(String::from("push"));
+                self.add_lib("push");
 
                 // Set base pointer of call frame (to something consistent)
                 self.add_expr(Get(String::from("base_pointer")));
@@ -320,28 +331,24 @@ impl AdvcToSmpl {
                     .sorted_by(|(_, var1), (_, var2)| var1.var_index.cmp(&var2.var_index))
                 {
                     self.add_expr(Instr(CMD::Push(var_def.value)));
-                    self.add_lib(String::from("push"));
+                    self.add_lib("push");
                 }
 
                 // self.add_expr(Instr(CMD::Push(1.into())));
-                // self.add_lib(String::from("push"));
+                // self.add_lib("push");
 
                 self.add_expr(Goto(handle_label(a)));
 
                 self.smpl_executor.label = r.get_label_name();
-
             }
             AdvcExpr::Return => {
                 self.add_expr(Expr::Debug);
 
-                let variable_map: HashMap<_, _> = self
-                    .local_vars
-                    .get(&local_label.clone())
-                    .unwrap()
-                    .clone();
+                let variable_map: HashMap<_, _> =
+                    self.local_vars.get(&local_label.clone()).unwrap().clone();
 
                 for _ in 0..variable_map.len() {
-                    self.add_lib(String::from("pop"));
+                    self.add_lib("pop");
                 }
 
                 self.add_expr(Set(String::from("base_pointer")));
@@ -349,11 +356,11 @@ impl AdvcToSmpl {
                 self.add_expr(Expr::Debug);
 
                 // TODO: assumes stack must be empty ..
-                // self.add_lib(String::from("pop"));
+                // self.add_lib("pop");
                 self.add_expr(Instr(CMD::Push(1.into())));
                 self.add_expr(Instr(CMD::Sub));
 
-                self.add_lib(String::from("swap"));
+                self.add_lib("swap");
 
                 self.add_expr(Expr::Debug);
 
@@ -361,12 +368,12 @@ impl AdvcToSmpl {
             }
             AdvcExpr::ClearList(l) => {
                 self.add_expr(Instr(CMD::Push(0.into())));
-                self.add_lib(String::from("push"));
+                self.add_lib("push");
                 self.add_expr(Expr::Get(l));
                 self.add_expr(Instr(CMD::Push(1.into())));
-                self.add_lib(String::from("push"));
-                self.add_lib(String::from("add"));
-                self.add_lib(String::from("set_heap"));
+                self.add_lib("push");
+                self.add_lib("add");
+                self.add_lib("set_heap");
             }
         }
     }
@@ -496,7 +503,7 @@ impl AdvcToSmpl {
             let v = advc_to_smpl.advc_executor.blocks[&x.clone()].clone();
             for e in v.clone() {
                 match e {
-                    AdvcExpr::Call(f, r) => {
+                    AdvcExpr::Call(f, _) => {
                         functions.insert(f.clone().get_label_name());
                     }
                     _ => (),

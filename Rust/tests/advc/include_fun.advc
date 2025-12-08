@@ -1,0 +1,4 @@
+label fun
+push 152
+outN
+return

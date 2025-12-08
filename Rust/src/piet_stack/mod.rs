@@ -14,6 +14,8 @@ use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
 
+use crate::rotation_stack::RotStack;
+
 #[derive(Debug, Clone)]
 pub enum Expr {
     Instr(CMD),
@@ -61,7 +63,7 @@ pub fn parse_expr(e: Pair<Rule>) -> Expr {
 pub struct PietStackExecutor {
     pub blocks: HashMap<String, Vec<Expr>>,
     pub block_index: HashMap<String, usize>,
-    pub stack: Vec<BigInt>,
+    pub stack: RotStack<BigInt>,
     pub label: String,
 }
 
@@ -177,7 +179,7 @@ impl PietStackExecutor {
         PietStackExecutor {
             blocks,
             block_index,
-            stack: Vec::new(),
+            stack: RotStack::new(),
             label: String::from("main"),
         }
     }

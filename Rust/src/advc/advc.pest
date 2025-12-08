@@ -1,6 +1,6 @@
 Document = {
     SOI ~
-    NEWLINE* ~ Imports ~ Variables ~
+    NEWLINE* ~ Imports ~ Includes ~ Variables ~
     NEWLINE* ~ SubBlock ~
     NEWLINE* ~ Blocks ~
     NEWLINE* ~
@@ -21,6 +21,10 @@ Filepath = @{ ("." | "/" | Name)+ }
 
 Imports = { (Import ~ NEWLINE*)* } // imports +
 Import = { "use" ~ SEPARATOR ~ Name ~ SEPARATOR ~ Filepath }
+
+Includes = { (Include ~ NEWLINE*)* } // includes +
+Include = { "include" ~ SEPARATOR ~ Filepath }
+
 
 Variables = { (Variable ~ NEWLINE*)* } // variables +
 Variable = { "var" ~ SEPARATOR ~ Name ~ SEPARATOR ~ VarType }

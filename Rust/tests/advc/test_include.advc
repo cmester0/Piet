@@ -1,0 +1,3 @@
+include ./tests/advc/include_fun.advc
+call fun
+goto term

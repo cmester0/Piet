@@ -12,6 +12,8 @@ use std::fs;
 #[allow(unused_imports)]
 use std::io::Read;
 
+use crate::rotation_stack::RotStack;
+
 #[derive(Clone, Debug)]
 // #[repr(isize)]
 pub enum VariableType {
@@ -532,9 +534,19 @@ pub fn parse_expr(
 
 #[derive(Clone, Debug)]
 pub struct StackFrame {
-    pub stack: Vec<BigInt>, // Stack frames
+    pub stack: RotStack<BigInt>, // Stack frames
     pub label: Label,       // Return label
     pub variables: HashMap<String, Variable>,
+}
+
+impl StackFrame {
+    pub fn new(l: Label) -> Self {
+        StackFrame {
+            stack: RotStack::new(),
+            label: l,
+            variables: HashMap::new(),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -723,11 +735,16 @@ pub fn parse_string(
         Rule::Document => {
             let mut v: pest::iterators::Pairs<Rule> = document.into_inner();
 
+            let mut label_map: HashMap<String, String> = HashMap::new();
+            let mut label_count = 0;
+
+            blocks.insert(String::from("main"), vec![]);
+            block_index.insert(String::from("main"), 0);
+
             let mut pre_main = v.next().unwrap();
             loop {
                 match pre_main.as_rule() {
                     Rule::Imports => {
-                        // TODO: handle import
                         let a = pre_main.into_inner();
                         for import in a {
                             match import.as_rule() {
@@ -737,6 +754,51 @@ pub fn parse_string(
                                     let filepath = imp.next().unwrap().as_str();
 
                                     imports.insert(String::from(name), String::from(filepath));
+                                }
+                                _ => todo!("Not variable!"),
+                            }
+                        }
+                    }
+                    Rule::Includes => {
+                        let a = pre_main.into_inner();
+                        for include in a {
+                            match include.as_rule() {
+                                Rule::Include => {
+                                    let mut inc = include.into_inner();
+                                    let filepath = inc.next().unwrap().as_str();
+
+                                    let unparsed_file = fs::read_to_string(filepath)
+                                        .expect(format!("cannot read file {}", filepath).as_str());
+
+                                    println!("FILE: {}", unparsed_file);
+
+                                    let rule_blocks = AdvcParser::parse(Rule::Blocks, &unparsed_file)
+                                        .expect("unsuccessful parse")
+                                        .next()
+                                        .unwrap()
+                                        .into_inner();
+
+                                    for b in rule_blocks {
+                                        if let Rule::EOI = b.as_rule() {
+                                            break;
+                                        }
+
+                                        if b.as_rule() != Rule::Block {
+                                            panic!()
+                                        }
+
+                                        parse_block(
+                                            b,
+                                            blocks,
+                                            block_index,
+                                            variables,
+                                            &mut label_map,
+                                            &mut label_count,
+                                            &HashMap::new(),
+                                            &vec![],
+                                        );
+                                    }
+                                    println!("{}", filepath);
                                 }
                                 _ => todo!("Not variable!"),
                             }
@@ -785,16 +847,10 @@ pub fn parse_string(
                 pre_main = v.next().unwrap();
             }
 
-            let mut label_map: HashMap<String, String> = HashMap::new();
-            let mut label_count = 0;
-
             let main = pre_main;
 
             match main.as_rule() {
                 Rule::SubBlock => {
-                    blocks.insert(String::from("main"), vec![]);
-                    block_index.insert(String::from("main"), 0);
-
                     parse_subblocks(
                         String::from("main"),
                         main,
@@ -867,11 +923,7 @@ impl AdvcExecutor {
             blocks,
             block_index,
             variables,
-            stack_frames: vec![StackFrame {
-                stack: Vec::new(),
-                label: Label::Name(String::from("term")),
-                variables: HashMap::new(),
-            }], // Default for "main"?
+            stack_frames: vec![StackFrame::new(Label::Name(String::from("term")))], // Default for "main"?
             heap: Vec::new(),
             label: String::from("main"),
             registers,
@@ -983,11 +1035,7 @@ impl AdvcExecutor {
                     return self.label != "term";
                 }
                 Call(fun, ret) => {
-                    self.stack_frames.push(StackFrame {
-                        stack: Vec::new(),
-                        label: ret,
-                        variables: HashMap::new(),
-                    });
+                    self.stack_frames.push(StackFrame::new(ret));
                     // Goto function
                     self.label = fun.clone().get_label_name();
                     return self.label != "term";

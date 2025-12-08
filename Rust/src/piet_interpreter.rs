@@ -2,6 +2,8 @@ use num::BigInt;
 use num::ToPrimitive;
 use num::traits::Euclid;
 
+use crate::rotation_stack::RotStack;
+
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum CMD {
     Nop,
@@ -57,7 +59,7 @@ impl CMD {
 
     pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut Vec<BigInt>,
+        stack: &mut RotStack<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> Option<()> {
@@ -118,7 +120,7 @@ impl CMD {
                 stack.push(a);
             }
             CMD::Roll => {
-                if stack.len() < 2 || stack[stack.len()-2] < 0.into() { return None }
+                if stack.len() < 2 || *stack.get(stack.len()-2).unwrap() < 0.into() { return None }
 
                 let mut a = stack.pop()?;
                 let b = stack.pop()?;
@@ -133,9 +135,11 @@ impl CMD {
                 if a != 0.into() {
                     let s = stack.len().clone();
                     if a > 0.into() {
-                        stack[s - b..s].rotate_right(a.to_usize().unwrap());
+                        stack.rotate_right_amount(b,a.to_usize().unwrap());
+                        // stack[s - b..s].rotate_right(a.to_usize().unwrap());
                     } else {
-                        stack[s - b..s].rotate_left((-a).to_usize().unwrap());
+                        stack.rotate_left_amount(b,a.to_usize().unwrap());
+                        // stack[s - b..s].rotate_left((-a).to_usize().unwrap());
                     }
                 }
             }
@@ -206,7 +210,7 @@ impl CMD {
 
     pub fn interpret<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut Vec<BigInt>,
+        stack: &mut RotStack<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) {

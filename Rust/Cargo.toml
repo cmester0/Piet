@@ -39,6 +39,8 @@ pest_derive = "*"
 sdl2 = "*"
 num = "*"
 
+rand = "*"
+
 [dependencies.druid]
 version = "*"
 features = ["image"]

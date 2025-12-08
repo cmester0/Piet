@@ -4,11 +4,12 @@ use num::BigInt;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
+use crate::rotation_stack::RotStack;
 
 pub struct StackOptimizer {
     results: HashMap<String, (usize, Vec<CMD>)>,
     // Weight, Curr_Stack, Curr_instrs, Total_instrs
-    heap: BinaryHeap<Reverse<(usize, CMD, Vec<BigInt>, Vec<CMD>)>>,
+    heap: BinaryHeap<Reverse<(usize, CMD, RotStack<BigInt>, Vec<CMD>)>>,
 }
 
 impl StackOptimizer {
@@ -16,10 +17,10 @@ impl StackOptimizer {
         StackOptimizer {
             results: HashMap::from([(String::from("0"), (2, vec![Push(1.into()), Not]))]),
             heap: BinaryHeap::from([
-                Reverse((1, Push(1.into()), vec![], vec![Push(1.into())])),
-                Reverse((2, Push(2.into()), vec![], vec![Push(2.into())])),
-                Reverse((3, Push(3.into()), vec![], vec![Push(3.into())])),
-                Reverse((5, Push(5.into()), vec![], vec![Push(5.into())])),
+                Reverse((1, Push(1.into()), RotStack::new(), vec![Push(1.into())])),
+                Reverse((2, Push(2.into()), RotStack::new(), vec![Push(2.into())])),
+                Reverse((3, Push(3.into()), RotStack::new(), vec![Push(3.into())])),
+                Reverse((5, Push(5.into()), RotStack::new(), vec![Push(5.into())])),
             ]),
         }
     }
@@ -47,7 +48,7 @@ fn int_root(x: BigInt, n: u32) -> BigInt {
     r
 }
 
-fn vec_to_str(v: Vec<BigInt>) -> String {
+fn vec_to_str(v: Vec<&BigInt>) -> String {
     v.into_iter()
         .map(|x| x.to_string())
         .collect::<Vec<_>>()
@@ -55,7 +56,7 @@ fn vec_to_str(v: Vec<BigInt>) -> String {
 }
 
 impl StackOptimizer {
-    fn evaluate(&mut self, cmd: CMD, stack: &mut Vec<BigInt>) -> () {
+    fn evaluate(&mut self, cmd: CMD, stack: &mut RotStack<BigInt>) -> () {
         match cmd {
             Push(c) if c == 1.into() || c == 2.into() || c == 3.into() || c == 5.into() => {
                 stack.push(c)
@@ -64,7 +65,7 @@ impl StackOptimizer {
         }
     }
 
-    fn add_neighbors(&mut self, weight: usize, stack: Vec<BigInt>, total_instructions: Vec<CMD>) {
+    fn add_neighbors(&mut self, weight: usize, stack: RotStack<BigInt>, total_instructions: Vec<CMD>) {
         let mut add_next_instr = |weight_change: usize, next_instr: CMD| {
             let mut cp = total_instructions.clone();
             cp.push(next_instr.clone());
@@ -88,27 +89,27 @@ impl StackOptimizer {
         add_next_instr(1, Mod);
         add_next_instr(1, Dup);
         if stack.len() >= 2
-            && <isize as Into<BigInt>>::into(stack.len() as isize - 2) >= stack[stack.len() - 2]
-            && stack[stack.len() - 2] > 0.into()
+            && <isize as Into<BigInt>>::into(stack.len() as isize - 2) >= *stack.get(stack.len() - 2).unwrap()
+            && *stack.get(stack.len() - 2).unwrap() > 0.into()
         {
             // only allow valid roll? (Otherwise is better pop, pop?)
             add_next_instr(1, Roll);
         }
     }
 
-    pub fn optimize_stack(&mut self, search_stack: Vec<BigInt>) -> Vec<CMD> {
-        let search_stack = vec_to_str(search_stack);
+    pub fn optimize_stack(&mut self, search_stack: RotStack<BigInt>) -> Vec<CMD> {
+        let search_stack = vec_to_str(search_stack.to_vec().clone());
         while !self.results.contains_key(&search_stack) {
             let Reverse((weight, instructions, mut stack, total_instructions)) =
                 self.heap.pop().unwrap();
 
             self.evaluate(instructions, &mut stack);
 
-            if stack.len() > 0 && stack[stack.len() - 1] == 0.into() {
+            if stack.len() > 0 && *stack.get(stack.len() - 1).unwrap() == 0.into() {
                 continue;
             }
 
-            let stk_str = vec_to_str(stack.clone());
+            let stk_str = vec_to_str(stack.clone().to_vec());
             if !self.results.contains_key(&stk_str) {
                 self.results
                     .insert(stk_str, (weight, total_instructions.clone()));
@@ -127,7 +128,9 @@ impl StackOptimizer {
         while int_root(n.clone(), root) > 173.into() {
             root += 1;
         }
-        instrs.extend(self.optimize_stack(vec![int_root(n.clone(), root).into()]));
+        let mut rot_stack = RotStack::new();
+        rot_stack.push(int_root(n.clone(), root).into());
+        instrs.extend(self.optimize_stack(rot_stack));
         for _ in 0..(root - 1) {
             instrs.push(CMD::Dup);
         }
