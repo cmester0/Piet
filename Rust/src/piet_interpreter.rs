@@ -2,8 +2,6 @@ use num::BigInt;
 use num::ToPrimitive;
 use num::traits::Euclid;
 
-use crate::rotation_stack::RotStack;
-
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum CMD {
     Nop,
@@ -59,7 +57,7 @@ impl CMD {
 
     pub fn interpret_result<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut RotStack<BigInt>,
+        stack: &mut Vec<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) -> Option<()> {
@@ -135,11 +133,9 @@ impl CMD {
                 if a != 0.into() {
                     let s = stack.len().clone();
                     if a > 0.into() {
-                        stack.rotate_right_amount(b,a.to_usize().unwrap());
-                        // stack[s - b..s].rotate_right(a.to_usize().unwrap());
+                        stack[s - b..s].rotate_right(a.to_usize().unwrap());
                     } else {
-                        stack.rotate_left_amount(b,a.to_usize().unwrap());
-                        // stack[s - b..s].rotate_left((-a).to_usize().unwrap());
+                        stack[s - b..s].rotate_left((-a).to_usize().unwrap());
                     }
                 }
             }
@@ -210,7 +206,7 @@ impl CMD {
 
     pub fn interpret<I: std::io::Read, O: std::io::Write>(
         self,
-        stack: &mut RotStack<BigInt>,
+        stack: &mut Vec<BigInt>,
         input: &mut Option<std::iter::Peekable<std::io::Bytes<I>>>,
         output: &mut Option<O>,
     ) {

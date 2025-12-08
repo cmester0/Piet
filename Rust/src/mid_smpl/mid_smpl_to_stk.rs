@@ -8,8 +8,6 @@ use crate::{
 use itertools::Itertools;
 use std::collections::HashMap;
 
-use crate::rotation_stack::RotStack;
-
 pub struct SmplToStk {
     smpl_executor: SmplExecutor,
     stk_executor: PietStackExecutor,
@@ -256,7 +254,7 @@ impl SmplToStk {
             stk_executor: PietStackExecutor {
                 blocks: HashMap::new(),
                 block_index: HashMap::new(),
-                stack: RotStack::new(),
+                stack: Vec::new(),
                 label: String::from("main"),
             },
         };

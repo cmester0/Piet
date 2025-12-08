@@ -12,8 +12,6 @@ use std::fs;
 #[allow(unused_imports)]
 use std::io::Read;
 
-use crate::rotation_stack::RotStack;
-
 #[derive(Clone, Debug)]
 // #[repr(isize)]
 pub enum VariableType {
@@ -534,7 +532,7 @@ pub fn parse_expr(
 
 #[derive(Clone, Debug)]
 pub struct StackFrame {
-    pub stack: RotStack<BigInt>, // Stack frames
+    pub stack: Vec<BigInt>, // Stack frames
     pub label: Label,       // Return label
     pub variables: HashMap<String, Variable>,
 }
@@ -542,7 +540,7 @@ pub struct StackFrame {
 impl StackFrame {
     pub fn new(l: Label) -> Self {
         StackFrame {
-            stack: RotStack::new(),
+            stack: Vec::new(),
             label: l,
             variables: HashMap::new(),
         }

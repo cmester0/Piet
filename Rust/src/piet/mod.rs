@@ -12,7 +12,6 @@ use sdl2::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Read;
-use crate::rotation_stack::RotStack;
 
 #[derive(Debug, Copy, Clone)]
 struct ABI {
@@ -56,7 +55,7 @@ struct PietCursor {
 struct PietExecution {
     map: PietImageData,
     cursor: PietCursor,
-    stack: RotStack<BigInt>, /* TODO: needs bigint math? */
+    stack: Vec<BigInt>, /* TODO: needs bigint math? */
     whitespace_jump : HashMap<(usize,usize,usize),(usize,usize,usize)>,
 }
 
@@ -401,9 +400,8 @@ impl PietExecution {
                 pix_to_blob,
                 all_blobs_indexed,
             },
-            stack: RotStack::new(),
+            stack: Vec::new(),
             whitespace_jump: HashMap::new(),
-            //
         }
     }
 }
